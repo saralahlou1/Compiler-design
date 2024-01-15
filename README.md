@@ -315,6 +315,12 @@ compile in Compile := Def.taskDyn {
 
 As you can see, you should, therefore, place your scala sources into the `src/scala` folder.
 
+
+Please ensure you have the most recent version of sbt installed.
+If using a McGill computer, you can download the SBT locally and run it without having to install it.
+[Link for latest version of SBT](https://www.scala-sbt.org/download.html).
+
+
 ### Main.java
 If you have a Main.java file in your source at the expected location, our automarker will replace it with our own version which is identical to the one we gave you originally, and will compile it!
 So if you wish to have a Main.scala source file as your main entry point, you should make sure to remove Main.java from your repo.
