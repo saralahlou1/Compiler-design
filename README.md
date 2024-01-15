@@ -277,14 +277,14 @@ If you wish to, you are allowed to use Scala instead of Java for implementing yo
 However, we strongly encourage you to stick with Java if you are not already familiar with Scala.
 In particular, you will not benefit from the starter code we give you and may have to rewrite a portion of it in Scala.
 
-Note that we only support Scala version 2.11.12.
+Note that we only support Scala version 2.13.12.
 
 ### Building
 If the automarker detect the presence of a *build.sbt* file in the root folder, it will compile your sources with SBT (`sbt compile`).
 Note that to ensure that you are not using any third party libraries, we will replace the *build.sbt* with our own version whose content is:
 
 ```
-scalaVersion := "2.11.12"
+scalaVersion := "2.13.12"
 
 javacOptions ++= Seq(
   "-source", "21",
@@ -302,7 +302,7 @@ lazy val cleanupTask = taskKey[Unit]("Now we will pretend we are Ant")
 
 import scala.sys.process._
 
-cleanupTask := ("rm -fr ./bin" #&& "cp -r ./target/scala-2.11/classes ./bin" !!)
+cleanupTask := ("rm -fr ./bin" #&& "cp -r ./target/scala-2.13/classes ./bin" !!)
 
 compile in Compile := Def.taskDyn {
   val result = (compile in Compile).value
@@ -324,6 +324,6 @@ Otherwise you will end up with two Main classes and nothing will work with the a
 
 To run your compiler, the automarker uses the following command:
 
-`java -cp bin/:PATH_TO/scala-compiler-2.11.12.jar:PATH_TO/scala-library-2.11.12.jar:PATH_TO/scala-reflect-2.11.12.jar Main`
+`java -cp bin/:PATH_TO/scala-compiler-2.13.12.jar:PATH_TO/scala-library-2.13.12.jar:PATH_TO/scala-reflect-2.13.12.jar Main`
 
 
