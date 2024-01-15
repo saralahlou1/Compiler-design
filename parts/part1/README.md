@@ -104,7 +104,7 @@ In addition, the `Parser`-class contains various private methods, of which some 
 * `boolean accept(Category... expected)` tests whether the next token(s) are identical to the `expected`. However, it *does not* consume any tokens from the token-stream.
 * `void parseProgram()` parses a "Program-production" from the LL(k) grammar. Similarly, `void parseIncludes()` parses an "Includes-production". Three additional empty methods have been provided: `parseStructDecls`, `parseVarDecls` and `parseFunDecls` are to be completed by you. Furthermore, you will need to add more parse methods yourself. For each nonterminal you should have a corresponding parse method.
 
-Your parser *should* only determine whether a given source program is syntactically correct.
+Your parser *should* only determine whether a given source program is syntactically correct or not.
 The `Main1`-class relies on the error count provided by the `Parser` superclass.
 Therefore, make sure you use the `error`-method in the `Parser`-class to report errors correctly!
 Feel free to modify any given source files, except for `Main1.java`.
