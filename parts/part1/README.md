@@ -78,7 +78,7 @@ The integer value corresponding to each letter or digit can be found in the ASCI
 ## 2. Grammar transformation to LL(k)
 
 Once you have written the lexer, you are almost ready to move on to the parser stage.
-However, you must first transform the [grammar](.grammar/syntax_grammar.txt) given into an equivalent context-free LL(k) grammar.
+However, you must first transform the [grammar](./grammar/syntax_grammar.txt) given into an equivalent context-free LL(k) grammar.
 As seen in the lectures, this is a requirement for implementing a recursive descent parser.
 
 You can keep some parts of the grammar in EBNF form and implement part of the parser in an iterative style where it makes sense to do so (e.g. function call arguments).
