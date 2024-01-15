@@ -18,14 +18,14 @@
 		  on the commandline.		     
 		  -->
 <!-- Replace the value of the attribute "name" with the name of YOUR project. -->
-<project basedir="." default="build" name="comp520-coursework-w2023">
+<project basedir="." default="build" name="comp520-coursework-w2024">
   <!-- You do not need to touch anything below this comment -->
   <property name="src" location="src/java"/>
   <property name="bin" location="bin"/>
   <property environment="env"/>
   <property name="debuglevel" value="source,lines,vars"/>
-  <property name="target" value="17"/>
-  <property name="source" value="17"/>
+  <property name="target" value="21"/>
+  <property name="source" value="21"/>
 
   <target name="init">
     <tstamp/>
