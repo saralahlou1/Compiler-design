@@ -12,6 +12,7 @@ import java.util.Queue;
 
 /**
  * @author cdubach
+ * @author Sara
  */
 public class Parser  extends CompilerPass {
 
