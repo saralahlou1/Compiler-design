@@ -40,6 +40,8 @@ public class Token {
         RETURN, // 'return'
         STRUCT, // 'struct'
         SIZEOF, // 'sizeof'
+        CONTINUE, // 'continue'
+        BREAK, // 'break'
 
         // include
         INCLUDE, // '#include'
