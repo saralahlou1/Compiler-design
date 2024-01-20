@@ -63,8 +63,9 @@ public class Tokeniser extends CompilerPass {
     }
 
     private boolean isEscapedChar(char c){
-        return ((int)c == 0 || (int)c == 7 || (int)c == 8 || (int)c == 9 || (int)c == 10 || (int)c == 13 ||
-                (int)c == 92 || (int)c == 39 || (int)c == 34);
+        return "abnrt\\'\"\0".indexOf(c) != -1;
+                //((int)c == 0 || (int)c == 7 || (int)c == 8 || (int)c == 9 || (int)c == 10 || (int)c == 13 ||
+                //(int)c == 92 || (int)c == 39 || (int)c == 34);
     }
 
     private String buildStringLiteral(char c){
@@ -75,13 +76,52 @@ public class Tokeniser extends CompilerPass {
             if (c == '"') return token.toString(); // check if empty string
 
             while (c != '"'){
-                if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1 || isEscapedChar(c)) {
+                if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
                     token.append(c);
                     scanner.next();
                     if (!scanner.hasNext()) {
                         break;
                     }
                     c = scanner.peek();
+                } else if (c == '\\') {
+                    scanner.next();
+                    if (!scanner.hasNext()) {
+                        break;
+                    }
+                    c = scanner.peek();
+                    if (isEscapedChar(c)){
+                        scanner.next();
+                        switch (c)
+                        {
+                            case 'a':
+                                token.append((char) 7);
+                                break;
+                            case 'b':
+                                token.append((char) 8);
+                                break;
+                            case 'n':
+                                token.append((char) 10);
+                                break;
+                            case 'r':
+                                token.append((char) 13);
+                                break;
+                            case 't':
+                                token.append((char) 9);
+                                break;
+                            case '\\':
+                                token.append((char) 92);
+                                break;
+                            case '\'':
+                                token.append((char) 39);
+                                break;
+                            case '"':
+                                token.append((char) 34);
+                                break;
+                            case '\0':
+                                token.append((char) 0);
+                                break;
+                        }
+                    } else error(c, scanner.getLine(), scanner.getColumn());
                 } else {
                     error(c, scanner.getLine(), scanner.getColumn());
                 }
@@ -293,12 +333,73 @@ public class Tokeniser extends CompilerPass {
             return new Token(Token.Category.IDENTIFIER, keyword, line, column);
         }
 
+        // recognises string literals
         if (c == '"'){
             String word = buildStringLiteral(c);
             return new Token(Token.Category.STRING_LITERAL, word, line, column);
+            // maybe change this so that it returns invalid if string is bad.
+            // for now returns void if bad string. and toString(null) = ""
+            // we don't separate empty str from non-valid
+        }
+
+        // recognises char literals
+        if (c == '\''){
+
+            if (scanner.hasNext()){
+                c = scanner.peek();
+                // check empty ''
+                if (c == '\'') return new Token(Token.Category.CHAR_LITERAL, "", line, column);
+                // else check if valid char
+                if (Character.isLetterOrDigit(c) || "\"~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1 || isEscapedChar(c)) {
+                    String character = Character.toString(c);
+                    scanner.next();
+                    // if it doesn't have next then it's not closed: 'a
+                    if (!scanner.hasNext()){
+                        error(c, line, column);
+                        return new Token(Token.Category.INVALID, "non closed '", line, column);
+                    }
+                    c = scanner.peek();
+                    // if it's not a ' then it's not a valid char
+                    if (c != '\''){
+                        error(c, line, column);
+                        return new Token(Token.Category.INVALID, "non closed '", line, column);
+                    }
+                    // else it's a good char
+                    scanner.next();
+                    return new Token(Token.Category.CHAR_LITERAL, character, line, column);
+                }
+                // if it didn't return then non-valid
+                else {
+                    error(c, line, column);
+                    return new Token(Token.Category.INVALID, "invalid char", line, column);}
+            }
+            // if it didn't return then non-closed '
+            else {
+                error(c, line, column);
+                return new Token(Token.Category.INVALID, "non closed '", line, column);}
 
         }
 
+        // recognises include keyword
+        if (c == '#'){
+            StringBuilder word = new StringBuilder();
+            word.append(c);
+            String include = "include";
+            for (int i =0; i<include.length(); i++){
+                if (!scanner.hasNext()){
+                    error(c, line, column);
+                    return new Token(Token.Category.INVALID, word.toString(), line, column);
+                }
+                c = scanner.peek();
+                if (c != include.charAt(i)){
+                    error(c, line, column);
+                    return new Token(Token.Category.INVALID, word.toString(), line, column);
+                }
+                scanner.next();
+                word.append(c);
+            }
+            return new Token(Token.Category.INCLUDE, word.toString(), line, column);
+        }
 
         // if we reach this point, it means we did not recognise a valid token
         error(c, line, column);
