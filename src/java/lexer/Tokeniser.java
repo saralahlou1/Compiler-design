@@ -62,6 +62,37 @@ public class Tokeniser extends CompilerPass {
         return token.toString();
     }
 
+    private boolean isEscapedChar(char c){
+        return ((int)c == 0 || (int)c == 7 || (int)c == 8 || (int)c == 9 || (int)c == 10 || (int)c == 13 ||
+                (int)c == 92 || (int)c == 39 || (int)c == 34);
+    }
+
+    private String buildStringLiteral(char c){
+        StringBuilder token = new StringBuilder();
+        // we don't append the outer quotes
+        if (scanner.hasNext()){
+            c = scanner.peek();
+            if (c == '"') return token.toString(); // check if empty string
+
+            while (c != '"'){
+                if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1 || isEscapedChar(c)) {
+                    token.append(c);
+                    scanner.next();
+                    if (!scanner.hasNext()) {
+                        break;
+                    }
+                    c = scanner.peek();
+                } else {
+                    error(c, scanner.getLine(), scanner.getColumn());
+                }
+            }
+            // after the loop we check if the quotes are closed: c should be "
+            if (c != '"') error(c, scanner.getLine(), scanner.getColumn());
+        } else error(c, scanner.getLine(), scanner.getColumn()); // that means that we only have " then eof
+        scanner.next();
+        return token.toString();
+    }
+
     /*
      * To be completed
      */
@@ -260,6 +291,12 @@ public class Tokeniser extends CompilerPass {
             if (keyword.equals("break")) return new Token(Token.Category.BREAK, line, column);
             // if we reach here, then the keyword is not any of the ones above
             return new Token(Token.Category.IDENTIFIER, keyword, line, column);
+        }
+
+        if (c == '"'){
+            String word = buildStringLiteral(c);
+            return new Token(Token.Category.STRING_LITERAL, word, line, column);
+
         }
 
 
