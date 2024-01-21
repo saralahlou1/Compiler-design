@@ -63,7 +63,7 @@ public class Tokeniser extends CompilerPass {
     }
 
     private boolean isEscapedChar(char c){
-        return "abnrt\\'\"\0".indexOf(c) != -1;
+        return "abnrt\\'\"0".indexOf(c) != -1;
                 //((int)c == 0 || (int)c == 7 || (int)c == 8 || (int)c == 9 || (int)c == 10 || (int)c == 13 ||
                 //(int)c == 92 || (int)c == 39 || (int)c == 34);
     }
@@ -76,7 +76,7 @@ public class Tokeniser extends CompilerPass {
             if (c == '"') return token.toString(); // check if empty string
 
             while (c != '"'){
-                if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
+                if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.?' ".indexOf(c) != -1) {
                     token.append(c);
                     scanner.next();
                     if (!scanner.hasNext()) {
@@ -117,10 +117,14 @@ public class Tokeniser extends CompilerPass {
                             case '"':
                                 token.append((char) 34);
                                 break;
-                            case '\0':
+                            case '0':
                                 token.append((char) 0);
                                 break;
                         }
+                        if (!scanner.hasNext()) {
+                            break;
+                        }
+                        c = scanner.peek();
                     } else error(c, scanner.getLine(), scanner.getColumn());
                 } else {
                     error(c, scanner.getLine(), scanner.getColumn());
@@ -353,7 +357,7 @@ public class Tokeniser extends CompilerPass {
                     return new Token(Token.Category.CHAR_LITERAL, "", line, column);
                 }
                 // else check if valid char
-                if (Character.isLetterOrDigit(c) || "\"~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
+                if (Character.isLetterOrDigit(c) || "\"`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
                     String character = Character.toString(c);
                     scanner.next();
                     // if it doesn't have next then it's not closed: 'a
@@ -379,6 +383,7 @@ public class Tokeniser extends CompilerPass {
                         return new Token(Token.Category.INVALID, line, column);
                     }
                     c = scanner.peek();
+
                     if (isEscapedChar(c)){
                         scanner.next();
                         String character = switch (c) {
@@ -390,7 +395,7 @@ public class Tokeniser extends CompilerPass {
                             case '\\' -> Character.toString((char) 92);
                             case '\'' -> Character.toString((char) 39);
                             case '"' -> Character.toString((char) 34);
-                            case '\0' -> Character.toString((char) 0);
+                            case '0' -> Character.toString((char) 0);
                             default -> "";
                         };
                         // if it doesn't have next then it's not closed: 'a
