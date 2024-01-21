@@ -348,9 +348,12 @@ public class Tokeniser extends CompilerPass {
             if (scanner.hasNext()){
                 c = scanner.peek();
                 // check empty ''
-                if (c == '\'') return new Token(Token.Category.CHAR_LITERAL, "", line, column);
+                if (c == '\'') {
+                    scanner.next();
+                    return new Token(Token.Category.CHAR_LITERAL, "", line, column);
+                }
                 // else check if valid char
-                if (Character.isLetterOrDigit(c) || "\"~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1 || isEscapedChar(c)) {
+                if (Character.isLetterOrDigit(c) || "\"~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
                     String character = Character.toString(c);
                     scanner.next();
                     // if it doesn't have next then it's not closed: 'a
@@ -368,7 +371,45 @@ public class Tokeniser extends CompilerPass {
                     scanner.next();
                     return new Token(Token.Category.CHAR_LITERAL, character, line, column);
                 }
-                // if it didn't return then non-valid
+                // check escape char
+                else if (c == '\\') {
+                    scanner.next();
+                    if (!scanner.hasNext()) {
+                        error(c, line, column);
+                        return new Token(Token.Category.INVALID, line, column);
+                    }
+                    c = scanner.peek();
+                    if (isEscapedChar(c)){
+                        scanner.next();
+                        String character = switch (c) {
+                            case 'a' -> Character.toString((char) 7);
+                            case 'b' -> Character.toString((char) 8);
+                            case 'n' -> Character.toString((char) 10);
+                            case 'r' -> Character.toString((char) 13);
+                            case 't' -> Character.toString((char) 9);
+                            case '\\' -> Character.toString((char) 92);
+                            case '\'' -> Character.toString((char) 39);
+                            case '"' -> Character.toString((char) 34);
+                            case '\0' -> Character.toString((char) 0);
+                            default -> "";
+                        };
+                        // if it doesn't have next then it's not closed: 'a
+                        if (!scanner.hasNext()){
+                            error(c, line, column);
+                            return new Token(Token.Category.INVALID, "non closed '", line, column);
+                        }
+                        c = scanner.peek();
+                        // if it's not a ' then it's not a valid char
+                        if (c != '\''){
+                            error(c, line, column);
+                            return new Token(Token.Category.INVALID, "non closed '", line, column);
+                        }
+                        // else it's a good char
+                        scanner.next();
+                        return new Token(Token.Category.CHAR_LITERAL, character, line, column);
+                    } else error(c, scanner.getLine(), scanner.getColumn());
+                }
+                // if it didn't return then non-valid char
                 else {
                     error(c, line, column);
                     return new Token(Token.Category.INVALID, "invalid char", line, column);}
