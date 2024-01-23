@@ -304,7 +304,7 @@ public class Parser  extends CompilerPass {
     }
 
     private void parse_typecast(){
-        expect(Category.LPAR);
+        //expect(Category.LPAR);
         parse_type();
         expect(Category.RPAR);
         parse_exp();
@@ -332,6 +332,7 @@ public class Parser  extends CompilerPass {
 
     private void parse_exp(){
         if(accept(Category.LPAR)){
+            nextToken();
             if(accept_type()){
                 parse_typecast();
                 parse_exp_prime();
