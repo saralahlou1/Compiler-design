@@ -73,7 +73,10 @@ public class Tokeniser extends CompilerPass {
         // we don't append the outer quotes
         if (scanner.hasNext()){
             c = scanner.peek();
-            if (c == '"') return token.toString(); // check if empty string
+            if (c == '"') {
+                scanner.next();
+                return token.toString();
+            } // check if empty string
 
             while (c != '"'){
                 if (Character.isLetterOrDigit(c) || "`~@!$#^*%&()[]{}<>+=_-|/;:,.?' ".indexOf(c) != -1) {
@@ -352,10 +355,10 @@ public class Tokeniser extends CompilerPass {
             if (scanner.hasNext()){
                 c = scanner.peek();
                 // check empty ''
-                if (c == '\'') {
-                    scanner.next();
-                    return new Token(Token.Category.CHAR_LITERAL, "", line, column);
-                }
+//                if (c == '\'') {
+//                    scanner.next();
+//                    return new Token(Token.Category.CHAR_LITERAL, "", line, column);
+//                }
                 // else check if valid char
                 if (Character.isLetterOrDigit(c) || "\"`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
                     String character = Character.toString(c);
