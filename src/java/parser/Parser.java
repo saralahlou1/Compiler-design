@@ -347,6 +347,7 @@ public class Parser  extends CompilerPass {
         else if(accept(Category.IDENTIFIER)){
             if(lookAhead(1).category == Category.LPAR){
                 parse_funcall();
+                parse_exp_prime();
             }
             else {
                 nextToken();
