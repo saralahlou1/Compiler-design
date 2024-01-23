@@ -337,7 +337,7 @@ public class Parser  extends CompilerPass {
                 parse_typecast();
                 parse_exp_prime();
             } else{
-                nextToken();
+                //nextToken();
                 parse_exp();
                 expect(Category.RPAR);
                 parse_exp_prime();
