@@ -376,10 +376,11 @@ public class Parser  extends CompilerPass {
             parse_exp_prime();
         }
 
-        else {
+        else if (accept(Category.SIZEOF)){
             parse_sizeof();
             parse_exp_prime();
         }
+        else error();
     }
 
     // includes are ignored, so does not need to return an AST node
