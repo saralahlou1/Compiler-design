@@ -216,6 +216,7 @@ public class Parser  extends CompilerPass {
         while(!accept(Category.RBRA)){
             parse_stmt();
         }
+        expect(Category.RBRA);
     }
 
     private void parse_stmt(){
@@ -244,21 +245,21 @@ public class Parser  extends CompilerPass {
             }
             expect(Category.SC);
         }
-    else if(accept(Category.CONTINUE)){
-            nextToken();
-            expect(Category.SC);
-        }
-    else if(accept(Category.BREAK)){
-            nextToken();
-            expect(Category.SC);
-        }
-    else if (accept(Category.LBRA)){
-            parse_block();
-        }
+        else if(accept(Category.CONTINUE)){
+                nextToken();
+                expect(Category.SC);
+            }
+        else if(accept(Category.BREAK)){
+                nextToken();
+                expect(Category.SC);
+            }
+        else if (accept(Category.LBRA)){
+                parse_block();
+            }
         else {
-            parse_exp();
-            expect(Category.SC);
-        }
+                parse_exp();
+                expect(Category.SC);
+            }
     }
 
     private void parse_funcall(){
@@ -313,9 +314,9 @@ public class Parser  extends CompilerPass {
         if(accept(Category.ASSIGN, Category.GT, Category.LT,Category.GE,
                     Category.LE, Category.NE, Category.EQ, Category.PLUS, Category.MINUS,
                     Category.DIV, Category.ASTERIX, Category.REM, Category.LOGOR, Category.LOGAND)){
-        nextToken();
-        parse_exp();
-        parse_exp_prime();
+            nextToken();
+            parse_exp();
+            parse_exp_prime();
         }
 
         else if(accept(Category.LSBR)){
@@ -368,12 +369,12 @@ public class Parser  extends CompilerPass {
             parse_exp_prime();
         }
 
-    else if(accept(Category.AND)){
+        else if(accept(Category.AND)){
             parse_addressof();
             parse_exp_prime();
         }
 
-    else if(accept(Category.SIZEOF)){
+        else {
             parse_sizeof();
             parse_exp_prime();
         }
