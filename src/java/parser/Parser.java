@@ -131,7 +131,7 @@ public class Parser  extends CompilerPass {
                     lookAhead(2).category == Category.LBRA) {
                 parseStructDecl();
             }
-            else {
+            else if (accept_type()){
                 parse_type();
                 expect(Category.IDENTIFIER);
                 // check if it's fundecl / funproto
@@ -171,8 +171,12 @@ public class Parser  extends CompilerPass {
             expect(Category.CHAR);
         } else if (accept(Category.VOID)){
             expect(Category.VOID);
-        } else {
+        } else if (accept(Category.STRUCT)){
             parse_structtype();
+        } else {
+            error();
+            nextToken();
+            return;
         }
         while (accept(Category.ASTERIX)){
             nextToken();
@@ -213,7 +217,16 @@ public class Parser  extends CompilerPass {
             expect(Category.IDENTIFIER);
             parse_vardecl();
         }
-        while(!accept(Category.RBRA)){
+//        while(!accept(Category.RBRA)){
+//            parse_stmt();
+//            if (accept(Category.EOF)){
+//                error();        // maybe do this in case there is never a RBRA?
+//                break;
+//            }
+//        }
+        while(accept(Category.LBRA, Category.WHILE, Category.IF, Category.RETURN, Category.CONTINUE,
+        Category.BREAK, Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
+        Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERIX, Category.AND, Category.SIZEOF)){
             parse_stmt();
         }
         expect(Category.RBRA);
