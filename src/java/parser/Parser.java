@@ -269,10 +269,11 @@ public class Parser  extends CompilerPass {
         else if (accept(Category.LBRA)){
                 parse_block();
             }
-        else {
+        else if (acceptExp()){
                 parse_exp();
                 expect(Category.SC);
             }
+        else error();
     }
 
     private void parse_funcall(){
