@@ -253,7 +253,7 @@ public class Parser  extends CompilerPass {
         }
         else if(accept(Category.RETURN)){
             nextToken();
-            if(!accept(Category.SC)){
+            if(acceptExp()){
                 parse_exp();
             }
             expect(Category.SC);
@@ -278,7 +278,7 @@ public class Parser  extends CompilerPass {
     private void parse_funcall(){
         expect(Category.IDENTIFIER);
         expect(Category.LPAR);
-        if(!accept(Category.RPAR)){
+        if(acceptExp()){
             parse_exp();
             while(accept(Category.COMMA)){
                 nextToken();
@@ -349,11 +349,13 @@ public class Parser  extends CompilerPass {
             if(accept_type()){
                 parse_typecast();
                 parse_exp_prime();
-            } else{
+            } else if (accept_type()){
                 //nextToken();
                 parse_exp();
                 expect(Category.RPAR);
                 parse_exp_prime();
+            } else {
+                error();
             }
         }
 
@@ -422,5 +424,9 @@ public class Parser  extends CompilerPass {
         expect(Category.SC);
     }
 
+    private boolean acceptExp(){
+        return accept(Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
+                Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERIX, Category.AND, Category.SIZEOF);
+    }
     // to be completed ...
 }
