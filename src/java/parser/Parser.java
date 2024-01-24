@@ -349,7 +349,7 @@ public class Parser  extends CompilerPass {
             if(accept_type()){
                 parse_typecast();
                 parse_exp_prime();
-            } else if (accept_type()){
+            } else if (acceptExp()){
                 //nextToken();
                 parse_exp();
                 expect(Category.RPAR);
