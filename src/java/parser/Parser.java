@@ -21,6 +21,7 @@ public class Parser  extends CompilerPass {
     private Queue<Token> buffer = new LinkedList<>();
 
     private final Tokeniser tokeniser;
+    private boolean error = false;
 
 
 
@@ -46,6 +47,7 @@ public class Parser  extends CompilerPass {
     private Token lastErrorToken;
 
     private void error(Category... expected) {
+        error = true;
 
         if (lastErrorToken == token) {
             // skip this error, same token causing trouble
@@ -126,6 +128,7 @@ public class Parser  extends CompilerPass {
         parseIncludes();
 //program    ::= ("struct" IDENT structdecl | type IDENT (vardecl | fundecl | funproto))*  EOF
         while (accept(Category.STRUCT, Category.INT, Category.CHAR, Category.VOID)) {
+            if (error){break;}
             if (token.category == Category.STRUCT &&
                     lookAhead(1).category == Category.IDENTIFIER &&
                     lookAhead(2).category == Category.LBRA) {
@@ -420,10 +423,10 @@ public class Parser  extends CompilerPass {
             expect(Category.IDENTIFIER);
             parse_vardecl();
         }
-        if (token.category != Category.RBRA){
-            error();
-            nextToken();
-        }
+//        if (token.category != Category.RBRA){
+//            error();
+//            nextToken();
+//        }
         expect(Category.RBRA);
         expect(Category.SC);
     }
