@@ -1,4 +1,6 @@
 #include "minic-stdlib.h"
+struct test{void bsjkb [1]; struct};
+
 
 void main() {
   int n;

@@ -176,7 +176,6 @@ public class Parser  extends CompilerPass {
         } else {
             error();
             nextToken();
-            return;
         }
         while (accept(Category.ASTERIX)){
             nextToken();
@@ -420,6 +419,10 @@ public class Parser  extends CompilerPass {
             parse_type();
             expect(Category.IDENTIFIER);
             parse_vardecl();
+        }
+        if (token.category != Category.RBRA){
+            error();
+            nextToken();
         }
         expect(Category.RBRA);
         expect(Category.SC);
