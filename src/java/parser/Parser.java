@@ -152,6 +152,10 @@ public class Parser  extends CompilerPass {
                 }
 
             }
+            else {
+                error();
+                nextToken();
+            }
         }
         // to be completed ...
 

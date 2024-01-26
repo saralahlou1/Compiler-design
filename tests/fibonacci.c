@@ -1,5 +1,5 @@
 #include "minic-stdlib.h"
-struct test{void bsjkb struct; struct};
+struct if {int x;};
 
 
 void main() {
