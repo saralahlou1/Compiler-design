@@ -184,7 +184,7 @@ public class Parser  extends CompilerPass {
             error();
             nextToken();
         }
-        while (accept(Category.ASTERIX)){
+        while (accept(Category.ASTERISK)){
             nextToken();
         }
     }
@@ -232,7 +232,7 @@ public class Parser  extends CompilerPass {
 //        }
         while(accept(Category.LBRA, Category.WHILE, Category.IF, Category.RETURN, Category.CONTINUE,
         Category.BREAK, Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
-        Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERIX, Category.AND, Category.SIZEOF)){
+        Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERISK, Category.AND, Category.SIZEOF)){
             parse_stmt();
         }
         expect(Category.RBRA);
@@ -307,7 +307,7 @@ public class Parser  extends CompilerPass {
     }
 
     private void parse_valueat(){
-        expect(Category.ASTERIX);
+        expect(Category.ASTERISK);
         parse_exp();
     }
 
@@ -333,7 +333,7 @@ public class Parser  extends CompilerPass {
     private void parse_exp_prime(){
         if(accept(Category.ASSIGN, Category.GT, Category.LT,Category.GE,
                     Category.LE, Category.NE, Category.EQ, Category.PLUS, Category.MINUS,
-                    Category.DIV, Category.ASTERIX, Category.REM, Category.LOGOR, Category.LOGAND)){
+                    Category.DIV, Category.ASTERISK, Category.REM, Category.LOGOR, Category.LOGAND)){
             nextToken();
             parse_exp();
             parse_exp_prime();
@@ -388,7 +388,7 @@ public class Parser  extends CompilerPass {
             parse_exp_prime();
         }
 
-        else if(accept(Category.ASTERIX)){
+        else if(accept(Category.ASTERISK)){
             parse_valueat();
             parse_exp_prime();
         }
@@ -437,7 +437,7 @@ public class Parser  extends CompilerPass {
 
     private boolean acceptExp(){
         return accept(Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
-                Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERIX, Category.AND, Category.SIZEOF);
+                Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERISK, Category.AND, Category.SIZEOF);
     }
     // to be completed ...
 }

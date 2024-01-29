@@ -168,7 +168,7 @@ public class Tokeniser extends CompilerPass {
 
         // recognises the times operator
         if (c == '*')
-            return new Token(Token.Category.ASTERIX, line, column);
+            return new Token(Token.Category.ASTERISK, line, column);
 
         // recognises the / operator or comment operator
         if (c == '/'){
