@@ -36,11 +36,6 @@ public class Parser  extends CompilerPass {
         parseProgram();
     }
 
-    //public int getErrorCount() {
-    //    return error;
-    //}
-
-
 
 
     //private int error = 0;
