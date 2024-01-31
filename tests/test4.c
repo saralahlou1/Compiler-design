@@ -7,3 +7,5 @@
 
 //chars: empty gives error or char with more than one thing
 '' 'aa' '\n\n'
+"do not accept '''"
+'''
