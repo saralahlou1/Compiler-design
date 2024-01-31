@@ -1,0 +1,2 @@
+//non closed str
+"a

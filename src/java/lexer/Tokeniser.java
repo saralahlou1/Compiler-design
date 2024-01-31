@@ -135,7 +135,10 @@ public class Tokeniser extends CompilerPass {
                 }
             }
             // after the loop we check if the quotes are closed: c should be "
-            if (c != '"') error(c, scanner.getLine(), scanner.getColumn());
+            if (c != '"') {
+                error(c, scanner.getLine(), scanner.getColumn());
+                return token.toString();
+            }
         } else {
             error(c, scanner.getLine(), scanner.getColumn()); // that means that we only have " then eof
             return token.toString();
