@@ -1,6 +1,4 @@
 #include "minic-stdlib.h"
-struct if {int x;};
-
 
 void main() {
   int n;

@@ -128,14 +128,18 @@ public class Tokeniser extends CompilerPass {
                             break;
                         }
                         c = scanner.peek();
-                    } else error(c, scanner.getLine(), scanner.getColumn());
+                    } else {error(c, scanner.getLine(), scanner.getColumn());
+                            break;}
                 } else {
-                    error(c, scanner.getLine(), scanner.getColumn());
+                    break;
                 }
             }
             // after the loop we check if the quotes are closed: c should be "
             if (c != '"') error(c, scanner.getLine(), scanner.getColumn());
-        } else error(c, scanner.getLine(), scanner.getColumn()); // that means that we only have " then eof
+        } else {
+            error(c, scanner.getLine(), scanner.getColumn()); // that means that we only have " then eof
+            return token.toString();
+        }
         scanner.next();
         return token.toString();
     }
