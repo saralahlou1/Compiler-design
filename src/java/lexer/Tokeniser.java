@@ -222,6 +222,7 @@ public class Tokeniser extends CompilerPass {
                     return new Token(Token.Category.LOGOR, line, column);
                 }
             }
+            error(c, line, column);
             return new Token(Token.Category.INVALID,"|", line, column);
         }
 
@@ -234,6 +235,7 @@ public class Tokeniser extends CompilerPass {
                     return new Token(Token.Category.NE, line, column);
                 }
             }
+            error(c, line, column);
             return new Token(Token.Category.INVALID,"!", line, column);
         }
 
