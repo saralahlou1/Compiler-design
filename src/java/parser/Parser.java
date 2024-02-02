@@ -274,7 +274,10 @@ public class Parser  extends CompilerPass {
                 parse_exp();
                 expect(Category.SC);
             }
-        else error();
+        else {
+            error();
+            nextToken();
+        }
     }
 
     private void parse_funcall(){
@@ -397,7 +400,10 @@ public class Parser  extends CompilerPass {
             parse_sizeof();
             parse_exp_prime();
         }
-        else error();
+        else {
+            error();
+            nextToken();
+        }
     }
 
     // includes are ignored, so does not need to return an AST node
