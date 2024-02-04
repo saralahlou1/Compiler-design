@@ -295,11 +295,12 @@ struct foo_t {
 Shadowing occurs when an identifier declared within a given scope has the same name as an identifier declared in an outer scope.
 The outer identifier is said to be shadowed and any use of the identifier will refer to the one from the inner scope.
 
-### Function prototypes
+### Function prototypes and declarations
 
 A function name can only be used once for a function declaration, and once for a function prototype (if any).
 Declaring two function prototypes, or two function declarations, with the same name, is not legal.
 Before a function is allowed to be call, a function prototype or declaration must have been defined first.
+If both a function prototype and function declaration with the same name exists, there must have identical types (return type and arguments' type).
 
 ### Built-in functions
 
