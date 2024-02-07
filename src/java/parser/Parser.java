@@ -1,12 +1,17 @@
 package parser;
 
 
+import ast.Decl;
+import ast.Program;
+import ast.StructTypeDecl;
 import lexer.Token;
 import lexer.Token.Category;
 import lexer.Tokeniser;
 import util.CompilerPass;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 
@@ -29,11 +34,11 @@ public class Parser  extends CompilerPass {
         this.tokeniser = tokeniser;
     }
 
-    public void parse() {
+    public Program parse() {
         // get the first token
         nextToken();
 
-        parseProgram();
+        return parseProgram();
     }
 
 
@@ -97,14 +102,16 @@ public class Parser  extends CompilerPass {
     /*
      * If the current token is equals to the expected one, then skip it, otherwise report an error.
      */
-    private void expect(Category... expected) {
+    private Token expect(Category... expected) {
         for (Category e : expected) {
             if (e == token.category) {
+                Token ret = token;
                 nextToken();
-                return;
+                return ret;
             }
         }
         error(expected);
+        return token;
     }
 
     /*
@@ -119,15 +126,17 @@ public class Parser  extends CompilerPass {
     }
 
 
-    private void parseProgram() {
+    private Program parseProgram() {
         parseIncludes();
-//program    ::= ("struct" IDENT structdecl | type IDENT (vardecl | fundecl | funproto))*  EOF
+
+        List<Decl> decls = new ArrayList<>();
+
         while (accept(Category.STRUCT, Category.INT, Category.CHAR, Category.VOID)) {
             if (error){break;}
             if (token.category == Category.STRUCT &&
                     lookAhead(1).category == Category.IDENTIFIER &&
                     lookAhead(2).category == Category.LBRA) {
-                parseStructDecl();
+                decls.add(parseStructDecl());
             }
             else if (accept_type()){
                 parse_type();
@@ -155,6 +164,7 @@ public class Parser  extends CompilerPass {
         // to be completed ...
 
         expect(Category.EOF);
+        return new Program(decls);
     }
 
     private boolean accept_type(){
@@ -218,13 +228,7 @@ public class Parser  extends CompilerPass {
             expect(Category.IDENTIFIER);
             parse_vardecl();
         }
-//        while(!accept(Category.RBRA)){
-//            parse_stmt();
-//            if (accept(Category.EOF)){
-//                error();        // maybe do this in case there is never a RBRA?
-//                break;
-//            }
-//        }
+
         while(accept(Category.LBRA, Category.WHILE, Category.IF, Category.RETURN, Category.CONTINUE,
         Category.BREAK, Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
         Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERISK, Category.AND, Category.SIZEOF)){
@@ -415,11 +419,12 @@ public class Parser  extends CompilerPass {
         }
     }
 
-    private void parseStructDecl(){
+    private StructTypeDecl parseStructDecl(){
         expect(Category.STRUCT);
-        expect(Category.IDENTIFIER);
+        Token id = expect(Category.IDENTIFIER);
         expect(Category.LBRA);
         // to be completed ...
+//<<<<<<< HEAD
         parse_type();
         expect(Category.IDENTIFIER);
         parse_vardecl();
@@ -434,6 +439,9 @@ public class Parser  extends CompilerPass {
 //        }
         expect(Category.RBRA);
         expect(Category.SC);
+//=======
+        return null; // to be changed
+//>>>>>>> 13738ac8337f6ff1cdb59e34870ad3e2bc70fb70
     }
 
     private boolean acceptExp(){
