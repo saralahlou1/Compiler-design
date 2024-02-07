@@ -1,8 +1,8 @@
 // The program top AST node (a list of declarations)
 Program    ::= (Decl)*
 
-// Declaration: a struct type, variable or FunDecl definitions
-Decl       ::= StructTypeDecl | VarDecl | FunDecl
+// Declarations
+Decl       ::= StructTypeDecl | VarDecl | FunDecl | FunProto
 
 // Types
 Type        ::= BaseType | PointerType | StructType | ArrayType
