@@ -68,6 +68,9 @@ public class ASTPrinter {
             }
 
             // to complete ...
+            default -> {
+                return;
+            }
         }
 
     }
