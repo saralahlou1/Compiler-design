@@ -46,7 +46,26 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			// to complete ...
-		};
+            case AddressOfExpr addressOfExpr -> null;
+            case ArrayAccessExpr arrayAccessExpr -> null;
+            case Assign assign -> null;
+            case BinOp binOp -> null;
+            case Break aBreak -> null;
+            case ChrLiteral chrLiteral -> null;
+            case Continue aContinue -> null;
+            case ExprStmt exprStmt -> null;
+            case FieldAccessExpr fieldAccessExpr -> null;
+            case FunCallExpr funCallExpr -> null;
+            case FunProto funProto -> null;
+            case If anIf -> null;
+            case IntLiteral intLiteral -> null;
+            case Return aReturn -> null;
+            case SizeOfExpr sizeOfExpr -> null;
+            case StrLiteral strLiteral -> null;
+            case TypecastExpr typecastExpr -> null;
+            case ValueAtExpr valueAtExpr -> null;
+            case While aWhile -> null;
+        };
 
 	}
 
