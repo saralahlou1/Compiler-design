@@ -137,12 +137,10 @@ public class Parser  extends CompilerPass {
                 decls.add(parseStructDecl());
             }
             else if (accept_type()){
-                // parse_type();
-                // expect(Category.IDENTIFIER);
+                Type type = parse_type();
 
                 // check if it's fundecl / funproto
-                if ((lookAhead(1).category == Category.IDENTIFIER) && (lookAhead(2).category == Category.LPAR)){
-                    Type t = parse_type();
+                if ((token.category == Category.IDENTIFIER) && (lookAhead(1).category == Category.LPAR)){
                     String fctName = expect(Category.IDENTIFIER).data;
 
                     expect(Category.LPAR);
@@ -150,7 +148,7 @@ public class Parser  extends CompilerPass {
                     expect(Category.RPAR);
 
                     if (accept(Category.SC)){
-                        FunProto proto = new FunProto(t, fctName, varDecls);
+                        FunProto proto = new FunProto(type, fctName, varDecls);
                         decls.add(proto);
                         nextToken();
                     } else {
@@ -161,7 +159,7 @@ public class Parser  extends CompilerPass {
                 }
                 // else it must be a vardecl
                 else {
-                    decls.add(parse_vardecl());
+                    decls.add(parse_vardecl(type));
                 }
 
             }
@@ -248,8 +246,8 @@ public class Parser  extends CompilerPass {
         return varDecls;
     }
 
-    private VarDecl parse_vardecl(){
-        Type varType = parse_type();
+    private VarDecl parse_vardecl(Type varType){
+        // Type varType = parse_type();
         Token id = expect(Category.IDENTIFIER);
         // in case it was an array, we update the type in parse VarDecl
 
@@ -269,7 +267,8 @@ public class Parser  extends CompilerPass {
     private void parse_block(){
         expect(Category.LBRA);
         while(accept_type()){
-            parse_vardecl();
+            Type t = parse_type();
+            parse_vardecl(t);
         }
 
         while(accept(Category.LBRA, Category.WHILE, Category.IF, Category.RETURN, Category.CONTINUE,
@@ -468,11 +467,13 @@ public class Parser  extends CompilerPass {
         expect(Category.LBRA);
 
         List<VarDecl> varDecls = new ArrayList<>();
-        VarDecl var= parse_vardecl();
+        Type t = parse_type();
+        VarDecl var= parse_vardecl(t);
         varDecls.add(var);
 
         while (accept_type()){
-            var = parse_vardecl();
+            t = parse_type();
+            var = parse_vardecl(t);
             varDecls.add(var);
         }
 
