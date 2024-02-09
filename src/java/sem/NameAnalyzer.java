@@ -8,7 +8,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 	public void visit(ASTNode node) {
 		switch(node) {
 			case null -> {
-				throw new IllegalStateException("Unexpected null value");
+				//throw new IllegalStateException("Unexpected null value");
 			}
 
 			case Block b -> {
