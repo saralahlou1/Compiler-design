@@ -68,8 +68,48 @@ public class ASTPrinter {
             }
 
             // to complete ...
-            default -> {
-                return;
+
+            case AddressOfExpr addressOfExpr -> {
+            }
+            case ArrayAccessExpr arrayAccessExpr -> {
+            }
+            case ArrayType arrayType -> {
+            }
+            case Assign assign -> {
+            }
+            case BinOp binOp -> {
+            }
+            case Break aBreak -> {
+            }
+            case ChrLiteral chrLiteral -> {
+            }
+            case Continue aContinue -> {
+            }
+            case ExprStmt exprStmt -> {
+            }
+            case FieldAccessExpr fieldAccessExpr -> {
+            }
+            case FunCallExpr funCallExpr -> {
+            }
+            case If anIf -> {
+            }
+            case IntLiteral intLiteral -> {
+            }
+            case PointerType pointerType -> {
+            }
+            case Return aReturn -> {
+            }
+            case SizeOfExpr sizeOfExpr -> {
+            }
+            case StrLiteral strLiteral -> {
+            }
+            case StructType structType -> {
+            }
+            case TypecastExpr typecastExpr -> {
+            }
+            case ValueAtExpr valueAtExpr -> {
+            }
+            case While aWhile -> {
             }
         }
 
