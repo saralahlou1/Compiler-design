@@ -3,7 +3,7 @@ package ast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FunProto {
+public final class FunProto extends Decl{
     public final List<VarDecl> params;
     Type type;
     String name;

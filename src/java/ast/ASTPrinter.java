@@ -59,21 +59,39 @@ public class ASTPrinter {
                 writer.print(")");
             }
 
-            case BaseType bt -> {
-                // to complete ...
-            }
+            case BaseType bt -> writer.print(bt);
 
             case StructTypeDecl std -> {
-                // to complete
+                writer.print("StructTypeDecl(");
+                visit(std.structType);
+                for (VarDecl vd : std.varDecl) {
+                    writer.print(",");
+                    visit(vd);
+                }
+                writer.print(")");
             }
 
-            // to complete ...
+            case FunProto funProto -> {
+                writer.print("FunProto(");
+                visit(funProto.type);
+                writer.print(",");
+                writer.print(funProto.name);
+                for (VarDecl vd : funProto.params) {
+                    writer.print(",");
+                    visit(vd);
+                }
+            }
 
             case AddressOfExpr addressOfExpr -> {
             }
             case ArrayAccessExpr arrayAccessExpr -> {
             }
-            case ArrayType arrayType -> {
+            case ArrayType array -> {
+                writer.print("ArrayType(");
+                visit(array.arrayType);
+                writer.print(",");
+                writer.print(array.nbElements);
+                writer.print(")");
             }
             case Assign assign -> {
             }
@@ -95,7 +113,10 @@ public class ASTPrinter {
             }
             case IntLiteral intLiteral -> {
             }
-            case PointerType pointerType -> {
+            case PointerType p -> {
+                writer.print("PointerType(");
+                visit(p.pointerType);
+                writer.print(")");
             }
             case Return aReturn -> {
             }
@@ -104,6 +125,9 @@ public class ASTPrinter {
             case StrLiteral strLiteral -> {
             }
             case StructType structType -> {
+                writer.print("StructType(");
+                writer.print(structType.structName);
+                writer.print(")");
             }
             case TypecastExpr typecastExpr -> {
             }
@@ -111,6 +135,7 @@ public class ASTPrinter {
             }
             case While aWhile -> {
             }
+
         }
 
     }

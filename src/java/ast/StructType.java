@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StructType implements Type{
-    String structName;
+    public String structName;
     public StructType(String structType){this.structName = structType;}
 
 

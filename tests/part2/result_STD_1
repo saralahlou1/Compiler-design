@@ -1,0 +1,1 @@
+Program(StructTypeDecl(StructType(example),VarDecl(ArrayType(INT,10),variable)))

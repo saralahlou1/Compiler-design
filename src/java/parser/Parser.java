@@ -1,9 +1,7 @@
 package parser;
 
 
-import ast.Decl;
-import ast.Program;
-import ast.StructTypeDecl;
+import ast.*;
 import lexer.Token;
 import lexer.Token.Category;
 import lexer.Tokeniser;
@@ -139,20 +137,31 @@ public class Parser  extends CompilerPass {
                 decls.add(parseStructDecl());
             }
             else if (accept_type()){
-                parse_type();
-                expect(Category.IDENTIFIER);
+                // parse_type();
+                // expect(Category.IDENTIFIER);
+
                 // check if it's fundecl / funproto
-                if (accept(Category.LPAR)){
-                    parse_fun();
+                if ((lookAhead(1).category == Category.IDENTIFIER) && (lookAhead(2).category == Category.LPAR)){
+                    Type t = parse_type();
+                    String fctName = expect(Category.IDENTIFIER).data;
+
+                    expect(Category.LPAR);
+                    List<VarDecl> varDecls = parse_params();
+                    expect(Category.RPAR);
+
                     if (accept(Category.SC)){
+                        FunProto proto = new FunProto(t, fctName, varDecls);
+                        decls.add(proto);
                         nextToken();
                     } else {
+                        // Return block from parseBlock
                         parse_block();
+                        // FunDecl fun = new FunDecl(t, fctName, varDecls, block);
                     }
                 }
                 // else it must be a vardecl
                 else {
-                    parse_vardecl();
+                    decls.add(parse_vardecl());
                 }
 
             }
@@ -172,60 +181,94 @@ public class Parser  extends CompilerPass {
                 || (accept(Category.STRUCT) && lookAhead(1).category == Category.IDENTIFIER);
     }
 
-    private void parse_structtype(){
+    private StructType parse_structtype(){
         expect(Category.STRUCT);
-        expect(Category.IDENTIFIER);
+        Token id = expect(Category.IDENTIFIER);
+        StructType type = new StructType(id.data);
+        return type;
     }
-    private void parse_type(){
+    private Type parse_type(){
+        Type type;
         if (accept(Category.INT)){
+            type = BaseType.INT;
             expect(Category.INT);
         } else if (accept(Category.CHAR)){
+            type = BaseType.CHAR;
             expect(Category.CHAR);
         } else if (accept(Category.VOID)){
+            type = BaseType.VOID;
             expect(Category.VOID);
         } else if (accept(Category.STRUCT)){
-            parse_structtype();
+            type = parse_structtype();
         } else {
+            type = BaseType.NONE;
             error();
             nextToken();
         }
         while (accept(Category.ASTERISK)){
+            type = new PointerType(type);
             nextToken();
         }
+        return type;
     }
 
-    private void parse_fun(){
-        expect(Category.LPAR);
-        parse_params();
-        expect(Category.RPAR);
-    }
 
-    private void parse_params(){
+    private List<VarDecl> parse_params(){
+        List<VarDecl> varDecls = new ArrayList<>();
         if(!accept(Category.RPAR)){
-            parse_type();
-            expect(Category.IDENTIFIER);
+            Type varType = parse_type();
+            Token id = expect(Category.IDENTIFIER);
+            while(accept(Category.LSBR)){
+                nextToken();
+                if (accept(Category.INT_LITERAL)) {
+                    Token token = expect(Category.INT_LITERAL);
+                    varType = new ArrayType(varType, Integer.parseInt(token.data));
+                }
+                else {error();}
+                expect(Category.RSBR);
+            }
+            varDecls.add(new VarDecl(varType, id.data));
+
             while(accept(Category.COMMA)){
                 nextToken();
-                parse_type();
-                expect(Category.IDENTIFIER);
+                varType = parse_type();
+                id = expect(Category.IDENTIFIER);
+                while(accept(Category.LSBR)){
+                    nextToken();
+                    if (accept(Category.INT_LITERAL)) {
+                        Token token = expect(Category.INT_LITERAL);
+                        varType = new ArrayType(varType, Integer.parseInt(token.data));
+                    }
+                    else {error();}
+                    expect(Category.RSBR);
+                }
+                varDecls.add(new VarDecl(varType, id.data));
             }
         }
+        return varDecls;
     }
 
-    private void parse_vardecl(){
+    private VarDecl parse_vardecl(){
+        Type varType = parse_type();
+        Token id = expect(Category.IDENTIFIER);
+        // in case it was an array, we update the type in parse VarDecl
+
         while(accept(Category.LSBR)){
             nextToken();
-            expect(Category.INT_LITERAL);
+            if (accept(Category.INT_LITERAL)) {
+                Token token = expect(Category.INT_LITERAL);
+                varType = new ArrayType(varType, Integer.parseInt(token.data));
+            }
+            else {error();}
             expect(Category.RSBR);
         }
         expect(Category.SC);
+        return  new VarDecl(varType, id.data);
     }
 
     private void parse_block(){
         expect(Category.LBRA);
         while(accept_type()){
-            parse_type();
-            expect(Category.IDENTIFIER);
             parse_vardecl();
         }
 
@@ -420,28 +463,24 @@ public class Parser  extends CompilerPass {
     }
 
     private StructTypeDecl parseStructDecl(){
-        expect(Category.STRUCT);
-        Token id = expect(Category.IDENTIFIER);
+        StructType type = parse_structtype();
+
         expect(Category.LBRA);
-        // to be completed ...
-//<<<<<<< HEAD
-        parse_type();
-        expect(Category.IDENTIFIER);
-        parse_vardecl();
+
+        List<VarDecl> varDecls = new ArrayList<>();
+        VarDecl var= parse_vardecl();
+        varDecls.add(var);
+
         while (accept_type()){
-            parse_type();
-            expect(Category.IDENTIFIER);
-            parse_vardecl();
+            var = parse_vardecl();
+            varDecls.add(var);
         }
-//        if (token.category != Category.RBRA){
-//            error();
-//            nextToken();
-//        }
+
         expect(Category.RBRA);
         expect(Category.SC);
-//=======
-        return null; // to be changed
-//>>>>>>> 13738ac8337f6ff1cdb59e34870ad3e2bc70fb70
+
+        return new StructTypeDecl(type,varDecls);
+
     }
 
     private boolean acceptExp(){
