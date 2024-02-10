@@ -69,6 +69,43 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case Program p -> {
+                /* void print_s(char* s);
+                void print_i(int i);
+                void print_c(char c);
+
+                char read_c();
+                int read_i();
+                void* mcmalloc(int size);
+                */
+                List<VarDecl> param_s = new ArrayList<>();
+                param_s.add(new VarDecl(new PointerType(BaseType.CHAR), "s"));
+                Decl fct_1 = new FunDecl(BaseType.VOID, "print_s", param_s, new Block(null, null));
+
+                List<VarDecl> param_i = new ArrayList<>();
+                param_i.add(new VarDecl(BaseType.INT, "i"));
+                Decl fct_2 = new FunDecl(BaseType.VOID, "print_i", param_i, new Block(null, null));
+
+                List<VarDecl> param_c = new ArrayList<>();
+                param_c.add(new VarDecl(BaseType.CHAR, "c"));
+                Decl fct_3 = new FunDecl(BaseType.VOID, "print_c", param_c, new Block(null, null));
+
+                List<VarDecl> param_read_c = new ArrayList<>();
+                Decl fct_4 = new FunDecl(BaseType.CHAR, "read_c", param_read_c, new Block(null, null));
+
+                List<VarDecl> param_read_i = new ArrayList<>();
+                Decl fct_5 = new FunDecl(BaseType.INT, "read_i", param_read_i, new Block(null, null));
+
+                List<VarDecl> param_maloc = new ArrayList<>();
+                param_maloc.add(new VarDecl(BaseType.INT, "size"));
+                Decl fct_6 = new FunDecl(new PointerType(BaseType.VOID), "mcmalloc", param_maloc, new Block(null, null));
+
+                p.decls.add(fct_1);
+                p.decls.add(fct_2);
+                p.decls.add(fct_3);
+                p.decls.add(fct_4);
+                p.decls.add(fct_5);
+                p.decls.add(fct_6);
+
                 for (ASTNode child : p.children()){
                     visit(child);
                 }
@@ -100,6 +137,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             }
 
             case FunProto funProto -> {
+                Symbol s = scope.lookupCurrent(funProto.name);
+                if (s != null){
+                    error("Function prototype has already been declared.");
+                }
+                else
+                    scope.put(new FunProtoSymbol(funProto));
             }
 
 			case StructTypeDecl std -> {
