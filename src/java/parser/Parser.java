@@ -153,8 +153,9 @@ public class Parser  extends CompilerPass {
                         nextToken();
                     } else {
                         // Return block from parseBlock
-                        parse_block();
-                        // FunDecl fun = new FunDecl(t, fctName, varDecls, block);
+                        Block block = parse_block();
+                        FunDecl fun = new FunDecl(type, fctName, varDecls, block);
+                        decls.add(fun);
                     }
                 }
                 // else it must be a vardecl
@@ -264,23 +265,80 @@ public class Parser  extends CompilerPass {
         return  new VarDecl(varType, id.data);
     }
 
-    private void parse_block(){
+    private Block parse_block(){
         expect(Category.LBRA);
+        List<VarDecl> vds = new ArrayList<>();
         while(accept_type()){
             Type t = parse_type();
-            parse_vardecl(t);
+            vds.add(parse_vardecl(t));
         }
-
+        List<Stmt> stmts = new ArrayList<>();
         while(accept(Category.LBRA, Category.WHILE, Category.IF, Category.RETURN, Category.CONTINUE,
         Category.BREAK, Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
         Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERISK, Category.AND, Category.SIZEOF)){
-            parse_stmt();
+            stmts.add(parse_stmt());
         }
         expect(Category.RBRA);
+        return new Block(vds, stmts);
     }
 
-    private void parse_stmt(){
+    private Stmt parse_stmt(){
         if(accept(Category.WHILE)){
+            nextToken();
+            expect(Category.LPAR);
+            Expr condition = parse_exp();
+            expect(Category.RPAR);
+            Stmt stmt = parse_stmt();
+            return new While(condition, stmt);
+        }
+        else if (accept(Category.IF)){
+            nextToken();
+            expect(Category.LPAR);
+            Expr condition = parse_exp();
+            expect(Category.RPAR);
+            Stmt stmt1 = parse_stmt();
+            Stmt stmt2 = null;
+            if(accept(Category.ELSE)){
+                nextToken();
+                stmt2 = parse_stmt();
+            }
+            return new If(condition, stmt1, stmt2);
+        }
+        else if(accept(Category.RETURN)){
+            nextToken();
+            if(acceptExp()){
+                Expr expr = parse_exp();
+                expect(Category.SC);
+                return new Return(expr);
+            }
+            expect(Category.SC);
+            return new Return();
+
+        }
+        else if(accept(Category.CONTINUE)){
+            nextToken();
+            expect(Category.SC);
+            return new Continue();
+        }
+        else if(accept(Category.BREAK)){
+            nextToken();
+            expect(Category.SC);
+            return new Break();
+        }
+        else if (accept(Category.LBRA)){
+            return parse_block();
+        }
+        else if (acceptExp()){
+            Expr expr = parse_exp();
+            expect(Category.SC);
+            return new ExprStmt(expr);
+        }
+        else {
+            error();
+            nextToken();
+            return null;
+        }
+        /*if(accept(Category.WHILE)){
             nextToken();
             expect(Category.LPAR);
             parse_exp();
@@ -324,8 +382,210 @@ public class Parser  extends CompilerPass {
             error();
             nextToken();
         }
+        return null; //to change */
     }
 
+
+    Expr parse_exp(){
+        Expr lhs = parseLogor_term();
+        if (accept(Category.ASSIGN)){
+            nextToken();
+            Expr rhs = parse_exp();
+            return new Assign(lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseLogor_term(){
+        Expr lhs = parseLogand_term();
+        while (accept(Category.LOGOR)){
+            nextToken();
+            Expr rhs = parseLogand_term();
+            lhs = new BinOp(Op.OR, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseLogand_term(){
+        Expr lhs = parse_eq_neq_term();
+        while (accept(Category.LOGAND)){
+            nextToken();
+            Expr rhs = parse_eq_neq_term();
+            lhs = new BinOp(Op.AND, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parse_eq_neq_term(){
+        Expr lhs = parseComparison_term();
+        while (accept(Category.EQ, Category.NE)){
+            Op op;
+            if (accept(Category.EQ)){
+                op = Op.EQ;
+            } else {
+                op = Op.NE;
+            }
+            nextToken();
+            Expr rhs = parseComparison_term();
+            lhs = new BinOp(op, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseComparison_term(){
+        Expr lhs = parseAdd_sub_term();
+        while (accept(Category.LT, Category.GT, Category.GE, Category.LE)){
+            Op op;
+            if (accept(Category.LT)){
+                op = Op.LT;
+            } else if (accept(Category.LE)){
+                op = Op.LE;
+            } else if (accept(Category.GE)){
+                op = Op.GE;
+            } else {
+                op = Op.GT;
+            }
+            nextToken();
+            Expr rhs = parseAdd_sub_term();
+            lhs = new BinOp(op, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseAdd_sub_term(){
+        Expr lhs = parseMul_div_rem_term();
+        while (accept(Category.PLUS, Category.MINUS)){
+            Op op;
+            if (accept(Category.PLUS)){
+                op = Op.ADD;
+            } else {
+                op = Op.SUB;
+            }
+            nextToken();
+            Expr rhs = parseMul_div_rem_term();
+            lhs = new BinOp(op, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseMul_div_rem_term(){
+        Expr lhs = parseFactor_2();
+        while (accept(Category.ASTERISK, Category.DIV, Category.REM)){
+            Op op;
+            if (accept(Category.ASTERISK)){
+                op = Op.MUL;
+            } else if (accept(Category.DIV)){
+                op = Op.DIV;
+            } else {
+                op = Op.MOD;
+            }
+            nextToken();
+            Expr rhs = parseFactor_2();
+            lhs = new BinOp(op, lhs, rhs);
+        }
+        return lhs;
+    }
+    Expr parseFactor_2(){
+        Expr expr;
+        if (accept(Category.ASTERISK)){
+            nextToken();
+            expr = parseFactor_2();
+            return new ValueAtExpr(expr);
+        } else if (accept(Category.AND)){
+            nextToken();
+            expr = parseFactor_2();
+            return new AddressOfExpr(expr);
+        } else if (accept(Category.PLUS)){
+            nextToken();
+            expr = parseFactor_2();
+            return new BinOp(Op.ADD, new IntLiteral(0), expr);
+        } else if (accept(Category.MINUS)){
+            nextToken();
+            expr = parseFactor_2();
+            return new BinOp(Op.SUB, new IntLiteral(0), expr);
+        } else if (accept(Category.LPAR) && (
+                (lookAhead(1).category == Category.INT) || (lookAhead(1).category == Category.CHAR) ||
+                (lookAhead(1).category == Category.VOID) ||
+                (lookAhead(1).category == Category.STRUCT && lookAhead(2).category == Category.IDENTIFIER)
+        )){
+            nextToken();
+            Type type = parse_type();
+            nextToken(); 						//right parenthesese
+            expr = parseFactor_2();
+            return new TypecastExpr(type, expr);
+        }
+        else {
+            return parseFactor_1();
+        }
+    }
+    Expr parseFactor_1(){
+        Expr expr;
+        expr = parseFactor();
+        while (accept(Category.DOT, Category.LSBR)){
+            if (accept(Category.DOT)){
+                nextToken();
+                String id = expect(Category.IDENTIFIER).data;
+                expr = new FieldAccessExpr(expr, id);
+            } else if (accept(Category.LSBR)){
+                nextToken();
+                Expr expr2 = parse_exp();
+                expect(Category.RSBR);
+                expr = new ArrayAccessExpr(expr, expr2);
+            }
+        }
+
+        return expr;
+    }
+
+    Expr parseFactor(){
+        Expr expr;
+        if (accept(Category.LPAR)){
+            nextToken();
+            expr = parse_exp();
+            expect(Category.RPAR);
+        }
+        else if (accept(Category.IDENTIFIER) && lookAhead(1).category == Category.LPAR){
+            String id = expect(Category.IDENTIFIER).data;
+            expect(Category.LPAR);
+            List<Expr> params = new ArrayList<>();
+            if(acceptExp()){
+                params.add(parse_exp());
+                while(accept(Category.COMMA)){
+                    nextToken();
+                    params.add(parse_exp());
+                }
+            }
+            expect(Category.RPAR);
+            expr = new FunCallExpr(id, params);
+        }
+        else if (accept(Category.IDENTIFIER )){
+            String id = expect(Category.IDENTIFIER).data;
+            expr = new VarExpr(id);
+        }
+        else if (accept(Category.INT_LITERAL)){
+            int i = Integer.parseInt(expect(Category.INT_LITERAL).data);
+            expr = new IntLiteral(i);
+        }
+        else if (accept(Category.CHAR_LITERAL)){
+            String id = expect(Category.CHAR_LITERAL).data;
+            char c = id.charAt(0);
+            expr = new ChrLiteral(c);
+        }
+        else if (accept(Category.STRING_LITERAL)){
+            String id = expect(Category.STRING_LITERAL).data;
+            expr = new StrLiteral(id);
+        }
+        else if (accept(Category.SIZEOF)){
+            expect(Category.SIZEOF);
+            expect(Category.LPAR);
+            Type type = parse_type();
+            expect(Category.RPAR);
+            expr = new SizeOfExpr(type);
+        }
+        else{
+            error();
+            nextToken();
+            expr = null;
+        }
+        return expr;
+    }
+
+
+    /*
     private void parse_funcall(){
         expect(Category.IDENTIFIER);
         expect(Category.LPAR);
@@ -451,6 +711,7 @@ public class Parser  extends CompilerPass {
             nextToken();
         }
     }
+*/
 
     // includes are ignored, so does not need to return an AST node
     private void parseIncludes() {
