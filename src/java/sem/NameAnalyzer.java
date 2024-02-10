@@ -92,15 +92,23 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 			}
 
             case FunCallExpr funCallExpr -> {
+                Symbol s = scope.lookup(funCallExpr.fctName);
+                switch (s){
+                    case FunSymbol vs -> funCallExpr.funDecl = vs.funDecl;
+                    case null, default -> error("Function has not been declared yet.");
+                }
             }
 
             case FunProto funProto -> {
             }
 
 			case StructTypeDecl std -> {
+                Scope oldScope = scope;
+                scope = new Scope(oldScope);
 				for (ASTNode child : std.children()){
                     visit(child);
                 }
+                scope = oldScope;
 			}
 
 			case Type t -> {}

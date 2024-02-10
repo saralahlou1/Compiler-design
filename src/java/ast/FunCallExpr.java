@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class FunCallExpr extends Expr{
-    String fctName;
+    public String fctName;
     public FunDecl funDecl; //initialized by name analyser
     public final List<Expr> params;
     public FunCallExpr(String fctName, List<Expr> params){
