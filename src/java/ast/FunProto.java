@@ -5,8 +5,8 @@ import java.util.List;
 
 public final class FunProto extends Decl{
     public final List<VarDecl> params;
-    Type type;
-    String name;
+    public Type type;
+    public String name;
 
     public FunProto(Type type, String name, List<VarDecl> params) {
         this.type = type;

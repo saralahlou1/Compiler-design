@@ -6,7 +6,7 @@ public class SemanticAnalyzer extends CompilerPass {
 	
 	public void analyze(ast.Program prog) {
 
-		NameAnalyzer na = new NameAnalyzer();
+		NameAnalyzer na = new NameAnalyzer(new Scope());
 		na.visit(prog);
 		this.numErrors += na.getNumErrors();
 
