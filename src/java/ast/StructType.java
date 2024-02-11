@@ -15,6 +15,9 @@ public final class StructType implements Type{
 
     @Override
     public boolean equals(Type obj) {
+        if (obj == null){
+            return false;
+        }
         switch (obj){
             case StructType s -> {
                 return this.structName.equals(s.structName);

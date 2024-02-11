@@ -14,6 +14,9 @@ public final class PointerType implements Type {
 
     @Override
     public boolean equals(Type obj) {
+        if (obj == null){
+            return false;
+        }
         switch (obj){
             case PointerType p -> {
                 Type pType = p.pointerType;

@@ -1,7 +1,7 @@
 java.lang.Throwable:
-sem.TypeAnalyzer.visit(TypeAnalyzer.java:61)
-sem.TypeAnalyzer.visit(TypeAnalyzer.java:51)
-sem.TypeAnalyzer.visit(TypeAnalyzer.java:172)
+java.base/java.util.Objects.requireNonNull(Objects.java:233)
+ast.BaseType.equals(BaseType.java:15)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:227)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:15)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:23)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:36)

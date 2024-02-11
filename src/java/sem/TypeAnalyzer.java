@@ -58,6 +58,9 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case VarExpr v -> {
+				if (v.vd == null){
+					yield BaseType.NONE;
+				}
 				v.type = v.vd.type;
 				yield v.vd.type;
 			}
@@ -214,6 +217,9 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case Return aReturn -> {
+				if (numErrors !=0){
+					yield BaseType.NONE;
+				}
 				Type retType = visit(aReturn.expr);
 				if (aReturn.expr == null){
 					retType = BaseType.VOID;

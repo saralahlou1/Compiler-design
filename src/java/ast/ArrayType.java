@@ -12,6 +12,9 @@ public final class ArrayType implements Type{
 
     @Override
     public boolean equals(Type obj) {
+        if (obj == null){
+            return false;
+        }
         switch (obj){
             case ArrayType arr -> {
                 Type arrType = arr.arrayType;

@@ -12,6 +12,9 @@ public enum BaseType implements Type {
 
     @Override
     public boolean equals(Type obj) {
+        if (obj == null){
+            return false;
+        }
         switch (obj){
             case BaseType b -> {
                 return this == b;
