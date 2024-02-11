@@ -143,8 +143,24 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 if (s != null){
                     error("Variable already declared in the same scope.");
                 }
-                else
-                    scope.put(new VarSymbol(vd));
+                else {
+                    switch (vd.type){
+                        case StructType struct ->{
+                            Symbol structDecl = scope.lookup(struct.structName);
+                            switch (structDecl){
+                                case StructSymbol st -> {
+                                    struct.sDecl = st.structTypeDecl;
+                                    scope.put(new StructSymbol(struct.sDecl));
+                                }
+                                case null, default -> error("Struct has not been declared yet.");
+                            }
+                        }
+                        default -> {
+                            scope.put(new VarSymbol(vd));
+                        }
+                    }
+                    // modified this
+                }
 			}
 
 			case VarExpr v -> {
