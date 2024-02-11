@@ -165,7 +165,19 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case FunProto funProto -> {
                 Symbol s = scope.lookupCurrent(funProto.name);
                 if (s != null){
-                    error("Function prototype has already been declared.");
+                    switch (s) {
+                        case FunSymbol funSymbol -> {
+                            Scope paramsScope = new Scope();
+                            for (VarDecl vd : funProto.params) {
+                                Symbol v = paramsScope.lookupCurrent(vd.name);
+                                if (v != null) {
+                                    error("Parameter already declared.");
+                                }
+                            }
+                            scope.put(new FunProtoSymbol(funProto));
+                        }
+                        default -> error("Function prototype has already been declared.");
+                    }
                 }
                 else {
                     lFunProto.add(funProto);
