@@ -112,12 +112,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 param_maloc.add(new VarDecl(BaseType.INT, "size"));
                 Decl fct_6 = new FunDecl(new PointerType(BaseType.VOID), "mcmalloc", param_maloc, new Block(null, null));
 
-                p.decls.add(fct_1);
-                p.decls.add(fct_2);
-                p.decls.add(fct_3);
-                p.decls.add(fct_4);
-                p.decls.add(fct_5);
-                p.decls.add(fct_6);
+                p.decls.addFirst(fct_1);
+                p.decls.addFirst(fct_2);
+                p.decls.addFirst(fct_3);
+                p.decls.addFirst(fct_4);
+                p.decls.addFirst(fct_5);
+                p.decls.addFirst(fct_6);
 
                 for (ASTNode child : p.children()){
                     visit(child);
@@ -148,7 +148,16 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case FunCallExpr funCallExpr -> {
                 Symbol s = scope.lookup(funCallExpr.fctName);
                 switch (s){
-                    case FunSymbol vs -> funCallExpr.funDecl = vs.funDecl;
+                    case FunSymbol vs -> {
+                        if (vs.funDecl.params.size() == funCallExpr.params.size())
+                            funCallExpr.funDecl = vs.funDecl;
+                        else error("Function call does not have same number of parameters");
+                    }
+                    case FunProtoSymbol v -> {
+                        if (v.funProto.params.size() == funCallExpr.params.size())
+                            funCallExpr.funDecl = v.funProto.funDecl;
+                        else error("Function call does not have same number of parameters");
+                    }
                     case null, default -> error("Function has not been declared yet.");
                 }
             }
@@ -160,6 +169,13 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 }
                 else {
                     lFunProto.add(funProto);
+                    Scope paramsScope = new Scope();
+                    for (VarDecl vd : funProto.params){
+                        Symbol v = paramsScope.lookupCurrent(vd.name);
+                        if (v != null){
+                            error("Parameter already declared.");
+                        }
+                    }
                     scope.put(new FunProtoSymbol(funProto));
                 }
             }
@@ -175,14 +191,20 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
 			case Type t -> {}
 
-			// to complete ...
             case AddressOfExpr addressOfExpr -> {
+                visit(addressOfExpr.address);
             }
             case ArrayAccessExpr arrayAccessExpr -> {
+                visit(arrayAccessExpr.array);
+                visit(arrayAccessExpr.index);
             }
             case Assign assign -> {
+                visit(assign.lhs);
+                visit(assign.rhs);
             }
             case BinOp binOp -> {
+                visit(binOp.rhs);
+                visit(binOp.lhs);
             }
             case Break aBreak -> {
             }
@@ -191,24 +213,34 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case Continue aContinue -> {
             }
             case ExprStmt exprStmt -> {
+                visit(exprStmt.stmt);
             }
             case FieldAccessExpr fieldAccessExpr -> {
+                visit(fieldAccessExpr.structure);
             }
             case If anIf -> {
+                visit(anIf.expr);
+                visit(anIf.ifStmt);
+                visit(anIf.elseStmt);
             }
             case IntLiteral intLiteral -> {
             }
             case Return aReturn -> {
+                visit(aReturn.expr);
             }
             case SizeOfExpr sizeOfExpr -> {
             }
             case StrLiteral strLiteral -> {
             }
             case TypecastExpr typecastExpr -> {
+                visit(typecastExpr.expr);
             }
             case ValueAtExpr valueAtExpr -> {
+                visit(valueAtExpr.value);
             }
             case While aWhile -> {
+                visit(aWhile.expr);
+                visit(aWhile.stmt);
             }
         };
 

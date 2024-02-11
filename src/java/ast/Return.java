@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Return extends Stmt{
-    Expr expr;
+    public Expr expr;
     public Return(){
     }
     public Return(Expr expr){

@@ -5,8 +5,8 @@ import java.util.List;
 
 public final class BinOp extends Expr{
     Op op ;
-    Expr lhs;
-    Expr rhs ;
+    public Expr lhs;
+    public Expr rhs ;
 
 
     public BinOp(Op op , Expr lhs , Expr rhs ){
