@@ -232,6 +232,10 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				yield switch (t){
 					case StructType type -> {
 						// maybe do name analysis here for this
+						if (type.sDecl == null){
+							error("Struct declaration is null. Maybe the struct does not exist");
+							yield BaseType.NONE;
+						}
 						for (VarDecl v : type.sDecl.varDecl){
 							if (fieldAccessExpr.fieldName.equals(v.name)){
 								yield v.type;
