@@ -7,6 +7,7 @@ public final class FunProto extends Decl{
     public final List<VarDecl> params;
     public Type type;
     public String name;
+    public FunDecl funDecl;     //for name analysis
 
     public FunProto(Type type, String name, List<VarDecl> params) {
         this.type = type;

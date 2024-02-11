@@ -9,6 +9,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
     Scope scope;
     List<VarDecl> params;
+    List<FunProto> lFunProto = new ArrayList<>();
+
 
     NameAnalyzer(Scope scope ) { this.scope = scope ; } ;
 	public void visit(ASTNode node) {
@@ -23,11 +25,15 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 for (VarDecl param : params){
                     scope.put(new VarSymbol(param));
                 }
-                params = new ArrayList<>();
+                List<FunProto> oldList = lFunProto;
+                lFunProto = new ArrayList<>();
                 for (ASTNode child : b.children()){
                     visit(child);
                 }
+
                 scope = oldScope;
+                lFunProto = oldList;
+                params = new ArrayList<>();
 			}
 
 			case FunDecl fd -> {
@@ -38,6 +44,9 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             if (funProtoSymbol.funProto.params == fd.params &&
                                     funProtoSymbol.funProto.type == fd.type){
                                 scope.put(new FunSymbol(fd));
+
+                                funProtoSymbol.funProto.funDecl = fd;
+
                                 Scope paramsScope = new Scope();
                                 params = new ArrayList<>();
                                 for (VarDecl vd : fd.params){
@@ -48,6 +57,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                     else
                                         params.add(vd);
                                 }
+                                visit(fd.block);
 
                             } else error("Function declaration does not respect function prototype specifications.");
                         }
@@ -62,9 +72,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         Symbol v = paramsScope.lookupCurrent(vd.name);
                         if (v != null) {
                             error("Parameter already declared.");
-                        } else
+                        } else {
+                            paramsScope.put(new VarSymbol(vd));
                             params.add(vd);
+                        }
                     }
+                    visit(fd.block);
                 }
 			}
 
@@ -109,6 +122,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 for (ASTNode child : p.children()){
                     visit(child);
                 }
+                for (FunProto funProto : lFunProto){
+                    if (funProto.funDecl == null)
+                        error("Function prototype declared with no corresponding function.");
+                }
 			}
 
 			case VarDecl vd -> {
@@ -141,8 +158,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 if (s != null){
                     error("Function prototype has already been declared.");
                 }
-                else
+                else {
+                    lFunProto.add(funProto);
                     scope.put(new FunProtoSymbol(funProto));
+                }
             }
 
 			case StructTypeDecl std -> {

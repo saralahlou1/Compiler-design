@@ -1,3 +1,9 @@
 java.lang.Throwable:
-Main2.compile(Main2.java:129)
+java.base/java.util.ArrayList.addAll(ArrayList.java:752)
+ast.Block.children(Block.java:18)
+sem.NameAnalyzer.visit(NameAnalyzer.java:30)
+sem.NameAnalyzer.visit(NameAnalyzer.java:80)
+sem.NameAnalyzer.visit(NameAnalyzer.java:123)
+sem.SemanticAnalyzer.analyze(SemanticAnalyzer.java:10)
+Main2.compile(Main2.java:173)
 Main2.main(Main2.java:62)

@@ -15,8 +15,12 @@ public final class Block extends Stmt {
     @Override
     public List<ASTNode> children() {
         List<ASTNode> children = new ArrayList<>();
-        children.addAll(vds);
-        children.addAll(stmts);
+        if (vds != null) {
+            children.addAll(vds);
+        }
+        if (stmts != null) {
+            children.addAll(stmts);
+        }
         return children;
     }
 
