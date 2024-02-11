@@ -44,7 +44,9 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             if (funProtoSymbol.funProto.params.size() == fd.params.size() &&
                                     funProtoSymbol.funProto.type == fd.type){
                                 scope.put(new FunSymbol(fd));
-
+                                if (funProtoSymbol.funProto.funDecl != null){
+                                    error("Function is being declared more than once.");
+                                }
                                 funProtoSymbol.funProto.funDecl = fd;
 
                                 Scope paramsScope = new Scope();
@@ -167,6 +169,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 if (s != null){
                     switch (s) {
                         case FunSymbol funSymbol -> {
+                            funProto.funDecl = funSymbol.funDecl;
                             Scope paramsScope = new Scope();
                             for (VarDecl vd : funProto.params) {
                                 Symbol v = paramsScope.lookupCurrent(vd.name);
