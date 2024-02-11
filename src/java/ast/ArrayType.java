@@ -11,6 +11,19 @@ public final class ArrayType implements Type{
     }
 
     @Override
+    public boolean equals(Type obj) {
+        switch (obj){
+            case ArrayType arr -> {
+                Type arrType = arr.arrayType;
+                return this.arrayType.equals(arrType) && this.nbElements == arr.nbElements;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    @Override
     public List<ASTNode> children() {
         return null;
     }

@@ -5,8 +5,9 @@ import java.util.List;
 
 public final class TypecastExpr extends Expr{
     public Expr expr;
+    public Type castType;
     public TypecastExpr(Type type, Expr expr){
-        this.type = type;
+        this.castType = type;
         this.expr = expr;
     }
     public List<ASTNode> children() {

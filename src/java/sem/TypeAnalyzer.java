@@ -48,7 +48,8 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case FunCallExpr funCallExpr -> {
 				for (int i = 0; i< funCallExpr.params.size(); i++){
-					if (funCallExpr.params.get(i).type != funCallExpr.funDecl.params.get(i).type){
+					Type paramType = visit(funCallExpr.params.get(i));
+					if (!paramType.equals(funCallExpr.funDecl.params.get(i).type)){
 						error("The types of the parameters in the function call do not match the required types.");
 					}
 				}
@@ -133,8 +134,12 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				yield t;
 			}
 
-			// to complete ...
-            case AddressOfExpr addressOfExpr -> null;
+
+            case AddressOfExpr addressOfExpr -> {
+				Type type = visit(addressOfExpr.address);
+				addressOfExpr.type = new PointerType(type);
+				yield addressOfExpr.type;
+			}
 
 			case Assign assign -> null;
 
@@ -163,13 +168,100 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case If anIf -> null;
 
-			case Return aReturn -> null;
+			case Return aReturn -> {
+				Type retType = visit(aReturn.expr);
+				if (aReturn.expr == null){
+					retType = BaseType.VOID;
+				}
+				if (retType.equals(aReturn.retType)){
+					yield retType;
+				}
+				else {
+					error("Return type different from expected one.");
+					yield BaseType.NONE;
+				}
+			}
 
-			case SizeOfExpr sizeOfExpr -> null;
+			case SizeOfExpr sizeOfExpr -> {
+				sizeOfExpr.type = BaseType.INT;
+				yield BaseType.INT;
+			}
 
-			case TypecastExpr typecastExpr -> null;
+			case TypecastExpr typecastExpr -> {
+				Type type = visit(typecastExpr.expr);
+				Type castType = typecastExpr.castType;
+				yield switch (type){
+					case BaseType.CHAR -> {
+						if (castType == BaseType.INT){
+							typecastExpr.type = BaseType.INT;
+							yield BaseType.INT;
+						}
+						else {
+							error("Type cast for char can only be to int.");
+							typecastExpr.type = BaseType.NONE;
+							yield BaseType.NONE;
+						}
+					}
+					case ArrayType array -> {
+						Type elmtType = array.arrayType;
+						yield switch (castType){
+							case PointerType p -> {
+								if (p.pointerType.equals(elmtType)){
+									typecastExpr.type = p;
+									yield p;
+								}
+								else {
+									error("Element types do not match between array type and pointer type.");
+									typecastExpr.type = BaseType.NONE;
+									yield BaseType.NONE;
+								}
+							}
+							default -> {
+								error("Type cast for array types can only be to pointer types.");
+								typecastExpr.type = BaseType.NONE;
+								yield BaseType.NONE;
+							}
+						};
 
-			case ValueAtExpr valueAtExpr -> null;
+					}
+					case PointerType pointerType -> {
+						Type elmtType = pointerType.pointerType;
+						yield switch (castType){
+							case PointerType p -> {
+								typecastExpr.type = p;
+								yield p;
+							}
+							default -> {
+								error("Type cast for pointer types can only be to pointer types.");
+								typecastExpr.type = BaseType.NONE;
+								yield BaseType.NONE;
+							}
+						};
+
+					}
+					default -> {
+						error("Type cast expression of non castable type.");
+						typecastExpr.type = BaseType.NONE;
+						yield BaseType.NONE;
+					}
+				};
+
+			}
+
+			case ValueAtExpr valueAtExpr -> {
+				Type expType = visit(valueAtExpr.value);
+				yield switch (expType){
+					case PointerType pType -> {
+						valueAtExpr.type = pType.pointerType;
+						yield pType.pointerType;
+					}
+					default -> {
+						valueAtExpr.type = BaseType.NONE;
+						error("Value access should be called on Pointer types.");
+						yield BaseType.NONE;
+					}
+				};
+			}
 
 			case While aWhile -> null;
         };

@@ -10,6 +10,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
     Scope scope;
     List<VarDecl> params;
     List<FunProto> lFunProto = new ArrayList<>();
+    Type fctRetType;
 
 
     NameAnalyzer(Scope scope ) { this.scope = scope ; } ;
@@ -30,7 +31,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 for (ASTNode child : b.children()){
                     visit(child);
                 }
-
+                fctRetType = BaseType.UNKNOWN;
                 scope = oldScope;
                 lFunProto = oldList;
                 params = new ArrayList<>();
@@ -63,6 +64,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                     else
                                         params.add(vd);
                                 }
+                                fctRetType = fd.type;
                                 visit(fd.block);
 
                             } else error("Function declaration does not respect function prototype specifications.");
@@ -83,6 +85,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             params.add(vd);
                         }
                     }
+                    fctRetType = fd.type;
                     visit(fd.block);
                 }
 			}
@@ -166,6 +169,9 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     }
                     case null, default -> error("Function has not been declared yet.");
                 }
+                for (Expr param : funCallExpr.params){
+                    visit(param);
+                }
             }
 
             case FunProto funProto -> {
@@ -245,6 +251,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 visit(exprStmt.stmt);
             }
             case FieldAccessExpr fieldAccessExpr -> {
+                // to change maybe check if name of field exists in given struct
                 visit(fieldAccessExpr.structure);
             }
             case If anIf -> {
@@ -255,6 +262,13 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case IntLiteral intLiteral -> {
             }
             case Return aReturn -> {
+                //Modify
+                switch (fctRetType){
+                    case BaseType b -> aReturn.retType = b;
+                    case ArrayType arr -> aReturn.retType = new ArrayType(arr.arrayType, arr.nbElements);
+                    case PointerType p -> aReturn.retType = new PointerType(p.pointerType);
+                    case StructType s -> aReturn.retType = new StructType(s.structName);
+                }
                 visit(aReturn.expr);
             }
             case SizeOfExpr sizeOfExpr -> {

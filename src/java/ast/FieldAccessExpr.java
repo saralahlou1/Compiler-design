@@ -6,6 +6,8 @@ import java.util.List;
 public final class FieldAccessExpr extends Expr{
     public Expr structure;
     String fieldName;
+
+    public StructTypeDecl structDecl;       // maybe link to struct decl
     public FieldAccessExpr(Expr structure, String fieldName){
         this.fieldName = fieldName;
         this.structure = structure;

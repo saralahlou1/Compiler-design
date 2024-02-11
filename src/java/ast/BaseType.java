@@ -9,4 +9,16 @@ public enum BaseType implements Type {
     public List<ASTNode> children() {
         return new ArrayList<ASTNode>();
     }
+
+    @Override
+    public boolean equals(Type obj) {
+        switch (obj){
+            case BaseType b -> {
+                return this == b;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
 }

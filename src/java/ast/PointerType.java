@@ -11,4 +11,17 @@ public final class PointerType implements Type {
     public List<ASTNode> children() {
         return new ArrayList<ASTNode>();
     }
+
+    @Override
+    public boolean equals(Type obj) {
+        switch (obj){
+            case PointerType p -> {
+                Type pType = p.pointerType;
+                return this.pointerType.equals(pType);
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
 }
