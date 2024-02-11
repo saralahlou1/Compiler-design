@@ -1,3 +1,11 @@
 java.lang.Throwable:
-Main2.compile(Main2.java:106)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:59)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:220)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:164)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:216)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:17)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:25)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:38)
+sem.SemanticAnalyzer.analyze(SemanticAnalyzer.java:14)
+Main2.compile(Main2.java:173)
 Main2.main(Main2.java:62)

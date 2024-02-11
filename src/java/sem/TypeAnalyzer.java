@@ -49,6 +49,10 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case FunCallExpr funCallExpr -> {
+				if (funCallExpr.funDecl == null && funCallExpr.protoDecl == null){
+					error("Function was not declared before call.");
+					yield BaseType.NONE;
+				}
 				if (funCallExpr.funDecl == null){
 					for (int i = 0; i< funCallExpr.params.size(); i++){
 						Type paramType = visit(funCallExpr.params.get(i));
@@ -70,6 +74,9 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case VarExpr v -> {
+				if (v.type != null){
+					yield v.type;
+				}
 				if (v.vd == null){
 					yield BaseType.NONE;
 				}
@@ -141,10 +148,11 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case StructTypeDecl std -> {
+				//test
 				for (VarDecl v : std.varDecl){
 					visit(v);
 				}
-				yield std.type;
+				yield BaseType.NONE;
 			}
 
 			case Type t -> {
@@ -215,7 +223,26 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			case ExprStmt exprStmt -> visit(exprStmt.stmt); //here
 
 
-			case FieldAccessExpr fieldAccessExpr -> null;
+			case FieldAccessExpr fieldAccessExpr -> {
+				Type t = visit(fieldAccessExpr.structure); //here goes to vardecl and gets none type
+				yield switch (t){
+					case StructType type -> {
+						// maybe do name analysis here for this
+						for (VarDecl v : type.sDecl.varDecl){
+							if (fieldAccessExpr.fieldName.equals(v.name)){
+								yield v.type;
+							}
+						}
+						// means we didn't find the field
+						error("The given field does not exist in the struct.");
+						yield BaseType.NONE;
+					}
+					default -> {
+						error("The given expression for field access is not a struct.");
+						yield BaseType.NONE;
+					}
+				};
+			}
 
 			case If anIf -> {
 				Type condition = visit(anIf.expr);

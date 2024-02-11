@@ -151,6 +151,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 				Symbol s = scope.lookup(v.name);
                 switch (s){
                     case VarSymbol vs -> v.vd = vs.varDecl;
+                    case StructSymbol struct -> v.type = struct.structTypeDecl.structType;
                     case null, default -> error("Variable has not been declared yet.");
                 }
 			}
@@ -217,6 +218,16 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             }
 
 			case StructTypeDecl std -> {
+                // trying this
+                Symbol s = scope.lookupCurrent(std.structType.structName);
+                if (s != null){
+                    error("Struct name already declared in the same scope.");
+                }
+                else {
+                    std.structType.sDecl = std;
+                    scope.put(new StructSymbol(std));
+                }
+
                 Scope oldScope = scope;
                 scope = new Scope(oldScope);
 				for (ASTNode child : std.children()){

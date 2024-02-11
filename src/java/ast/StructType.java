@@ -5,6 +5,7 @@ import java.util.List;
 
 public final class StructType implements Type{
     public String structName;
+    public StructTypeDecl sDecl;    //fill in name analysis
     public StructType(String structType){this.structName = structType;}
 
 
