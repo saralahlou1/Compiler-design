@@ -41,7 +41,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 if (s != null){
                     switch (s){
                         case FunProtoSymbol funProtoSymbol -> {
-                            if (funProtoSymbol.funProto.params == fd.params &&
+                            if (funProtoSymbol.funProto.params.size() == fd.params.size() &&
                                     funProtoSymbol.funProto.type == fd.type){
                                 scope.put(new FunSymbol(fd));
 
@@ -174,6 +174,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                     error("Parameter already declared.");
                                 }
                             }
+                            if (funSymbol.funDecl.params.size() != funProto.params.size())
+                                error("The number of parameters in function prototype does not match that of function declaration.");
                             scope.put(new FunProtoSymbol(funProto));
                         }
                         default -> error("Function prototype has already been declared.");
