@@ -169,6 +169,10 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			case Assign assign -> {
 				Type type_e1 = visit(assign.lhs);
 				Type type_e2 = visit(assign.rhs);
+				if (type_e1 == null || type_e2 == null){
+					error("One of the assignments side is null.");
+					yield BaseType.NONE;
+				}
 				yield switch (type_e1){		//here
 					case ArrayType arr -> {
 						error("Can't assign to array types.");
