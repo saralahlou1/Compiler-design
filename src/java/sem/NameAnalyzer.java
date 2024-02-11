@@ -165,7 +165,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     }
                     case FunProtoSymbol v -> {
                         if (v.funProto.params.size() == funCallExpr.params.size())
-                            funCallExpr.funDecl = v.funProto.funDecl;
+                            funCallExpr.protoDecl = v.funProto;
                         else error("Function call does not have same number of parameters");
                     }
                     case null, default -> error("Function has not been declared yet.");

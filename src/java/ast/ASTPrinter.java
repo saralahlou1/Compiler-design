@@ -12,9 +12,7 @@ public class ASTPrinter {
 
     public void visit(ASTNode node) {
         switch(node) {
-            case null -> {
-                throw new IllegalStateException("Unexpected null value");
-            }
+            case null -> {}
 
             case Block block -> {
                 writer.print("Block(");

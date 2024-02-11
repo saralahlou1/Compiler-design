@@ -6,6 +6,7 @@ import java.util.List;
 public final class FunCallExpr extends Expr{
     public String fctName;
     public FunDecl funDecl; //initialized by name analyser
+    public FunProto protoDecl; //initialized by name analyser
     public final List<Expr> params;
     public FunCallExpr(String fctName, List<Expr> params){
         this.fctName = fctName;

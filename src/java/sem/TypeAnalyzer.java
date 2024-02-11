@@ -12,7 +12,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case Block b -> {
 				for (ASTNode c : b.children())
-					visit(c);
+					visit(c);	//here
 				yield BaseType.NONE;
 			}
 
@@ -20,7 +20,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				for (VarDecl varDecl : fd.params){
 					visit(varDecl);
 				}
-				visit(fd.block);
+				visit(fd.block);	//here
 				yield BaseType.NONE;
 			}
 
@@ -47,6 +47,16 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case FunCallExpr funCallExpr -> {
+				if (funCallExpr.funDecl == null){
+					for (int i = 0; i< funCallExpr.params.size(); i++){
+						Type paramType = visit(funCallExpr.params.get(i));
+						if (!paramType.equals(funCallExpr.protoDecl.params.get(i).type)){
+							error("The types of the parameters in the function call do not match the required types by prototype.");
+						}
+					}
+					funCallExpr.type = funCallExpr.protoDecl.type;
+					yield funCallExpr.type;
+				}
 				for (int i = 0; i< funCallExpr.params.size(); i++){
 					Type paramType = visit(funCallExpr.params.get(i));
 					if (!paramType.equals(funCallExpr.funDecl.params.get(i).type)){
@@ -147,7 +157,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			case Assign assign -> {
 				Type type_e1 = visit(assign.lhs);
 				Type type_e2 = visit(assign.rhs);
-				yield switch (type_e1){
+				yield switch (type_e1){		//here
 					case ArrayType arr -> {
 						error("Can't assign to array types.");
 						assign.type = BaseType.NONE;
@@ -198,7 +208,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case Continue aContinue -> null;
 
-			case ExprStmt exprStmt -> visit(exprStmt.stmt);
+			case ExprStmt exprStmt -> visit(exprStmt.stmt); //here
 
 
 			case FieldAccessExpr fieldAccessExpr -> null;
@@ -220,10 +230,11 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				if (numErrors !=0){
 					yield BaseType.NONE;
 				}
-				Type retType = visit(aReturn.expr);
+				Type retType;
 				if (aReturn.expr == null){
 					retType = BaseType.VOID;
 				}
+				else retType = visit(aReturn.expr);
 				if (retType.equals(aReturn.retType)){
 					yield retType;
 				}
