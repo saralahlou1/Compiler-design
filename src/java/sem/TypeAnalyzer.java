@@ -7,7 +7,9 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 	public Type visit(ASTNode node) {
 		return switch(node) {
 			case null -> {
-				throw new IllegalStateException("Unexpected null value");
+				error("Value is null");
+				yield BaseType.NONE;
+				//throw new IllegalStateException("Unexpected null value");
 			}
 
 			case Block b -> {
@@ -139,8 +141,10 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case StructTypeDecl std -> {
-				// to complete
-				yield BaseType.UNKNOWN; // to change
+				for (VarDecl v : std.varDecl){
+					visit(v);
+				}
+				yield std.type;
 			}
 
 			case Type t -> {
