@@ -46,7 +46,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             if (funProtoSymbol.funProto.params.size() == fd.params.size() &&
                                     funProtoSymbol.funProto.type == fd.type){
                                 for (int i=0; i<fd.params.size(); i++){
-                                    if(fd.params.get(i).type != funProtoSymbol.funProto.params.get(i).type)
+                                    if(! fd.params.get(i).type.equals(funProtoSymbol.funProto.params.get(i).type))
                                         error("Parameters types do not match with function prototypes requirements.");
                                 }
                                 scope.put(new FunSymbol(fd));
@@ -191,11 +191,11 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             if (funSymbol.funDecl.params.size() != funProto.params.size())
                                 error("The number of parameters in function prototype does not match that of function declaration.");
 
-                            if (funSymbol.funDecl.type == funProto.type)
-                                error("Parameters types do not match with function prototypes requirements.");
+                            if (!funSymbol.funDecl.type.equals(funProto.type))
+                                error("Declaration types do not match with function prototypes requirements.");
 
                             for (int i=0; i<funProto.params.size(); i++){
-                                if(funProto.params.get(i).type != funSymbol.funDecl.params.get(i).type)
+                                if(!funProto.params.get(i).type.equals(funSymbol.funDecl.params.get(i).type))
                                     error("Parameters types do not match with function prototypes requirements.");
                             }
                             scope.put(new FunProtoSymbol(funProto));
