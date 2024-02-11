@@ -141,7 +141,40 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				yield addressOfExpr.type;
 			}
 
-			case Assign assign -> null;
+			case Assign assign -> {
+				Type type_e1 = visit(assign.lhs);
+				Type type_e2 = visit(assign.rhs);
+				yield switch (type_e1){
+					case ArrayType arr -> {
+						error("Can't assign to array types.");
+						assign.type = BaseType.NONE;
+						yield BaseType.NONE;
+					}
+					case BaseType b -> {
+						if (b.equals(BaseType.VOID)){
+							error("Can't assign to void type.");
+							assign.type = BaseType.NONE;
+							yield BaseType.NONE;
+						}
+						if (!type_e1.equals(type_e2)){
+							error("Assignment types do not match.");
+							assign.type = BaseType.NONE;
+							yield BaseType.NONE;
+						}
+						assign.type = type_e1;
+						yield type_e1;
+					}
+					default -> {
+						if (!type_e1.equals(type_e2)){
+							error("Assignment types do not match.");
+							assign.type = BaseType.NONE;
+							yield BaseType.NONE;
+						}
+						assign.type = type_e1;
+						yield type_e1;
+					}
+				};
+			}
 
 			case Break aBreak -> null;
 
@@ -162,11 +195,23 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case Continue aContinue -> null;
 
-			case ExprStmt exprStmt -> null;
+			case ExprStmt exprStmt -> visit(exprStmt.stmt);
+
 
 			case FieldAccessExpr fieldAccessExpr -> null;
 
-			case If anIf -> null;
+			case If anIf -> {
+				Type condition = visit(anIf.expr);
+				if (condition != BaseType.INT){
+					error("If statement condition must be an int.");
+					yield BaseType.NONE;
+				}
+				visit(anIf.ifStmt);
+				if (anIf.elseStmt != null){
+					visit(anIf.elseStmt);
+				}
+				yield BaseType.NONE;
+			}
 
 			case Return aReturn -> {
 				Type retType = visit(aReturn.expr);
@@ -263,7 +308,15 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				};
 			}
 
-			case While aWhile -> null;
+			case While aWhile -> {
+				Type condition = visit(aWhile.expr);
+				if (condition != BaseType.INT){
+					error("While statement condition must be an int.");
+					yield BaseType.NONE;
+				}
+				visit(aWhile.stmt);
+				yield BaseType.NONE;
+			}
         };
 
 	}

@@ -10,7 +10,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
     Scope scope;
     List<VarDecl> params;
     List<FunProto> lFunProto = new ArrayList<>();
-    Type fctRetType;
+    Type fctRetType = BaseType.UNKNOWN;
 
 
     NameAnalyzer(Scope scope ) { this.scope = scope ; } ;
@@ -21,6 +21,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case Block b -> {
+                Type oldFctRetType = fctRetType;
 				Scope oldScope = scope;
                 scope = new Scope(oldScope);
                 for (VarDecl param : params){
@@ -31,7 +32,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 for (ASTNode child : b.children()){
                     visit(child);
                 }
-                fctRetType = BaseType.UNKNOWN;
+                fctRetType = oldFctRetType;
                 scope = oldScope;
                 lFunProto = oldList;
                 params = new ArrayList<>();
