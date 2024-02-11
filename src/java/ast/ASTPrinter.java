@@ -193,7 +193,7 @@ public class ASTPrinter {
             }
             case SizeOfExpr sizeOfExpr -> {
                 writer.print("SizeOfExpr(");
-                visit(sizeOfExpr.type);
+                visit(sizeOfExpr.sizeOfType);
                 writer.print(")");
             }
             case StrLiteral strLiteral -> {
@@ -208,7 +208,7 @@ public class ASTPrinter {
             }
             case TypecastExpr typecastExpr -> {
                 writer.print("TypecastExpr(");
-                visit(typecastExpr.type);
+                visit(typecastExpr.castType);
                 writer.print(",");
                 visit(typecastExpr.expr);
                 writer.print(")");
