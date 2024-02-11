@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class BinOp extends Expr{
-    Op op ;
+    public Op op ;
     public Expr lhs;
     public Expr rhs ;
 

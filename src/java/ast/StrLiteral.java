@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class StrLiteral extends Expr{
-    String id;
+    public String id;
     public StrLiteral(String id){
         this.id = id;
     }
