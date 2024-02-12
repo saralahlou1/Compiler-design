@@ -374,7 +374,25 @@ The type analysis pass must ensure that each structure declaration has a unique 
 You can enforce this by creating a simple pass which checks for this before running the type checker for instance.
 
 Similarly to the function call and variable use, your type analyser needs to check that if any variable is declared with a struct type, the struct type exists.
-For instance if you encounter a variable declaration such as `struct node_t var;`, you must ensure that the corresponding `node_t` structure has been declared at the beginning of the program.
+For instance if you encounter a variable declaration such as `struct node_t var;`, you must ensure that the corresponding `node_t` structure has been declared earlier.
+
+Note that structure can only be defined recursively when using a pointer.
+So the following example is valid:
+```C
+struct x_s {
+    int a;
+    struct x_s * s; // recursive reference via a pointer is fine
+}
+```
+while the following example is invalid:
+```C
+struct x_s {
+    int a;
+    struct x_s s; // recursive reference without a pointer is invalid
+}
+```
+For the last example, the issue is that it is impossible to tell how large this data structure is due to the recursive definition.
+Hence, this should be rejected by the compiler during semantic analysis.
 
 Finally, when accessing a structure, you must also check that the field exist in the structure type declaration.
 
