@@ -150,7 +150,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             switch (structDecl){
                                 case StructSymbol st -> {
                                     struct.sDecl = st.structTypeDecl;
-                                    scope.put(new StructSymbol(struct.sDecl));
+                                    scope.put(new VarSymbol(vd));
                                 }
                                 case null, default -> error("Struct has not been declared yet.");
                             }
@@ -168,7 +168,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 switch (s){
                     case VarSymbol vs -> v.vd = vs.varDecl;
                     case StructSymbol struct -> v.type = struct.structTypeDecl.structType;
-                    case null, default -> error("Variable has not been declared yet.");
+                    case null, default -> error("Variable has not been declared yet."); //here
                 }
 			}
 

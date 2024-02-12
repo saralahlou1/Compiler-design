@@ -228,7 +228,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 
 			case FieldAccessExpr fieldAccessExpr -> {
-				Type t = visit(fieldAccessExpr.structure); //here goes to vardecl and gets none type
+				Type t = visit(fieldAccessExpr.structure);
 				yield switch (t){
 					case StructType type -> {
 						// maybe do name analysis here for this
@@ -238,6 +238,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						}
 						for (VarDecl v : type.sDecl.varDecl){
 							if (fieldAccessExpr.fieldName.equals(v.name)){
+								fieldAccessExpr.type = v.type;
 								yield v.type;
 							}
 						}

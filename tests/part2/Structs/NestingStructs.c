@@ -19,6 +19,6 @@ struct Organisation
   struct Employee emp;  //its a var decl so problem of linkage from var decl in name analysis
 };
 // organisation.emp not linked to decl
-void main(){
-    Organisation.emp.salary;
+int main(){
+    return Organisation.emp.salary;
 }
