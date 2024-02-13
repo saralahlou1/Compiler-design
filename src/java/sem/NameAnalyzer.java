@@ -75,6 +75,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                                 }
                                             }
                                             default -> {
+                                                visit(vd.type);
                                                 params.add(vd);
                                             }
                                         }
@@ -99,8 +100,23 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         if (v != null) {
                             error("Parameter already declared.");
                         } else {
+                            switch (vd.type) {
+                                case StructType struct -> {
+                                    Symbol structDecl = scope.lookup(struct.structName);
+                                    switch (structDecl) {
+                                        case StructSymbol st -> {
+                                            struct.sDecl = st.structTypeDecl;
+                                            params.add(vd);
+                                        }
+                                        case null, default -> error("Struct has not been declared yet.");
+                                    }
+                                }
+                                default -> {
+                                    visit(vd.type);
+                                    params.add(vd);
+                                }
+                            }
                             paramsScope.put(new VarSymbol(vd));
-                            params.add(vd);
                         }
                     }
                     fctRetType = fd.type;
@@ -173,6 +189,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             }
                         }
                         default -> {
+                            visit(vd.type);
                             scope.put(new VarSymbol(vd));
                         }
                     }
@@ -269,7 +286,23 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 scope = oldScope;
 			}
 
-			case Type t -> {}
+			case Type t -> {
+                switch (t){
+                    case StructType struct ->{
+                        Symbol structDecl = scope.lookup(struct.structName);
+                        switch (structDecl){
+                            case StructSymbol st -> {
+                                struct.sDecl = st.structTypeDecl;
+                            }
+                            case null, default -> error("Struct has not been declared yet.");
+                        }
+                    }
+                    case ArrayType arr -> visit(arr.arrayType);
+                    case PointerType p -> visit(p.pointerType);
+                    default -> {}
+                }
+
+            }
 
             case AddressOfExpr addressOfExpr -> {
                 visit(addressOfExpr.address);
