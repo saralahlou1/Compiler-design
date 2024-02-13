@@ -62,8 +62,25 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                     if (v != null){
                                         error("Parameter already declared.");
                                     }
-                                    else
-                                        params.add(vd);
+                                    else {
+                                        switch (vd.type) {
+                                            case StructType struct -> {
+                                                Symbol structDecl = scope.lookup(struct.structName);
+                                                switch (structDecl) {
+                                                    case StructSymbol st -> {
+                                                        struct.sDecl = st.structTypeDecl;
+                                                        params.add(vd);
+                                                    }
+                                                    case null, default -> error("Struct has not been declared yet.");
+                                                }
+                                            }
+                                            default -> {
+                                                params.add(vd);
+                                            }
+                                        }
+
+//                                        params.add(vd);
+                                    }
                                 }
                                 fctRetType = fd.type;
                                 visit(fd.block);
