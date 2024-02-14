@@ -341,6 +341,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             }
             case Return aReturn -> {
                 //Modify
+                visit(fctRetType);
                 switch (fctRetType){
                     case BaseType b -> aReturn.retType = b;
                     case ArrayType arr -> aReturn.retType = new ArrayType(arr.arrayType, arr.nbElements);
@@ -354,6 +355,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case StrLiteral strLiteral -> {
             }
             case TypecastExpr typecastExpr -> {
+                visit(typecastExpr.castType);
                 visit(typecastExpr.expr);
             }
             case ValueAtExpr valueAtExpr -> {

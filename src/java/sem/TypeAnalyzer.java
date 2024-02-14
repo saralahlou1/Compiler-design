@@ -102,14 +102,14 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 								error("EQ or NE operations do not accept Void.");
 								yield BaseType.NONE;
 							}
-							if (lhsType != rhsType){
+							if (! lhsType.equals(rhsType)){
 								error("Right and left hand side don't have the same time.");
 								yield BaseType.NONE;
 							}
 							yield BaseType.INT;
 						}
 						default -> {
-							if (lhsType != rhsType){
+							if (! lhsType.equals(rhsType) ){
 								error("Right and left hand side don't have the same time.");
 								yield BaseType.NONE;
 							}
