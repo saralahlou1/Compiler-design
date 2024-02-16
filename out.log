@@ -1,8 +1,9 @@
 java.lang.Throwable:
-sem.StructSymbol.<init>(StructSymbol.java:9)
-sem.NameAnalyzer.visit(NameAnalyzer.java:149)
-sem.NameAnalyzer.visit(NameAnalyzer.java:243)
-sem.NameAnalyzer.visit(NameAnalyzer.java:133)
+sem.NameAnalyzer.visit(NameAnalyzer.java:21)
+sem.NameAnalyzer.visit(NameAnalyzer.java:339)
+sem.NameAnalyzer.visit(NameAnalyzer.java:34)
+sem.NameAnalyzer.visit(NameAnalyzer.java:124)
+sem.NameAnalyzer.visit(NameAnalyzer.java:167)
 sem.SemanticAnalyzer.analyze(SemanticAnalyzer.java:10)
 Main2.compile(Main2.java:173)
 Main2.main(Main2.java:62)

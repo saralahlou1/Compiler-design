@@ -335,7 +335,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case If anIf -> {
                 visit(anIf.expr);
                 visit(anIf.ifStmt);
-                visit(anIf.elseStmt);
+                if (anIf.elseStmt != null)
+                    visit(anIf.elseStmt);
             }
             case IntLiteral intLiteral -> {
             }
