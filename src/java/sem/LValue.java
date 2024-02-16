@@ -56,7 +56,8 @@ public class LValue extends BaseSemanticAnalyzer{
             }
 
             case Return aReturn -> {
-                visit(aReturn.expr);
+                if (aReturn.expr != null)
+                    visit(aReturn.expr);
             }
 
             case ExprStmt exprStmt -> {
