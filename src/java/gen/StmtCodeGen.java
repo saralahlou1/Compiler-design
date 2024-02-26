@@ -14,10 +14,13 @@ public class StmtCodeGen extends CodeGen {
         switch (s) {
             case Block b -> {
                 // no need to do anything with varDecl (memory allocator takes care of them)
-                b.stmts.forEach((innerStmt) -> {
-                    visit(innerStmt);
-                });
+                if (b.stmts!= null) {
+                    b.stmts.forEach((innerStmt) -> {
+                        visit(innerStmt);
+                    });
+                }
             }
+            default -> {}
             // To complete other cases
         }
     }
