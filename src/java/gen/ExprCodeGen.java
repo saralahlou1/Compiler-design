@@ -1,10 +1,7 @@
 package gen;
 
 import ast.*;
-import gen.asm.AssemblyProgram;
-import gen.asm.Label;
-import gen.asm.OpCode;
-import gen.asm.Register;
+import gen.asm.*;
 
 
 /**
@@ -125,18 +122,26 @@ public class ExprCodeGen extends CodeGen {
             case FunCallExpr fctExp -> {
                 // maybe here check if its one of the std library fct
                 // then for each fct provide implementation
+                // may need to modify print_s cause for now may not cover all cases
+                // only dummy one
                 if (fctExp.fctName.equals("print_s")){
                     switch (fctExp.params.get(0)){
-                        case StrLiteral strLiteral -> {
-                            AssemblyProgram.Section newData = asmProg.newSection(AssemblyProgram.Section.Type.DATA);
-                            Label label = Label.create();
-                            newData.emit(label);
-                            newData.emit("asciiz " + strLiteral);
-                            AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
-                            text = newText;
-                            newText.emit(OpCode.LA, Register.Arch.a0, label);
-                            newText.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
-                            newText.emit(OpCode.SYSCALL);
+                        case TypecastExpr p -> {
+                            switch (p.expr){
+                                case StrLiteral strLiteral -> {
+                                    AssemblyProgram.Section newData = asmProg.newSection(AssemblyProgram.Section.Type.DATA);
+                                    Label label = Label.create();
+                                    newData.emit(label);
+                                    newData.emit(new Directive("asciiz \"" + strLiteral.id +"\""));
+                                    AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
+                                    text = newText;
+                                    newText.emit(OpCode.LA, Register.Arch.a0, label);
+                                    newText.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
+                                    newText.emit(OpCode.SYSCALL);
+                                }
+                                default -> {
+                                }
+                            }
                         }
                         default -> {}
                     }

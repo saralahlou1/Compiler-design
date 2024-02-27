@@ -1,3 +1,3 @@
 void main(){
-    print_i(2);
+    print_s((char*) "Hello World");
 }
