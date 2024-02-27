@@ -125,6 +125,23 @@ public class ExprCodeGen extends CodeGen {
             case FunCallExpr fctExp -> {
                 // maybe here check if its one of the std library fct
                 // then for each fct provide implementation
+                if (fctExp.fctName.equals("print_s")){
+                    yield switch (fctExp.params.get(0)){
+                        case StrLiteral strLiteral -> {
+                            AssemblyProgram.Section newData = asmProg.newSection(AssemblyProgram.Section.Type.DATA);
+                            Label label = Label.create();
+                            newData.emit(label);
+                            newData.emit("asciiz " + strLiteral);
+                            AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
+                            text = newText;
+
+                            newText.emit(OpCode.LUI, Register.Arch.a0, 0x1001);
+                            newText.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
+                            newText.emit(OpCode.SYSCALL);
+                        }
+                        default -> {yield null;}
+                    };
+                }
                 yield  null;
             }
             case StrLiteral str -> {yield  null;}
