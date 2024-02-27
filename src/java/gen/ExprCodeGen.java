@@ -153,6 +153,17 @@ public class ExprCodeGen extends CodeGen {
                     }
                     yield  null;
                 }
+                if (fctExp.fctName.equals("print_c")){
+                    switch (fctExp.params.get(0)){
+                        case ChrLiteral chrLiteral -> {
+                            text.emit(OpCode.LI, Register.Arch.a0, chrLiteral.character);
+                            text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 11);
+                            text.emit(OpCode.SYSCALL);
+                        }
+                        default -> {}
+                    }
+                    yield  null;
+                }
                 yield  null;
             }
             case StrLiteral str -> {yield  null;}
