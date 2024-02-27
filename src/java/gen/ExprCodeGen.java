@@ -134,10 +134,20 @@ public class ExprCodeGen extends CodeGen {
                             newData.emit("asciiz " + strLiteral);
                             AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
                             text = newText;
-
-                            newText.emit(OpCode.LUI, Register.Arch.a0, 0x1001);
+                            newText.emit(OpCode.LA, Register.Arch.a0, label);
                             newText.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
                             newText.emit(OpCode.SYSCALL);
+                        }
+                        default -> {}
+                    }
+                    yield  null;
+                }
+                if (fctExp.fctName.equals("print_i")){
+                    switch (fctExp.params.get(0)){
+                        case IntLiteral intLiteral -> {
+                            text.emit(OpCode.LUI, Register.Arch.a0, intLiteral.i);
+                            text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 1);
+                            text.emit(OpCode.SYSCALL);
                         }
                         default -> {}
                     }
