@@ -145,7 +145,7 @@ public class ExprCodeGen extends CodeGen {
                 if (fctExp.fctName.equals("print_i")){
                     switch (fctExp.params.get(0)){
                         case IntLiteral intLiteral -> {
-                            text.emit(OpCode.LUI, Register.Arch.a0, intLiteral.i);
+                            text.emit(OpCode.ADDI, Register.Arch.a0, Register.Arch.zero, intLiteral.i);
                             text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 1);
                             text.emit(OpCode.SYSCALL);
                         }
