@@ -38,6 +38,9 @@ public final class StructType implements Type{
     public int size() {
         // implement padding
         int structSize = 0;
+        if (this.sDecl.varDecl == null){
+            return structSize;
+        }
         for (VarDecl vd : this.sDecl.varDecl){
             // this is for padding
             int padding = structSize % 4;
