@@ -24,4 +24,15 @@ public enum BaseType implements Type {
             }
         }
     }
+
+    @Override
+    public int size() {
+        return switch (this){
+            case INT -> 4;
+            case CHAR -> 1;
+            case VOID -> 0;
+            case UNKNOWN -> 0;
+            case NONE -> 0;
+        };
+    }
 }

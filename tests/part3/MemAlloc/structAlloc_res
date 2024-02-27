@@ -1,0 +1,35 @@
+.data
+.align 4
+label_0_node:
+.space 8
+
+.data
+# Allocated labels for virtual registers
+
+.text
+
+.data
+# Allocated labels for virtual registers
+
+.text
+
+.data
+# Allocated labels for virtual registers
+
+.text
+
+.data
+# Allocated labels for virtual registers
+
+.text
+
+.data
+# Allocated labels for virtual registers
+
+.text
+
+.data
+# Allocated labels for virtual registers
+
+.text
+

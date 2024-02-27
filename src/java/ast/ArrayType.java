@@ -27,6 +27,11 @@ public final class ArrayType implements Type{
     }
 
     @Override
+    public int size() {
+        return arrayType.size() * nbElements;
+    }
+
+    @Override
     public List<ASTNode> children() {
         return null;
     }

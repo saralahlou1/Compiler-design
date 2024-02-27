@@ -45,6 +45,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 					error("Variable declared with type void.");
 					yield BaseType.NONE;
 				}
+				vd.size = vd.type.size();
 				yield BaseType.NONE;
 			}
 

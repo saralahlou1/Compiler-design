@@ -23,9 +23,9 @@ public class FunCodeGen extends CodeGen {
         // 1) emit the prolog
 
         if (fd.name.equals("main")){
+            // maybe use get label instead
             Label main = Label.create("main");
             text.emit(main);
-
         }
 
         // 2) emit the body of the function

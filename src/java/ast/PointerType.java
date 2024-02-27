@@ -27,4 +27,9 @@ public final class PointerType implements Type {
             }
         }
     }
+
+    @Override
+    public int size() {
+        return 4;
+    }
 }

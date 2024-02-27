@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class IntLiteral extends Expr{
-    int i;
+    public int i;
     public IntLiteral(int i){
         this.i = i;
     }
