@@ -35,6 +35,7 @@ public class MemAllocCodeGen extends CodeGen {
                 this.global = true;
             }
             case VarDecl vd -> {
+                vd.size = vd.type.size();
                 // Need to change this to account for different types and sizes
                 if (!global){ // local / stack
                     this.fpOffset -= vd.size;

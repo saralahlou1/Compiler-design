@@ -122,8 +122,8 @@ public class ExprCodeGen extends CodeGen {
             case FunCallExpr fctExp -> {
                 // maybe here check if its one of the std library fct
                 // then for each fct provide implementation
-                // may need to modify print_s cause for now may not cover all cases
-                // only dummy one
+                // need to modify print_s cause for now may not cover all cases
+                // only dummy one where we directly pass str with type cast
                 if (fctExp.fctName.equals("print_s")){
                     switch (fctExp.params.get(0)){
                         case TypecastExpr p -> {
