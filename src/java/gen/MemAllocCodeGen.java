@@ -64,8 +64,8 @@ public class MemAllocCodeGen extends CodeGen {
                         case ArrayType arr -> {
                             Label label = Label.create(vd.name);
                             if (arr.arrayType == BaseType.INT) {
-                                data.emit(label);
                                 data.emit(new Directive("align 4"));
+                                data.emit(label);
                             }
                             data.emit(new Directive("space " + vd.size));
                             vd.lable = label;
