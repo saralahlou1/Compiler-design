@@ -24,6 +24,8 @@ public class ProgramCodeGen extends CodeGen {
         // allocate all variables
         MemAllocCodeGen allocator = new MemAllocCodeGen(asmProg);
         allocator.visit(p);
+        StrCodeGen strCodeGen = new StrCodeGen(asmProg);
+        strCodeGen.visit(p);
 
         for (Decl decl : p.decls){
             switch (decl){

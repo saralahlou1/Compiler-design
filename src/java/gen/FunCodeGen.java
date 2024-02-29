@@ -24,7 +24,7 @@ public class FunCodeGen extends CodeGen {
 
         if (fd.name.equals("main")){
             // maybe use get label instead
-            Label main = Label.create("main");
+            Label main = Label.get("main");
             text.emit(main);
         }
 

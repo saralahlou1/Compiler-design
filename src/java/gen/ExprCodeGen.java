@@ -122,30 +122,24 @@ public class ExprCodeGen extends CodeGen {
             case FunCallExpr fctExp -> {
                 // maybe here check if its one of the std library fct
                 // then for each fct provide implementation
-                // need to modify print_s cause for now may not cover all cases
-                // only dummy one where we directly pass str with type cast
                 if (fctExp.fctName.equals("print_s")){
-                    // Register param = visit(fctExp.params.getFirst());
-                    switch (fctExp.params.get(0)){
-                        case TypecastExpr p -> {
-                            switch (p.expr){
-                                case StrLiteral strLiteral -> {
-                                    AssemblyProgram.Section newData = asmProg.newSection(AssemblyProgram.Section.Type.DATA);
-                                    Label label = Label.create();
-                                    newData.emit(label);
-                                    newData.emit(new Directive("asciiz \"" + strLiteral.id +"\""));
-                                    AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
-                                    text = newText;
-                                    newText.emit(OpCode.LA, Register.Arch.a0, label);
-                                    newText.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
-                                    newText.emit(OpCode.SYSCALL);
-                                }
-                                default -> {
-                                }
-                            }
-                        }
-                        default -> {}
-                    }
+                    Register param = visit(fctExp.params.getFirst());
+
+                    text.emit(OpCode.ADD, Register.Arch.a0, Register.Arch.zero, param);
+                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 4);
+                    text.emit(OpCode.SYSCALL);
+//                    Label printLoop = Label.create();
+//                    Label exit = Label.create();
+//                    text.emit(printLoop);
+//                    text.emit(OpCode.LB, Register.Arch.a0, param, 0);
+//                    text.emit(OpCode.BEQZ, Register.Arch.a0, exit);
+//                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 11);
+//                    text.emit(OpCode.SYSCALL);
+//                    text.emit(OpCode.ADDI, param, param, 1);
+//                    text.emit(OpCode.J, printLoop);
+//
+//                    text.emit(exit);
+
                     yield  null;
                 }
                 if (fctExp.fctName.equals("print_i")){
@@ -156,27 +150,17 @@ public class ExprCodeGen extends CodeGen {
                     yield  null;
                 }
                 if (fctExp.fctName.equals("print_c")){
-                    switch (fctExp.params.get(0)){
-                        case ChrLiteral chrLiteral -> {
-                            text.emit(OpCode.LI, Register.Arch.a0, chrLiteral.character);
-                            text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 11);
-                            text.emit(OpCode.SYSCALL);
-                        }
-                        default -> {}
-                    }
+                    Register param = visit(fctExp.params.getFirst());
+                    text.emit(OpCode.ADD, Register.Arch.a0, Register.Arch.zero, param);
+                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 11);
+                    text.emit(OpCode.SYSCALL);
                     yield  null;
                 }
                 yield  null;
             }
             case StrLiteral str -> {
-                AssemblyProgram.Section newData = asmProg.newSection(AssemblyProgram.Section.Type.DATA);
-                Label label = Label.create();
-                newData.emit(label);
-                newData.emit(new Directive("asciiz \"" + str.id +"\""));
-                AssemblyProgram.Section newText = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
-                text = newText;
                 Register resReg = Register.Virtual.create();
-                text.emit(OpCode.LA, resReg, label);
+                text.emit(OpCode.LA, resReg, str.label);
                 yield resReg;
                 // we then use move to copy address from here to another register
             }
@@ -340,7 +324,19 @@ public class ExprCodeGen extends CodeGen {
             }
             case TypecastExpr typeCast -> {
                 //TODO think about how to type cast in assembly
-                yield  null;
+                Register exp = visit(typeCast.expr);
+                //Register register = Register.Virtual.create();
+                switch (typeCast.castType){
+                    case BaseType baseType -> {
+                        if (baseType == BaseType.INT){
+                            text.emit(OpCode.ANDI, exp, exp, 0xFF);
+                        }
+                    }
+
+                    default -> {}
+                }
+
+                yield  exp;
             }
             case Assign assign -> {
                 // need to load address of lhs if it's an int or char

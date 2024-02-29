@@ -292,6 +292,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case TypecastExpr typecastExpr -> {
 				Type type = visit(typecastExpr.expr);
+				typecastExpr.expr.type = type;
 				Type castType = typecastExpr.castType;
 				yield switch (type){
 					case BaseType.CHAR -> {

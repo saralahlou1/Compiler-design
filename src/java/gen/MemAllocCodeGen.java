@@ -1,10 +1,7 @@
 package gen;
 
 import ast.*;
-import gen.asm.AssemblyProgram;
-import gen.asm.Directive;
-import gen.asm.Label;
-import gen.asm.OpCode;
+import gen.asm.*;
 
 /* This allocator should deal with all global and local variable declarations. */
 
