@@ -206,6 +206,8 @@ public class ExprCodeGen extends CodeGen {
                     // if it's a struct or array, we return the address
                     yield result;
                 }
+                // TODO check if the variable is in the stack
+
                 // need to implement case when var is in stack
                 yield  null;
             }
@@ -228,17 +230,26 @@ public class ExprCodeGen extends CodeGen {
                 text.emit(OpCode.ADD, address, address, offset);
 
                 Register result = Register.Virtual.create();
-                // if it's a char we only load 1 bite
-                if (arr.type == BaseType.CHAR){
-                    text.emit(OpCode.LB, result, address, 0);
+
+                switch (arr.type){
+                    case BaseType baseType -> {
+                        if (baseType == BaseType.CHAR){
+                            // if it's a char we only load 1 bite
+                            text.emit(OpCode.LB, result, address, 0);
+                        }
+                        if (baseType == BaseType.INT){
+                            // or it's an int so we return it
+                            text.emit(OpCode.LW, result, address, 0);
+                        }
+                    }
+                    case PointerType p ->
+                            // if it's a pointer we return it as well
+                            text.emit(OpCode.LW, result, address, 0);
+                    default -> {
+                        // else it's an array or struct type, so we return the address
+                        result = address;
+                    }
                 }
-                // or it's an int so we return it
-                if (arr.type == BaseType.INT){
-                    text.emit(OpCode.LW, result, address, 0);
-                }
-                // else it's an array or struct type, so we return the address
-                else
-                    result = address;
                 yield result;
             }
             case FieldAccessExpr s -> {
@@ -289,8 +300,8 @@ public class ExprCodeGen extends CodeGen {
                         yield  null;
                     }
                 };
-
             }
+
             case ValueAtExpr value -> {
                 /* TODO using address code gen to get address, then read value at 0
                  *  if int or char, then read first word or byte
@@ -298,13 +309,34 @@ public class ExprCodeGen extends CodeGen {
                  *  pointers? Return address too probably or read first word
                  *  (ValueAt only called at pointer types)
                  * */
-
-
-                yield  null;
+                Register reg = visit(value.value);
+                Register result = Register.Virtual.create();
+                switch (value.type){
+                    case BaseType b -> {
+                        // if it's a char we only load 1 bite
+                        if (b == BaseType.CHAR){
+                            text.emit(OpCode.LB, result, reg, 0);
+                        }
+                        // or it's an int so we return it
+                        if (b == BaseType.INT){
+                            text.emit(OpCode.LW, result, reg, 0);
+                        }
+                    }
+                    case PointerType p -> {
+                        // if it's a pointer we return the value stored in it.
+                        // it corresponds to an address in the memory
+                        text.emit(OpCode.LW, result, reg, 0);
+                    }
+                    default ->
+                        // else it's an array or struct type, so we return the address
+                            result = reg;
+                }
+                yield  result;
             }
             case AddressOfExpr address -> {
                 //TODO use AddrCodeGen maybe and return the result
-                yield  null;
+                // Done need to test
+                yield new AddrCodeGen(asmProg).visit(address);
             }
             case TypecastExpr typeCast -> {
                 //TODO think about how to type cast in assembly

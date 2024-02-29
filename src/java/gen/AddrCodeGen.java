@@ -20,11 +20,11 @@ public class AddrCodeGen extends CodeGen {
             // TODO do it for all lvalues
             case AddressOfExpr addressOfExpr -> {
                 // TODO
-                yield null;
+                yield  visit(addressOfExpr.address);
             }
             case FieldAccessExpr s -> {
+                // should be good
                 Register address = new ExprCodeGen(asmProg).visit(s.structure);
-
                 // find the offset plus the type
                 int offset;
                 Type structureType = s.structure.type;
@@ -44,6 +44,7 @@ public class AddrCodeGen extends CodeGen {
                 };
             }
             case ArrayAccessExpr arr -> {
+                // should be good
                 Register address = new ExprCodeGen(asmProg).visit(arr.array);
                 Register index = new ExprCodeGen(asmProg).visit(arr.index);
                 Register size = Register.Virtual.create();
@@ -68,6 +69,9 @@ public class AddrCodeGen extends CodeGen {
                 else
                     text.emit(OpCode.ADDI, result, Register.Arch.fp, v.vd.fpOffset);
                 yield result;
+            }
+            case ValueAtExpr value -> {
+                yield new ExprCodeGen(asmProg).visit(value.value);
             }
             default -> {
                 yield null;
