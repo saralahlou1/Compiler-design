@@ -1,15 +1,18 @@
 package ast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class StructType implements Type{
     public String structName;
     public StructTypeDecl sDecl;    //fill in name analysis
 
     // use hash maps to link field name to fieldOffset and fieldSize
-    public List<Integer> fieldOffsets = new ArrayList<>();
-    public List<Integer> fieldSizes = new ArrayList<>();
+    public Map<String, Integer> fieldOffsets = new HashMap<>();
+    public Map<String, Integer> fieldSizes = new HashMap<>();
+//    public Map<String, Type> fieldTypes = new HashMap<>();
 
     public StructType(String structType){this.structName = structType;}
 
@@ -33,6 +36,14 @@ public final class StructType implements Type{
             }
         }
     }
+//
+//    public void inferTypes(){
+//        if (this.sDecl.varDecl != null){
+//            for (VarDecl vd : this.sDecl.varDecl){
+//                fieldTypes.put(vd.name, vd.type);
+//            }
+//        }
+//    }
 
     @Override
     public int size() {
@@ -71,9 +82,9 @@ public final class StructType implements Type{
                 }
             }
 
-            this.fieldOffsets.addLast(structSize);
-            int fieldSize = vd.size;
-            this.fieldSizes.addLast(fieldSize);
+            this.fieldOffsets.put(vd.name, structSize);
+            int fieldSize = vd.type.size();
+            this.fieldSizes.put(vd.name, fieldSize);
             structSize += fieldSize;
         }
         // we pad in the end again

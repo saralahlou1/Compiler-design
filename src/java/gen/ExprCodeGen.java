@@ -199,14 +199,19 @@ public class ExprCodeGen extends CodeGen {
                                 text.emit(OpCode.LW, result, result, 0);
                             }
                         }
+                        case PointerType p ->
+                                text.emit(OpCode.LW, result, result, 0);
                         default -> {}
                     }
+                    // if it's a struct or array, we return the address
                     yield result;
                 }
                 // need to implement case when var is in stack
                 yield  null;
             }
             case ArrayAccessExpr arr -> {
+                //TODO implement array access for pointers
+
                 Register address = visit(arr.array);
                 Register index = visit(arr.index);
                 Register size = Register.Virtual.create();
@@ -236,33 +241,109 @@ public class ExprCodeGen extends CodeGen {
                     result = address;
                 yield result;
             }
-            case FieldAccessExpr field -> {
+            case FieldAccessExpr s -> {
+                //TODO implement hashmap for offsets of each field
+                // Done. Need to test it
+
+                // fetch the address of the struct
+                Register address = visit(s.structure);
+
+                // find the offset plus the type
+                int offset;
+                Type fieldType = s.type;
+                Type structureType = s.structure.type;
+
+                // the structure type must be a struct. This was checked by type analyser
+                yield switch (structureType){
+                    case StructType structType -> {
+                        offset = structType.fieldOffsets.get(s.fieldName);
+                        // we add offset to the address given to make it point where we want
+                        text.emit(OpCode.ADDI, address, address, offset);
+
+                        Register result = Register.Virtual.create();
+                        switch (fieldType){
+                            case BaseType b -> {
+                                // if it's a char we only load 1 bite
+                                if (b == BaseType.CHAR){
+                                    text.emit(OpCode.LB, result, address, 0);
+                                }
+                                // or it's an int so we return it
+                                if (b == BaseType.INT){
+                                    text.emit(OpCode.LW, result, address, 0);
+                                }
+                            }
+                            case PointerType p -> {
+                                // if it's a pointer we return the value stored in it.
+                                // it corresponds to an address in the memory
+                                text.emit(OpCode.LW, result, address, 0);
+                            }
+                            default ->
+                                // else it's an array or struct type, so we return the address
+                                result = address;
+                        }
+
+                        yield result;
+                    }
+                    default -> {
+                        // not possible to get here from type analysis
+                        yield  null;
+                    }
+                };
+
+            }
+            case ValueAtExpr value -> {
+                /* TODO using address code gen to get address, then read value at 0
+                 *  if int or char, then read first word or byte
+                 *  else then its an array or struct so return address
+                 *  pointers? Return address too probably or read first word
+                 *  (ValueAt only called at pointer types)
+                 * */
+
 
                 yield  null;
             }
-            case ValueAtExpr value -> {yield  null;}
-            case AddressOfExpr address -> {yield  null;}
-            case TypecastExpr typeCast -> {yield  null;}
+            case AddressOfExpr address -> {
+                //TODO use AddrCodeGen maybe and return the result
+                yield  null;
+            }
+            case TypecastExpr typeCast -> {
+                //TODO think about how to type cast in assembly
+                yield  null;
+            }
             case Assign assign -> {
                 // need to load address of lhs if it's an int or char
                 Register rhs = visit(assign.rhs);
-                if (assign.type == BaseType.INT){
-                    Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
-                    text.emit(OpCode.SW, rhs, lhs, 0);
 
-                } else if (assign.type == BaseType.CHAR){
-                    Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
-                    text.emit(OpCode.SB, rhs, lhs, 0);
-                } else {
-                    // if it's a struct/ array we pass their address so its fine
-                    Register lhs = visit(assign.lhs);
-                    int sizeAssign = assign.type.size();
-                    Register biteCopy = Register.Virtual.create();
-                    for (int i = 0; i < sizeAssign; i++) {
-                        text.emit(OpCode.LB, biteCopy, rhs, i);
-                        text.emit(OpCode.SB, biteCopy, lhs, i);
+                switch (assign.type){
+                    case BaseType b -> {
+                        // if it's a char we only store 1 bite
+                        Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
+                        if (b == BaseType.CHAR){
+                            text.emit(OpCode.SB, rhs, lhs, 0);
+                        }
+                        // or it's an int so we store a word
+                        if (b == BaseType.INT){
+                            text.emit(OpCode.SW, rhs, lhs, 0);
+                        }
+                    }
+                    case PointerType p -> {
+                        // for pointers, we make them point to same address
+                        Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
+                        text.emit(OpCode.SW, rhs, lhs, 0);
+                    }
+                    default -> {
+                        // else it's a struct type, since we can't assign to arrays
+                        // if it's a struct we pass their address, so it's fine
+                        Register lhs = visit(assign.lhs);
+                        int sizeAssign = assign.type.size();
+                        Register biteCopy = Register.Virtual.create();
+                        for (int i = 0; i < sizeAssign; i++) {
+                            text.emit(OpCode.LB, biteCopy, rhs, i);
+                            text.emit(OpCode.SB, biteCopy, lhs, i);
+                        }
                     }
                 }
+
                 yield null;
             }
 

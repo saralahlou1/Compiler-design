@@ -229,6 +229,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case FieldAccessExpr fieldAccessExpr -> {
 				Type t = visit(fieldAccessExpr.structure);
+				fieldAccessExpr.structure.type = t;
 				yield switch (t){
 					case StructType type -> {
 						// maybe do name analysis here for this
@@ -352,6 +353,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case ValueAtExpr valueAtExpr -> {
 				Type expType = visit(valueAtExpr.value);
+				valueAtExpr.value.type = expType;
 				yield switch (expType){
 					case PointerType pType -> {
 						valueAtExpr.type = pType.pointerType;

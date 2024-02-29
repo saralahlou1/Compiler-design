@@ -5,6 +5,7 @@ import java.util.List;
 
 public final class PointerType implements Type {
     public Type pointerType;
+    public int pTypeSize; // how to figure this out? and when maybe no need
     public PointerType(Type type){this.pointerType = type;}
 
     @Override

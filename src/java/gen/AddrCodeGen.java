@@ -22,6 +22,27 @@ public class AddrCodeGen extends CodeGen {
                 // TODO
                 yield null;
             }
+            case FieldAccessExpr s -> {
+                Register address = new ExprCodeGen(asmProg).visit(s.structure);
+
+                // find the offset plus the type
+                int offset;
+                Type structureType = s.structure.type;
+
+                // the structure type must be a struct. This was checked by type analyser
+                yield switch (structureType){
+                    case StructType structType -> {
+                        offset = structType.fieldOffsets.get(s.fieldName);
+                        // we add offset to the address given to make it point where we want
+                        text.emit(OpCode.ADDI, address, address, offset);
+                        yield address;
+                    }
+                    default -> {
+                        // not possible to get here from type analysis
+                        yield  null;
+                    }
+                };
+            }
             case ArrayAccessExpr arr -> {
                 Register address = new ExprCodeGen(asmProg).visit(arr.array);
                 Register index = new ExprCodeGen(asmProg).visit(arr.index);
