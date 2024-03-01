@@ -153,6 +153,21 @@ public class ExprCodeGen extends CodeGen {
                     //li $v0, 5           # Load syscall code for reading integer
                     //    syscall             # Read the integer
                 }
+                if (fctExp.fctName.equals("read_c")){
+                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 12);
+                    text.emit(OpCode.SYSCALL);
+                    yield Register.Arch.v0;
+                }
+
+                if (fctExp.fctName.equals("mcmalloc")){
+                    Register param = visit(fctExp.params.getFirst());
+                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 9);
+                    text.emit(OpCode.ADD, Register.Arch.a0, Register.Arch.zero, param);
+                    text.emit(OpCode.SYSCALL);
+                    yield Register.Arch.v0;
+
+                }
+
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument
