@@ -145,6 +145,14 @@ public class ExprCodeGen extends CodeGen {
                     text.emit(OpCode.SYSCALL);
                     yield  null;
                 }
+                if (fctExp.fctName.equals("read_i")){
+                    text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 5);
+                    text.emit(OpCode.SYSCALL);
+                    yield Register.Arch.v0;
+
+                    //li $v0, 5           # Load syscall code for reading integer
+                    //    syscall             # Read the integer
+                }
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument

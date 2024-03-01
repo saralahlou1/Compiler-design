@@ -1,4 +1,4 @@
-#include "minic-stdlib.h"
+//#include "minic-stdlib.h"
 
 void main() {
   int n;
