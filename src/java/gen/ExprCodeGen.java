@@ -191,9 +191,25 @@ public class ExprCodeGen extends CodeGen {
                     yield result;
                 }
                 // TODO check if the variable is in the stack
+                else {
+                    Register result = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, result, Register.Arch.fp, var.vd.fpOffset);
+                    switch (var.type){
+                        case BaseType baseType -> {
+                            if (baseType == BaseType.CHAR){
+                                text.emit(OpCode.LB, result, result, 0);
+                            }
+                            if (baseType == BaseType.INT){
+                                text.emit(OpCode.LW, result, result, 0);
+                            }
+                        }
+                        case PointerType p ->
+                                text.emit(OpCode.LW, result, result, 0);
+                        default -> {}
+                    }
+                    yield  result;
+                }
 
-                // need to implement case when var is in stack
-                yield  null;
             }
             case ArrayAccessExpr arr -> {
                 //TODO implement array access for pointers

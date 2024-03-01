@@ -21,7 +21,7 @@ public class MemAllocCodeGen extends CodeGen {
                 // review this
                 fd.retValFPOffset = 4 ;
                 // need to implement returnSize
-                int offset = 4 + fd.returnSize ;
+                int offset = 4 + fd.type.size();
                 for (VarDecl param: fd.params.reversed()) {
                     param.fpOffset = offset;
                     offset += param.size;

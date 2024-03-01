@@ -5,23 +5,23 @@ label_0_x:
 
 .data
 # Allocated labels for virtual registers
-label_13_v5:
+label_6_v4:
 .space 4
 label_12_v1:
 .space 4
 label_5_v2:
 .space 4
-label_9_v3:
-.space 4
-label_6_v4:
-.space 4
 label_8_v0:
+.space 4
+label_13_v5:
 .space 4
 label_17_v6:
 .space 4
+label_9_v3:
+.space 4
 
 .text
-label_1_main:
+main:
 # Original instruction: li v0,4
 li $t5,4
 la $t0,label_8_v0
