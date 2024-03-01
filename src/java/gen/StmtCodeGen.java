@@ -82,6 +82,9 @@ public class StmtCodeGen extends CodeGen {
                 exprCodeGen.visit(exp.stmt);
             }
             case Return aReturn -> {
+                if (aReturn.expr == null){
+                    break;
+                }
                 ExprCodeGen exprCodeGen = new ExprCodeGen(asmProg);
                 Register ret = exprCodeGen.visit(aReturn.expr);
                 //Register result = Register.Virtual.create();

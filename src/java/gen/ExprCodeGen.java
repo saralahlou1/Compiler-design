@@ -174,6 +174,7 @@ public class ExprCodeGen extends CodeGen {
                     Register arg = visit(fctExp.params.get(i));
                     // size of arg
                     int sizeAssign = fctExp.funDecl.params.get(i).type.size();
+                    fctExp.totalSpOffset += sizeAssign;
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                     switch (fctExp.funDecl.params.get(i).type){
                         case BaseType b -> {
@@ -200,6 +201,7 @@ public class ExprCodeGen extends CodeGen {
                     }
                 }
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - fctExp.funDecl.type.size());
+                fctExp.totalSpOffset += fctExp.funDecl.type.size();
                 text.emit(OpCode.JAL, fctExp.funDecl.fctLabel);
 
                 Register result = Register.Virtual.create();
@@ -217,6 +219,7 @@ public class ExprCodeGen extends CodeGen {
                             text.emit(OpCode.LW, result, result, 0);
                     default -> {}
                 }
+                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
                 yield  result;
 
 

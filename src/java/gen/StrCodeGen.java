@@ -67,6 +67,7 @@ public class StrCodeGen extends CodeGen {
                 visit(aWhile.stmt);
                 visit(aWhile.expr);
             }
+            case null -> {}
             default -> {}
         }
 
