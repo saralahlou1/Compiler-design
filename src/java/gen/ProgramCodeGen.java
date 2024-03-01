@@ -4,10 +4,7 @@ import ast.BaseType;
 import ast.Decl;
 import ast.FunDecl;
 import ast.Program;
-import gen.asm.AssemblyProgram;
-import gen.asm.Directive;
-import gen.asm.Label;
-import gen.asm.OpCode;
+import gen.asm.*;
 
 /**
  * This visitor should produce a program.
@@ -28,6 +25,7 @@ public class ProgramCodeGen extends CodeGen {
         allocator.visit(p);
         StrCodeGen strCodeGen = new StrCodeGen(asmProg);
         strCodeGen.visit(p);
+        dataSection.emit(new Directive("align 4"));
 
         Label mainLabel = Label.get("main");
         AssemblyProgram.Section text = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);

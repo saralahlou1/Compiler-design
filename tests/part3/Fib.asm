@@ -5,6 +5,7 @@ label_1_:
 .asciiz " terms of Fibonacci series are : "
 label_2_:
 .asciiz " "
+.align 4
 
 .data
 # Allocated labels for virtual registers

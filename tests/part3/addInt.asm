@@ -69,8 +69,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_9_v0
 sw $t4,0($t0)
-# Original instruction: addi v2,$fp,8
-addi $t5,$fp,8
+# Original instruction: addi v2,$fp,12
+addi $t5,$fp,12
 la $t0,label_10_v2
 sw $t5,0($t0)
 # Original instruction: lw v2,0(v2)
