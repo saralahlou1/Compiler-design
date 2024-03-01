@@ -81,7 +81,36 @@ public class StmtCodeGen extends CodeGen {
                 ExprCodeGen exprCodeGen = new ExprCodeGen(asmProg);
                 exprCodeGen.visit(exp.stmt);
             }
-            case Return aReturn -> {}
+            case Return aReturn -> {
+                ExprCodeGen exprCodeGen = new ExprCodeGen(asmProg);
+                Register ret = exprCodeGen.visit(aReturn.expr);
+                //Register result = Register.Virtual.create();
+                //text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
+                switch (aReturn.retType){
+                    case BaseType b -> {
+                        // if it's a char we only store 1 bite
+                        if (b == BaseType.CHAR){
+                            text.emit(OpCode.SB, ret, Register.Arch.fp, 4);
+                        }
+                        // or it's an int so we store a word
+                        if (b == BaseType.INT){
+                            text.emit(OpCode.SW, ret, Register.Arch.fp, 4);
+                        }
+                    }
+                    case PointerType pointerType -> {
+                        // for pointers, we make them point to same address
+                        text.emit(OpCode.SW, ret, Register.Arch.fp, 4);
+                    }
+                    default -> {
+                        Register biteCopy = Register.Virtual.create();
+                        for (int j = 0; j < aReturn.retType.size(); j++) {
+                            text.emit(OpCode.LB, biteCopy, ret, j);
+                            text.emit(OpCode.SB, biteCopy, Register.Arch.fp, 4+j);
+                        }
+                    }
+
+                }
+            }
             default -> {}
         }
     }

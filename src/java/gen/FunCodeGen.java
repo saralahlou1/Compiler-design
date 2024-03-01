@@ -1,10 +1,7 @@
 package gen;
 
 import ast.FunDecl;
-import gen.asm.AssemblyProgram;
-import gen.asm.Label;
-import gen.asm.OpCode;
-import gen.asm.Register;
+import gen.asm.*;
 
 /**
  * A visitor that produces code for a single function declaration
@@ -23,10 +20,13 @@ public class FunCodeGen extends CodeGen {
 
         if (fd.name.equals("main")){
             // maybe use get label instead
-            Label main = Label.get("main");
-            text.emit(main);
+            text.emit(fd.fctLabel);
             StmtCodeGen scd = new StmtCodeGen(asmProg);
             scd.visit(fd.block);
+            text.emit(OpCode.LI, Register.Arch.v0, 10);
+            text.emit(OpCode.SYSCALL);
+            //li $v0, 10
+            //	syscall
         }
 
         else {
@@ -37,13 +37,14 @@ public class FunCodeGen extends CodeGen {
                 return;
             }
 
-            Label fctName = Label.get(fd.name);
+            Label fctName = Label.create(fd.name);
+            fd.fctLabel = fctName;
             text.emit(fctName);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
             text.emit(OpCode.SW, Register.Arch.fp, Register.Arch.sp, 0);
             text.emit(OpCode.ADD, Register.Arch.fp, Register.Arch.zero, Register.Arch.sp);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
-            text.emit(OpCode.SW, Register.Arch.sp, Register.Arch.ra, 0);
+            text.emit(OpCode.SW, Register.Arch.ra, Register.Arch.sp, 0);
 
 
             // 2) emit the body of the function

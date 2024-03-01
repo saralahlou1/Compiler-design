@@ -5,7 +5,9 @@ import ast.Decl;
 import ast.FunDecl;
 import ast.Program;
 import gen.asm.AssemblyProgram;
+import gen.asm.Directive;
 import gen.asm.Label;
+import gen.asm.OpCode;
 
 /**
  * This visitor should produce a program.
@@ -27,12 +29,18 @@ public class ProgramCodeGen extends CodeGen {
         StrCodeGen strCodeGen = new StrCodeGen(asmProg);
         strCodeGen.visit(p);
 
+        Label mainLabel = Label.get("main");
+        AssemblyProgram.Section text = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
+        text.emit(Label.get("_start"));
+        text.emit(OpCode.JAL, mainLabel);
+
         for (Decl decl : p.decls){
             switch (decl){
                 case FunDecl funDecl -> {
                     if (funDecl.name.equals("main") && funDecl.type.equals(BaseType.VOID)){
                         p.decls.remove(funDecl);
-                        p.decls.addFirst(funDecl);
+                        p.decls.addLast(funDecl);
+                        funDecl.fctLabel = mainLabel;
                     }
                 }
                 default -> {}

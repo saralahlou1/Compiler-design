@@ -1,5 +1,7 @@
 package ast;
 
+import gen.asm.Label;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,7 +9,7 @@ public final class FunDecl extends Decl {
     public final List<VarDecl> params;
     public final Block block;
     public int retValFPOffset;
-    public int returnSize; // need to put value here from name analysis maybe
+    public Label fctLabel;
 
     public FunDecl(Type type, String name, List<VarDecl> params, Block block) {
 	    this.type = type;
