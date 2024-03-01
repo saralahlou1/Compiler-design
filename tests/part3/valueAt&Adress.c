@@ -1,6 +1,7 @@
-int* x;
-int a;
+
 void main(){
+    int* x;
+    int a;
     x = &a;
     a = 51;
     print_i(*x);

@@ -1,6 +1,6 @@
+void main(){
 int x[3];
 int z;
-void main(){
 x[0] = 2;
 x[1]= 49;
 x[2]= 51;
