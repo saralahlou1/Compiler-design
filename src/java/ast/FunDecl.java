@@ -11,6 +11,7 @@ public final class FunDecl extends Decl {
     public int retValFPOffset;
     public Label fctLabel;
     public boolean protoImplemented = false;
+    int fctSize;
 
     public FunDecl(Type type, String name, List<VarDecl> params, Block block) {
 	    this.type = type;

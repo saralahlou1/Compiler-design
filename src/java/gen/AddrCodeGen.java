@@ -32,6 +32,7 @@ public class AddrCodeGen extends CodeGen {
                 // the structure type must be a struct. This was checked by type analyser
                 yield switch (structureType){
                     case StructType structType -> {
+                        structType.size();
                         offset = structType.fieldOffsets.get(s.fieldName);
                         // we add offset to the address given to make it point where we want
                         text.emit(OpCode.ADDI, address, address, offset);

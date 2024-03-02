@@ -41,19 +41,19 @@ jal main
 
 .data
 # Allocated labels for virtual registers
-label_20_v3:
-.space 4
-label_21_v5:
-.space 4
 label_8_v0:
-.space 4
-label_17_v2:
-.space 4
-label_12_v1:
 .space 4
 label_18_v4:
 .space 4
+label_12_v1:
+.space 4
 label_25_v6:
+.space 4
+label_17_v2:
+.space 4
+label_20_v3:
+.space 4
+label_21_v5:
 .space 4
 
 .text

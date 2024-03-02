@@ -173,6 +173,8 @@ public class ExprCodeGen extends CodeGen {
                 else
                     funDecl = fctExp.funDecl;
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
+
+                // The way I store the params doesn't correspond to the offsets I did in memAlloc
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument
                     Register arg = visit(fctExp.params.get(i));
@@ -338,6 +340,7 @@ public class ExprCodeGen extends CodeGen {
                 // the structure type must be a struct. This was checked by type analyser
                 yield switch (structureType){
                     case StructType structType -> {
+                        structType.size();
                         offset = structType.fieldOffsets.get(s.fieldName);
                         // we add offset to the address given to make it point where we want
                         text.emit(OpCode.ADDI, address, address, offset);
