@@ -236,6 +236,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_57_v15
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,8
+addi $sp,$sp,8
 # Original instruction: addi v17,$fp,8
 addi $t5,$fp,8
 la $t0,label_50_v17
@@ -278,6 +280,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_58_v20
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,8
+addi $sp,$sp,8
 # Original instruction: add v16,v15,v20
 la $t5,label_57_v15
 lw $t5,0($t5)
@@ -310,8 +314,8 @@ label_66_v22:
 
 .text
 main:
-# Original instruction: li v21,3
-li $t5,3
+# Original instruction: li v21,4
+li $t5,4
 la $t0,label_62_v21
 sw $t5,0($t0)
 # Original instruction: addi $sp,$sp,-4
@@ -334,6 +338,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_66_v22
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,8
+addi $sp,$sp,8
 # Original instruction: add $a0,$zero,v22
 la $t5,label_66_v22
 lw $t5,0($t5)

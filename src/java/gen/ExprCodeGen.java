@@ -167,16 +167,20 @@ public class ExprCodeGen extends CodeGen {
                     yield Register.Arch.v0;
 
                 }
-
+                FunDecl funDecl;
+                if (fctExp.funDecl == null)
+                    funDecl = fctExp.protoDecl.funDecl;
+                else
+                    funDecl = fctExp.funDecl;
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument
                     Register arg = visit(fctExp.params.get(i));
                     // size of arg
-                    int sizeAssign = fctExp.funDecl.params.get(i).type.size();
+                    int sizeAssign = funDecl.params.get(i).type.size();
                     fctExp.totalSpOffset += sizeAssign;
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                    switch (fctExp.funDecl.params.get(i).type){
+                    switch (funDecl.params.get(i).type){
                         case BaseType b -> {
                             // if it's a char we only store 1 bite
                             if (b == BaseType.CHAR){
@@ -200,13 +204,13 @@ public class ExprCodeGen extends CodeGen {
                         }
                     }
                 }
-                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - fctExp.funDecl.type.size());
-                fctExp.totalSpOffset += fctExp.funDecl.type.size();
-                text.emit(OpCode.JAL, fctExp.funDecl.fctLabel);
+                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
+                fctExp.totalSpOffset += funDecl.type.size();
+                text.emit(OpCode.JAL, funDecl.fctLabel);
 
                 Register result = Register.Virtual.create();
                 text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
-                switch (fctExp.funDecl.type){
+                switch (funDecl.type){
                     case BaseType baseType -> {
                         if (baseType == BaseType.CHAR){
                             text.emit(OpCode.LB, result, result, 0);

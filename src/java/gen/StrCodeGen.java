@@ -61,13 +61,14 @@ public class StrCodeGen extends CodeGen {
                 visit(anIf.expr);
             }
             case Return aReturn -> {
+                if (aReturn.expr == null)
+                    break;
                 visit(aReturn.expr);
             }
             case While aWhile -> {
                 visit(aWhile.stmt);
                 visit(aWhile.expr);
             }
-            case null -> {}
             default -> {}
         }
 

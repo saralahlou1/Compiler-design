@@ -16,7 +16,7 @@ void main(){
 //    print_c(',');
 //    print_i(fibbonacci(2));
 //    print_c(',');
-    print_i(fibbonacci(3));
+    print_i(fibbonacci(4));
 //    print_c(',');
 //    print_i(fibbonacci(4));
 //    print_c(',');

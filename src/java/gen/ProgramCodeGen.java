@@ -1,10 +1,10 @@
 package gen;
 
-import ast.BaseType;
-import ast.Decl;
-import ast.FunDecl;
-import ast.Program;
+import ast.*;
 import gen.asm.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This visitor should produce a program.
@@ -36,8 +36,8 @@ public class ProgramCodeGen extends CodeGen {
             switch (decl){
                 case FunDecl funDecl -> {
                     if (funDecl.name.equals("main") && funDecl.type.equals(BaseType.VOID)){
-                        p.decls.remove(funDecl);
-                        p.decls.addLast(funDecl);
+//                        p.decls.remove(funDecl);
+//                        p.decls.addLast(funDecl);
                         funDecl.fctLabel = mainLabel;
                     }
                 }
@@ -49,8 +49,16 @@ public class ProgramCodeGen extends CodeGen {
         p.decls.forEach((d) -> {
             switch(d) {
                 case FunDecl fd -> {
+                    if (!fd.protoImplemented) {
+                        FunCodeGen fcg = new FunCodeGen(asmProg);
+                        fcg.visit(fd);
+                    }
+                }
+                case FunProto fProto -> {
+                    fProto.funDecl.protoImplemented = true;
                     FunCodeGen fcg = new FunCodeGen(asmProg);
-                    fcg.visit(fd);
+                    fcg.visit(fProto.funDecl);
+
                 }
                 default -> {}// nothing to do
             }});
