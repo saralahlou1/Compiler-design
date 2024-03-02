@@ -7,7 +7,7 @@ void main()
 {
  countDown( 10 );
 
-} /* end main */
+}
 
 /* Function definition */
  void countDown( int n )
@@ -16,11 +16,11 @@ void main()
    print_i( n );
 
    countDown( n - 1 );
-  } /* end if */
+  }
   else{
    print_i( n );
-  } /* end else */
+  }
 
  return;
- } /* end countDown */
+ }
 

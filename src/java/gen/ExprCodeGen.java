@@ -182,6 +182,8 @@ public class ExprCodeGen extends CodeGen {
                     int sizeAssign = funDecl.params.get(i).type.size();
                     fctExp.totalSpOffset += sizeAssign;
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+                    // int padding = fctExp.totalSpOffset % 4;
+                    // maybe I need to review the offsets
                     switch (funDecl.params.get(i).type){
                         case BaseType b -> {
                             // if it's a char we only store 1 bite

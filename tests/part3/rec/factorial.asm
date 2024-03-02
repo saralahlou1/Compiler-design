@@ -124,14 +124,6 @@ sw $t5,0($t0)
 la $t5,label_18_v5
 lw $t5,0($t5)
 sw $t5,4($fp)
-# Original instruction: addi $sp,$fp,4
-addi $sp,$fp,4
-# Original instruction: lw $ra,-4($fp)
-lw $ra,-4($fp)
-# Original instruction: lw $fp,0($fp)
-lw $fp,0($fp)
-# Original instruction: jr $ra
-jr $ra
 # Original instruction: j label_3_
 j label_3_
 label_4_:
@@ -203,6 +195,7 @@ sw $t5,0($t0)
 la $t5,label_36_v7
 lw $t5,0($t5)
 sw $t5,4($fp)
+label_3_:
 # Original instruction: addi $sp,$fp,4
 addi $sp,$fp,4
 # Original instruction: lw $ra,-4($fp)
@@ -211,7 +204,6 @@ lw $ra,-4($fp)
 lw $fp,0($fp)
 # Original instruction: jr $ra
 jr $ra
-label_3_:
 
 .data
 # Allocated labels for virtual registers

@@ -277,6 +277,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				}
 				else retType = visit(aReturn.expr);
 				if (retType.equals(aReturn.retType)){
+					aReturn.retType = retType;
 					yield retType;
 				}
 				else {

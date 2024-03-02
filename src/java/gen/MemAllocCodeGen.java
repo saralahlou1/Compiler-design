@@ -23,30 +23,30 @@ public class MemAllocCodeGen extends CodeGen {
                 // need to implement returnSize
                 int offset = 4 + fd.type.size();
                 for (VarDecl param: fd.params.reversed()) {
-                    int padding = offset % 4;
-                    switch (param.type){
-                        case BaseType b -> {
-                            if (b == BaseType.INT){
-                                if (padding != 0)
-                                    offset = offset + (4 - (offset % 4));
-                            }
-                        }
-                        case PointerType pointerType -> {
-                            if (padding != 0)
-                                offset = offset + (4 - (offset % 4));
-                        }
-
-                        case ArrayType arrayType -> {
-                            if (arrayType.arrayType == BaseType.INT){
-                                if (padding != 0)
-                                    offset = offset + (4 - (offset % 4));
-                            }
-                        }
-                        case StructType structType -> {
-                            if (padding != 0)
-                                offset = offset + (4 - (offset % 4));
-                        }
-                    }
+//                    int padding = offset % 4;
+//                    switch (param.type){
+//                        case BaseType b -> {
+//                            if (b == BaseType.INT){
+//                                if (padding != 0)
+//                                    offset = offset + (4 - (offset % 4));
+//                            }
+//                        }
+//                        case PointerType pointerType -> {
+//                            if (padding != 0)
+//                                offset = offset + (4 - (offset % 4));
+//                        }
+//
+//                        case ArrayType arrayType -> {
+//                            if (arrayType.arrayType == BaseType.INT){
+//                                if (padding != 0)
+//                                    offset = offset + (4 - (offset % 4));
+//                            }
+//                        }
+//                        case StructType structType -> {
+//                            if (padding != 0)
+//                                offset = offset + (4 - (offset % 4));
+//                        }
+//                    }
 
                     param.fpOffset = offset;
                     offset += param.type.size();

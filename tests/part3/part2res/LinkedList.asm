@@ -41,21 +41,21 @@ jal main
 
 .data
 # Allocated labels for virtual registers
-label_43_v10:
-.space 4
-label_38_v7:
+label_15_v0:
 .space 4
 label_18_v2:
 .space 4
-label_15_v0:
-.space 4
-label_19_v3:
+label_43_v10:
 .space 4
 label_29_v5:
 .space 4
 label_39_v8:
 .space 4
 label_28_v4:
+.space 4
+label_38_v7:
+.space 4
+label_19_v3:
 .space 4
 
 .text
@@ -191,109 +191,109 @@ jr $ra
 
 .data
 # Allocated labels for virtual registers
-label_175_v60:
-.space 4
-label_72_v21:
+label_58_v17:
 .space 4
 label_158_v51:
 .space 4
-label_93_v24:
+label_148_v48:
 .space 4
-label_97_v30:
-.space 4
-label_100_v31:
-.space 4
-label_179_v62:
-.space 4
-label_58_v17:
-.space 4
-label_164_v54:
+label_47_v12:
 .space 4
 label_91_v28:
 .space 4
 label_117_v37:
 .space 4
-label_127_v39:
+label_93_v24:
 .space 4
-label_187_v65:
+label_129_v40:
 .space 4
-label_145_v47:
-.space 4
-label_61_v18:
-.space 4
-label_47_v12:
-.space 4
-label_126_v43:
-.space 4
-label_159_v53:
-.space 4
-label_133_v44:
-.space 4
-label_165_v56:
-.space 4
-label_186_v63:
-.space 4
-label_51_v14:
-.space 4
-label_63_v16:
+label_153_v50:
 .space 4
 label_90_v23:
 .space 4
+label_145_v47:
+.space 4
+label_186_v63:
+.space 4
+label_72_v21:
+.space 4
+label_46_v11:
+.space 4
+label_175_v60:
+.space 4
+label_187_v65:
+.space 4
+label_68_v19:
+.space 4
+label_100_v31:
+.space 4
+label_179_v62:
+.space 4
+label_59_v15:
+.space 4
+label_73_v22:
+.space 4
 label_124_v41:
+.space 4
+label_51_v14:
+.space 4
+label_69_v20:
+.space 4
+label_110_v35:
+.space 4
+label_191_v66:
+.space 4
+label_149_v49:
+.space 4
+label_126_v43:
+.space 4
+label_84_v27:
+.space 4
+label_111_v36:
+.space 4
+label_137_v45:
+.space 4
+label_144_v46:
+.space 4
+label_63_v16:
+.space 4
+label_127_v39:
+.space 4
+label_181_v59:
+.space 4
+label_159_v53:
+.space 4
+label_107_v33:
+.space 4
+label_174_v58:
+.space 4
+label_164_v54:
+.space 4
+label_97_v30:
 .space 4
 label_190_v64:
 .space 4
 label_168_v55:
 .space 4
-label_191_v66:
-.space 4
-label_111_v36:
-.space 4
-label_87_v26:
-.space 4
-label_68_v19:
-.space 4
-label_178_v61:
-.space 4
-label_59_v15:
-.space 4
-label_153_v50:
-.space 4
-label_148_v48:
-.space 4
-label_69_v20:
-.space 4
-label_144_v46:
-.space 4
-label_137_v45:
-.space 4
-label_149_v49:
-.space 4
-label_84_v27:
-.space 4
-label_169_v57:
-.space 4
-label_83_v25:
-.space 4
-label_110_v35:
-.space 4
-label_46_v11:
-.space 4
-label_50_v13:
-.space 4
-label_73_v22:
+label_165_v56:
 .space 4
 label_101_v32:
 .space 4
-label_174_v58:
+label_178_v61:
 .space 4
-label_107_v33:
+label_61_v18:
 .space 4
-label_129_v40:
+label_83_v25:
 .space 4
-label_181_v59:
+label_169_v57:
+.space 4
+label_133_v44:
 .space 4
 label_88_v29:
+.space 4
+label_87_v26:
+.space 4
+label_50_v13:
 .space 4
 
 .text

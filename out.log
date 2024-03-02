@@ -1,7 +1,6 @@
 java.lang.Throwable:
-gen.AddrCodeGen.visit(AddrCodeGen.java:35)
-gen.ExprCodeGen.visit(ExprCodeGen.java:449)
-gen.StmtCodeGen.visit(StmtCodeGen.java:82)
+ast.StructType.size(StructType.java:52)
+gen.StmtCodeGen.visit(StmtCodeGen.java:109)
 gen.StmtCodeGen.lambda$visit$0(StmtCodeGen.java:24)
 java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
 gen.StmtCodeGen.visit(StmtCodeGen.java:23)
