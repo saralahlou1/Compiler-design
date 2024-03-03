@@ -116,12 +116,14 @@ label_30_v6:
 
 .text
 main:
+# Original instruction: add $fp,$zero,$sp
+add $fp,$zero,$sp
 # Original instruction: addi $v0,$zero,5
 addi $v0,$zero,5
 # Original instruction: syscall
 syscall
-# Original instruction: addi v0,$fp,-32
-addi $t5,$fp,-32
+# Original instruction: addi v0,$fp,-8
+addi $t5,$fp,-8
 la $t0,label_16_v0
 sw $t5,0($t0)
 # Original instruction: sw $v0,0(v0)
@@ -132,8 +134,8 @@ sw $v0,0($t5)
 li $t5,0
 la $t0,label_19_v1
 sw $t5,0($t0)
-# Original instruction: addi v2,$fp,-36
-addi $t5,$fp,-36
+# Original instruction: addi v2,$fp,-12
+addi $t5,$fp,-12
 la $t0,label_20_v2
 sw $t5,0($t0)
 # Original instruction: sw v1,0(v2)
@@ -146,8 +148,8 @@ sw $t5,0($t4)
 li $t5,1
 la $t0,label_23_v3
 sw $t5,0($t0)
-# Original instruction: addi v4,$fp,-40
-addi $t5,$fp,-40
+# Original instruction: addi v4,$fp,-16
+addi $t5,$fp,-16
 la $t0,label_24_v4
 sw $t5,0($t0)
 # Original instruction: sw v3,0(v4)
@@ -168,8 +170,8 @@ add $a0,$zero,$t5
 addi $v0,$zero,4
 # Original instruction: syscall
 syscall
-# Original instruction: addi v6,$fp,-32
-addi $t5,$fp,-32
+# Original instruction: addi v6,$fp,-8
+addi $t5,$fp,-8
 la $t0,label_30_v6
 sw $t5,0($t0)
 # Original instruction: lw v6,0(v6)
@@ -202,8 +204,8 @@ syscall
 li $t5,0
 la $t0,label_35_v8
 sw $t5,0($t0)
-# Original instruction: addi v9,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v9,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_36_v9
 sw $t5,0($t0)
 # Original instruction: sw v8,0(v9)
@@ -213,8 +215,8 @@ la $t4,label_36_v9
 lw $t4,0($t4)
 sw $t5,0($t4)
 label_11_:
-# Original instruction: addi v10,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v10,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_43_v10
 sw $t5,0($t0)
 # Original instruction: lw v10,0(v10)
@@ -223,8 +225,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_43_v10
 sw $t4,0($t0)
-# Original instruction: addi v12,$fp,-32
-addi $t5,$fp,-32
+# Original instruction: addi v12,$fp,-8
+addi $t5,$fp,-8
 la $t0,label_44_v12
 sw $t5,0($t0)
 # Original instruction: lw v12,0(v12)
@@ -245,8 +247,8 @@ sw $t3,0($t0)
 la $t5,label_46_v11
 lw $t5,0($t5)
 beq $t5,$zero,label_12_
-# Original instruction: addi v13,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v13,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_52_v13
 sw $t5,0($t0)
 # Original instruction: lw v13,0(v13)
@@ -277,8 +279,8 @@ sw $t4,0($t0)
 la $t5,label_56_v14
 lw $t5,0($t5)
 beq $t5,$zero,label_14_
-# Original instruction: addi v17,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v17,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_61_v17
 sw $t5,0($t0)
 # Original instruction: lw v17,0(v17)
@@ -287,8 +289,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_61_v17
 sw $t4,0($t0)
-# Original instruction: addi v18,$fp,-44
-addi $t5,$fp,-44
+# Original instruction: addi v18,$fp,-20
+addi $t5,$fp,-20
 la $t0,label_62_v18
 sw $t5,0($t0)
 # Original instruction: sw v17,0(v18)
@@ -300,8 +302,8 @@ sw $t5,0($t4)
 # Original instruction: j label_13_
 j label_13_
 label_14_:
-# Original instruction: addi v19,$fp,-36
-addi $t5,$fp,-36
+# Original instruction: addi v19,$fp,-12
+addi $t5,$fp,-12
 la $t0,label_69_v19
 sw $t5,0($t0)
 # Original instruction: lw v19,0(v19)
@@ -310,8 +312,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_69_v19
 sw $t4,0($t0)
-# Original instruction: addi v21,$fp,-40
-addi $t5,$fp,-40
+# Original instruction: addi v21,$fp,-16
+addi $t5,$fp,-16
 la $t0,label_70_v21
 sw $t5,0($t0)
 # Original instruction: lw v21,0(v21)
@@ -328,8 +330,8 @@ lw $t4,0($t4)
 add $t3,$t5,$t4
 la $t0,label_73_v20
 sw $t3,0($t0)
-# Original instruction: addi v22,$fp,-44
-addi $t5,$fp,-44
+# Original instruction: addi v22,$fp,-20
+addi $t5,$fp,-20
 la $t0,label_74_v22
 sw $t5,0($t0)
 # Original instruction: sw v20,0(v22)
@@ -338,8 +340,8 @@ lw $t5,0($t5)
 la $t4,label_74_v22
 lw $t4,0($t4)
 sw $t5,0($t4)
-# Original instruction: addi v23,$fp,-40
-addi $t5,$fp,-40
+# Original instruction: addi v23,$fp,-16
+addi $t5,$fp,-16
 la $t0,label_79_v23
 sw $t5,0($t0)
 # Original instruction: lw v23,0(v23)
@@ -348,8 +350,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_79_v23
 sw $t4,0($t0)
-# Original instruction: addi v24,$fp,-36
-addi $t5,$fp,-36
+# Original instruction: addi v24,$fp,-12
+addi $t5,$fp,-12
 la $t0,label_80_v24
 sw $t5,0($t0)
 # Original instruction: sw v23,0(v24)
@@ -358,8 +360,8 @@ lw $t5,0($t5)
 la $t4,label_80_v24
 lw $t4,0($t4)
 sw $t5,0($t4)
-# Original instruction: addi v25,$fp,-44
-addi $t5,$fp,-44
+# Original instruction: addi v25,$fp,-20
+addi $t5,$fp,-20
 la $t0,label_85_v25
 sw $t5,0($t0)
 # Original instruction: lw v25,0(v25)
@@ -368,8 +370,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_85_v25
 sw $t4,0($t0)
-# Original instruction: addi v26,$fp,-40
-addi $t5,$fp,-40
+# Original instruction: addi v26,$fp,-16
+addi $t5,$fp,-16
 la $t0,label_86_v26
 sw $t5,0($t0)
 # Original instruction: sw v25,0(v26)
@@ -379,8 +381,8 @@ la $t4,label_86_v26
 lw $t4,0($t4)
 sw $t5,0($t4)
 label_13_:
-# Original instruction: addi v27,$fp,-44
-addi $t5,$fp,-44
+# Original instruction: addi v27,$fp,-20
+addi $t5,$fp,-20
 la $t0,label_90_v27
 sw $t5,0($t0)
 # Original instruction: lw v27,0(v27)
@@ -409,8 +411,8 @@ add $a0,$zero,$t5
 addi $v0,$zero,4
 # Original instruction: syscall
 syscall
-# Original instruction: addi v29,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v29,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_97_v29
 sw $t5,0($t0)
 # Original instruction: lw v29,0(v29)
@@ -431,8 +433,8 @@ lw $t4,0($t4)
 add $t3,$t5,$t4
 la $t0,label_101_v30
 sw $t3,0($t0)
-# Original instruction: addi v32,$fp,-48
-addi $t5,$fp,-48
+# Original instruction: addi v32,$fp,-24
+addi $t5,$fp,-24
 la $t0,label_102_v32
 sw $t5,0($t0)
 # Original instruction: sw v30,0(v32)

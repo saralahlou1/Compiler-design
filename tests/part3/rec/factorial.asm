@@ -319,6 +319,8 @@ label_49_v13:
 
 .text
 main:
+# Original instruction: add $fp,$zero,$sp
+add $fp,$zero,$sp
 # Original instruction: li v12,4
 li $t5,4
 la $t0,label_45_v12

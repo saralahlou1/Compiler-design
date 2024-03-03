@@ -12,41 +12,42 @@ public class MemAllocCodeGen extends CodeGen {
     }
 
     boolean global = true;
-    int fpOffset = 0;
+    int fpOffset ;
 
     void visit(ASTNode n) {
         AssemblyProgram.Section data = asmProg.getCurrentSection();
         switch (n){
             case FunDecl fd -> {
+                fpOffset = 0;
                 // review this
                 fd.retValFPOffset = 4 ;
                 // need to implement returnSize
                 int offset = 4 + fd.type.size();
                 for (VarDecl param: fd.params.reversed()) {
-//                    int padding = offset % 4;
-//                    switch (param.type){
-//                        case BaseType b -> {
-//                            if (b == BaseType.INT){
-//                                if (padding != 0)
-//                                    offset = offset + (4 - (offset % 4));
-//                            }
-//                        }
-//                        case PointerType pointerType -> {
-//                            if (padding != 0)
-//                                offset = offset + (4 - (offset % 4));
-//                        }
-//
-//                        case ArrayType arrayType -> {
-//                            if (arrayType.arrayType == BaseType.INT){
-//                                if (padding != 0)
-//                                    offset = offset + (4 - (offset % 4));
-//                            }
-//                        }
-//                        case StructType structType -> {
-//                            if (padding != 0)
-//                                offset = offset + (4 - (offset % 4));
-//                        }
-//                    }
+                    int padding = offset % 4;
+                    switch (param.type){
+                        case BaseType b -> {
+                            if (b == BaseType.INT){
+                                if (padding != 0)
+                                    offset = offset + (4 - (offset % 4));
+                            }
+                        }
+                        case PointerType pointerType -> {
+                            if (padding != 0)
+                                offset = offset + (4 - (offset % 4));
+                        }
+
+                        case ArrayType arrayType -> {
+                            if (arrayType.arrayType == BaseType.INT){
+                                if (padding != 0)
+                                    offset = offset + (4 - (offset % 4));
+                            }
+                        }
+                        case StructType structType -> {
+                            if (padding != 0)
+                                offset = offset + (4 - (offset % 4));
+                        }
+                    }
 
                     param.fpOffset = offset;
                     offset += param.type.size();
@@ -60,28 +61,28 @@ public class MemAllocCodeGen extends CodeGen {
                 vd.size = vd.type.size();
                 // Need to review this code
                 if (!global){ // local / stack
-                    int padding = vd.size % 4;
+                    int padding = this.fpOffset % 4;
                     switch (vd.type){
                         case BaseType b -> {
                             if (b == BaseType.INT){
                                 if (padding != 0)
-                                    this.fpOffset -= (4- (this.fpOffset % 4));
+                                    this.fpOffset += (-4- (this.fpOffset % 4));
                             }
                         }
                         case PointerType p -> {
                             if (padding != 0)
-                                this.fpOffset -= (4- (this.fpOffset % 4));
+                                this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                         case ArrayType arr -> {
                             // maybe I need to add few more cases
                             if (arr.arrayType == BaseType.INT) {
                                 if (padding != 0)
-                                    this.fpOffset -= (4- (this.fpOffset % 4));
+                                    this.fpOffset += (-4- (this.fpOffset % 4));
                             }
                         }
                         case StructType structType -> {
                             if (padding != 0)
-                                this.fpOffset -= (4- (this.fpOffset % 4));
+                                this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                     }
                      this.fpOffset -= vd.size;

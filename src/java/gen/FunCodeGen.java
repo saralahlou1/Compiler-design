@@ -21,6 +21,7 @@ public class FunCodeGen extends CodeGen {
         if (fd.name.equals("main")){
             // maybe use get label instead
             text.emit(fd.fctLabel);
+            text.emit(OpCode.ADD, Register.Arch.fp, Register.Arch.zero, Register.Arch.sp);
             StmtCodeGen scd = new StmtCodeGen(asmProg);
             scd.visit(fd.block);
             text.emit(OpCode.LI, Register.Arch.v0, 10);

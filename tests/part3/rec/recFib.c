@@ -1,11 +1,17 @@
 int fibbonacci(int n) {
+//   int x;
+//   int y;
    if(n == 0){
       return 0;
    } else {
    if(n == 1) {
       return 1;
    } else {
-      return (fibbonacci(n-1) + fibbonacci(n-2));
+//      x = fibbonacci(n-1);
+//      y = fibbonacci(n-2);
+//      return (x + y);
+// this version works
+        return (fibbonacci(n-1) + fibbonacci(n-2));
    }
    }
 }
@@ -16,7 +22,7 @@ void main(){
 //    print_c(',');
 //    print_i(fibbonacci(2));
 //    print_c(',');
-    print_i(fibbonacci(4));
+    print_i(fibbonacci(4)); // its 3
 //    print_c(',');
 //    print_i(fibbonacci(4));
 //    print_c(',');

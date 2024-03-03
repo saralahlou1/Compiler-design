@@ -183,6 +183,13 @@ public class ExprCodeGen extends CodeGen {
                     // argument
                     Register arg = visit(fctExp.params.get(i));
                     // size of arg
+//                    int sizeAssign;
+//                    if (i == 0){
+//                        sizeAssign = funDecl.params.get(i).fpOffset ;
+//                    } else {
+//                        sizeAssign = funDecl.params.get(i).fpOffset - funDecl.params.get(i-1).fpOffset ;
+//                    }
+
                     int sizeAssign = funDecl.params.get(i).type.size();
                     fctExp.totalSpOffset += sizeAssign;
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
