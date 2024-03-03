@@ -41,33 +41,31 @@ jal main
 
 .data
 # Allocated labels for virtual registers
-label_17_v2:
-.space 4
-label_20_v3:
-.space 4
-label_49_v13:
-.space 4
-label_34_v10:
-.space 4
-label_41_v11:
-.space 4
-label_45_v12:
-.space 4
 label_23_v1:
-.space 4
-label_44_v7:
-.space 4
-label_33_v8:
-.space 4
-label_40_v6:
-.space 4
-label_16_v0:
 .space 4
 label_25_v5:
 .space 4
-label_21_v4:
+label_16_v0:
+.space 4
+label_43_v12:
+.space 4
+label_33_v8:
+.space 4
+label_20_v3:
+.space 4
+label_44_v11:
+.space 4
+label_17_v2:
 .space 4
 label_36_v9:
+.space 4
+label_21_v4:
+.space 4
+label_34_v10:
+.space 4
+label_28_v6:
+.space 4
+label_46_v7:
 .space 4
 
 .text
@@ -137,13 +135,13 @@ j label_10_
 label_11_:
 # Original instruction: addi v6,$fp,8
 addi $t5,$fp,8
-la $t0,label_40_v6
+la $t0,label_28_v6
 sw $t5,0($t0)
 # Original instruction: lw v6,0(v6)
-la $t4,label_40_v6
+la $t4,label_28_v6
 lw $t4,0($t4)
 lw $t4,0($t4)
-la $t0,label_40_v6
+la $t0,label_28_v6
 sw $t4,0($t0)
 # Original instruction: addi v8,$fp,8
 addi $t5,$fp,8
@@ -179,46 +177,36 @@ addi $sp,$sp,-4
 jal label_9_factorial
 # Original instruction: addi v11,$sp,0
 addi $t5,$sp,0
-la $t0,label_41_v11
+la $t0,label_44_v11
 sw $t5,0($t0)
 # Original instruction: lw v11,0(v11)
-la $t4,label_41_v11
+la $t4,label_44_v11
 lw $t4,0($t4)
 lw $t4,0($t4)
-la $t0,label_41_v11
+la $t0,label_44_v11
 sw $t4,0($t0)
-# Original instruction: mult v6,v11
-la $t5,label_40_v6
+# Original instruction: addi v12,$fp,8
+addi $t5,$fp,8
+la $t0,label_43_v12
+sw $t5,0($t0)
+# Original instruction: lw v12,0(v12)
+la $t4,label_43_v12
+lw $t4,0($t4)
+lw $t4,0($t4)
+la $t0,label_43_v12
+sw $t4,0($t0)
+# Original instruction: mult v12,v11
+la $t5,label_43_v12
 lw $t5,0($t5)
-la $t4,label_41_v11
+la $t4,label_44_v11
 lw $t4,0($t4)
 mult $t5,$t4
 # Original instruction: mflo v7
 mflo $t5
-la $t0,label_44_v7
+la $t0,label_46_v7
 sw $t5,0($t0)
-# Original instruction: addi v12,$fp,-32
-addi $t5,$fp,-32
-la $t0,label_45_v12
-sw $t5,0($t0)
-# Original instruction: sw v7,0(v12)
-la $t5,label_44_v7
-lw $t5,0($t5)
-la $t4,label_45_v12
-lw $t4,0($t4)
-sw $t5,0($t4)
-# Original instruction: addi v13,$fp,-32
-addi $t5,$fp,-32
-la $t0,label_49_v13
-sw $t5,0($t0)
-# Original instruction: lw v13,0(v13)
-la $t4,label_49_v13
-lw $t4,0($t4)
-lw $t4,0($t4)
-la $t0,label_49_v13
-sw $t4,0($t0)
-# Original instruction: sw v13,4($fp)
-la $t5,label_49_v13
+# Original instruction: sw v7,4($fp)
+la $t5,label_46_v7
 lw $t5,0($t5)
 sw $t5,4($fp)
 # Original instruction: addi $sp,$sp,8
@@ -238,39 +226,39 @@ jr $ra
 
 .data
 # Allocated labels for virtual registers
-label_51_v14:
+label_52_v14:
 .space 4
-label_55_v15:
+label_48_v13:
 .space 4
 
 .text
 main:
-# Original instruction: li v14,2
-li $t5,2
-la $t0,label_51_v14
+# Original instruction: li v13,3
+li $t5,3
+la $t0,label_48_v13
 sw $t5,0($t0)
 # Original instruction: addi $sp,$sp,-4
 addi $sp,$sp,-4
-# Original instruction: sw v14,0($sp)
-la $t5,label_51_v14
+# Original instruction: sw v13,0($sp)
+la $t5,label_48_v13
 lw $t5,0($t5)
 sw $t5,0($sp)
 # Original instruction: addi $sp,$sp,-4
 addi $sp,$sp,-4
 # Original instruction: jal label_9_factorial
 jal label_9_factorial
-# Original instruction: addi v15,$sp,0
+# Original instruction: addi v14,$sp,0
 addi $t5,$sp,0
-la $t0,label_55_v15
+la $t0,label_52_v14
 sw $t5,0($t0)
-# Original instruction: lw v15,0(v15)
-la $t4,label_55_v15
+# Original instruction: lw v14,0(v14)
+la $t4,label_52_v14
 lw $t4,0($t4)
 lw $t4,0($t4)
-la $t0,label_55_v15
+la $t0,label_52_v14
 sw $t4,0($t0)
-# Original instruction: add $a0,$zero,v15
-la $t5,label_55_v15
+# Original instruction: add $a0,$zero,v14
+la $t5,label_52_v14
 lw $t5,0($t5)
 add $a0,$zero,$t5
 # Original instruction: addi $v0,$zero,1
