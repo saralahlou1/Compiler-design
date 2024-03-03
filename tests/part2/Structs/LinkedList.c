@@ -2,6 +2,7 @@ struct Node{
     int data;
     struct Node* next;
 };
+struct node* NULL;
 struct Node* swap(struct Node* ptr1, struct Node* ptr2)
 {
     struct Node* tmp;
@@ -47,4 +48,76 @@ int bubbleSort(struct Node** head, int count)
 
         i = i+1;
     }
+}
+// To fix
+void printList(struct Node* n)
+{
+    while (n != NULL) {
+        print_i((*n).data);
+        print_s("->");
+        n = (*n).next;
+    }
+    print_s("\n");
+}
+
+void insertAtTheBegin(struct Node** start_ref, int data)
+{
+    struct Node* ptr1;
+    ptr1    = (struct Node*)malloc(sizeof(struct Node));
+
+    (*ptr1).data = data;
+    (*ptr1).next = *start_ref;
+    *start_ref = ptr1;
+}
+
+void main()
+{
+    int arr[6];
+    int list_size;
+    int i;
+
+    /* start with empty linked list */
+    struct Node* start;
+    int i;
+
+    arr[0] = 78;
+    arr[1] = 20;
+    arr[2] = 10;
+    arr[4] = 1;
+    arr[3] = 32;
+    arr[5] = 5;
+
+//    start = NULL;
+    list_size = sizeof(int)*6 / sizeof(int);
+
+    /* Create linked list from the array arr[] */
+    i = list_size - 1;
+    while (i>= 0){
+        insertAtTheBegin(&start, arr[i]);
+        i = i-1;
+    }
+
+    i = 0;
+    /* print list before sorting */
+    print_s("Linked list before sorting\n");
+    while (i<list_size){
+        print_i(*(start+i));
+        print_c(',');
+        i=i+1;
+    }
+    //printList(start);
+
+    /* sort the linked list */
+    bubbleSort(&start, list_size);
+
+    i = 0;
+    /* print list after sorting */
+    print_s("Linked list after sorting\n");
+    while (i<list_size){
+            print_i(*(start+i));
+            print_c(',');
+            i=i+1;
+        }
+    //printList(start);
+
 }

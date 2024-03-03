@@ -174,7 +174,7 @@ public class ExprCodeGen extends CodeGen {
                     funDecl = fctExp.funDecl;
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
 
-                // The way I store the params doesn't correspond to the offsets I did in memAlloc
+
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument
                     Register arg = visit(fctExp.params.get(i));
@@ -209,7 +209,10 @@ public class ExprCodeGen extends CodeGen {
                     }
                 }
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
-                fctExp.totalSpOffset += funDecl.type.size();
+                fctExp.totalSpOffset += funDecl.type.size(); // maybe for structs I should pay attention
+
+                funDecl.totalSpOffset = fctExp.totalSpOffset;
+
                 text.emit(OpCode.JAL, funDecl.fctLabel);
 
                 Register result = Register.Virtual.create();
@@ -227,7 +230,7 @@ public class ExprCodeGen extends CodeGen {
                             text.emit(OpCode.LW, result, result, 0);
                     default -> {}
                 }
-                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
+//                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
                 yield  result;
 
 

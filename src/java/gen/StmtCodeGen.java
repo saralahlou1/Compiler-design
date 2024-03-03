@@ -83,6 +83,8 @@ public class StmtCodeGen extends CodeGen {
             }
             case Return aReturn -> {
                 if (aReturn.expr == null){
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
+                    text.emit(OpCode.J, aReturn.funDecl.returnLabel);
                     break;
                 }
                 ExprCodeGen exprCodeGen = new ExprCodeGen(asmProg);
@@ -113,6 +115,8 @@ public class StmtCodeGen extends CodeGen {
                     }
 
                 }
+                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
+                text.emit(OpCode.J, aReturn.funDecl.returnLabel);
             }
             default -> {}
         }

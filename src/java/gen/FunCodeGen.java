@@ -32,6 +32,8 @@ public class FunCodeGen extends CodeGen {
         else {
             // TODO: to complete
             // 1) emit the prolog
+            Label fctEnd = Label.create();
+            fd.returnLabel = fctEnd;
             if (fd.name.equals("print_s") || fd.name.equals("print_i") || fd.name.equals("print_c")
             || fd.name.equals("read_c") || fd.name.equals("read_i") || fd.name.equals("mcmalloc")){
                 return;
@@ -51,6 +53,7 @@ public class FunCodeGen extends CodeGen {
             StmtCodeGen scd = new StmtCodeGen(asmProg);
             scd.visit(fd.block);
 
+            text.emit(fctEnd);
             // 3) emit the epilog
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.fp, 4);
             text.emit(OpCode.LW, Register.Arch.ra, Register.Arch.fp, -4);

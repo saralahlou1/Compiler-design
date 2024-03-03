@@ -8,6 +8,7 @@ public final class FunProto extends Decl{
     public Type type;
     public String name;
     public FunDecl funDecl;     //for name analysis
+    public int totalSpOffset = 0;
 
     public FunProto(Type type, String name, List<VarDecl> params) {
         this.type = type;
