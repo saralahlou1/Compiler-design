@@ -173,8 +173,6 @@ sw $t5,0($t0)
 la $t5,label_25_v5
 lw $t5,0($t5)
 sw $t5,4($fp)
-# Original instruction: addi $sp,$sp,0
-addi $sp,$sp,0
 # Original instruction: j label_8_
 j label_8_
 # Original instruction: j label_10_
@@ -232,6 +230,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_41_v11
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,8
+addi $sp,$sp,8
 # Original instruction: mult v6,v11
 la $t5,label_40_v6
 lw $t5,0($t5)
@@ -246,8 +246,6 @@ sw $t5,0($t0)
 la $t5,label_43_v7
 lw $t5,0($t5)
 sw $t5,4($fp)
-# Original instruction: addi $sp,$sp,8
-addi $sp,$sp,8
 # Original instruction: j label_8_
 j label_8_
 label_10_:
@@ -345,6 +343,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_49_v13
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,8
+addi $sp,$sp,8
 # Original instruction: add $a0,$zero,v13
 la $t5,label_49_v13
 lw $t5,0($t5)

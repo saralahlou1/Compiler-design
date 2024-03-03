@@ -115,7 +115,8 @@ public class StmtCodeGen extends CodeGen {
                     }
 
                 }
-                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
+//                text.emit(OpCode.POP_REGISTERS);
+//                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
                 text.emit(OpCode.J, aReturn.funDecl.returnLabel);
             }
             default -> {}

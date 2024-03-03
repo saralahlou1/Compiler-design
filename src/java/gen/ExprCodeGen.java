@@ -241,7 +241,7 @@ public class ExprCodeGen extends CodeGen {
                             text.emit(OpCode.LW, result, result, 0);
                     default -> {}
                 }
-//                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
+                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
                 yield  result;
 
 

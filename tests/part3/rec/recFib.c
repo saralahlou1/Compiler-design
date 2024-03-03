@@ -16,21 +16,21 @@ int fibbonacci(int n) {
    }
 }
 void main(){
-//    print_i(fibbonacci(0));
-//    print_c(',');
-//    print_i(fibbonacci(1));
-//    print_c(',');
-//    print_i(fibbonacci(2));
-//    print_c(',');
-    print_i(fibbonacci(4)); // its 3
-//    print_c(',');
-//    print_i(fibbonacci(4));
-//    print_c(',');
-//    print_i(fibbonacci(5));
-//    print_c(',');
-//    print_i(fibbonacci(6));
-//    print_c(',');
-//    print_i(fibbonacci(7));
-//    print_c(',');
-//    print_i(fibbonacci(8));
+    print_i(fibbonacci(0));
+    print_c(',');
+    print_i(fibbonacci(1));
+    print_c(',');
+    print_i(fibbonacci(2));
+    print_c(',');
+    print_i(fibbonacci(3));
+    print_c(',');
+    print_i(fibbonacci(4));
+    print_c(',');
+    print_i(fibbonacci(5));
+    print_c(',');
+    print_i(fibbonacci(6));
+    print_c(',');
+    print_i(fibbonacci(7));
+    print_c(',');
+    print_i(fibbonacci(8));
 }

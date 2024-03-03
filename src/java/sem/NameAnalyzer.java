@@ -84,6 +84,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 //                                        params.add(vd);
                                     }
                                 }
+                                fctDecl = fd;
                                 fctRetType = fd.type;
                                 visit(fd.block);
 

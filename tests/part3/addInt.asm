@@ -60,6 +60,19 @@ add $fp,$zero,$sp
 addi $sp,$sp,-4
 # Original instruction: sw $ra,0($sp)
 sw $ra,0($sp)
+# Original instruction: pushRegisters
+la $t0,label_16_v0
+lw $t0,0($t0)
+addi $sp,$sp,-4
+sw $t0,0($sp)
+la $t0,label_19_v1
+lw $t0,0($t0)
+addi $sp,$sp,-4
+sw $t0,0($sp)
+la $t0,label_17_v2
+lw $t0,0($t0)
+addi $sp,$sp,-4
+sw $t0,0($sp)
 # Original instruction: addi v0,$fp,12
 addi $t5,$fp,12
 la $t0,label_16_v0
@@ -92,11 +105,22 @@ sw $t3,0($t0)
 la $t5,label_19_v1
 lw $t5,0($t5)
 sw $t5,4($fp)
-# Original instruction: addi $sp,$sp,0
-addi $sp,$sp,0
 # Original instruction: j label_8_
 j label_8_
 label_8_:
+# Original instruction: popRegisters
+lw $t0,0($sp)
+addi $sp,$sp,4
+la $t1,label_17_v2
+sw $t0,0($t1)
+lw $t0,0($sp)
+addi $sp,$sp,4
+la $t1,label_19_v1
+sw $t0,0($t1)
+lw $t0,0($sp)
+addi $sp,$sp,4
+la $t1,label_16_v0
+sw $t0,0($t1)
 # Original instruction: addi $sp,$fp,4
 addi $sp,$fp,4
 # Original instruction: lw $ra,-4($fp)
@@ -117,6 +141,8 @@ label_21_v3:
 
 .text
 main:
+# Original instruction: add $fp,$zero,$sp
+add $fp,$zero,$sp
 # Original instruction: li v3,1
 li $t5,1
 la $t0,label_21_v3
@@ -151,6 +177,8 @@ lw $t4,0($t4)
 lw $t4,0($t4)
 la $t0,label_27_v5
 sw $t4,0($t0)
+# Original instruction: addi $sp,$sp,12
+addi $sp,$sp,12
 # Original instruction: add $a0,$zero,v5
 la $t5,label_27_v5
 lw $t5,0($t5)
