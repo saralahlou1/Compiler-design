@@ -35,7 +35,8 @@ public class ExprCodeGen extends CodeGen {
                         Register rhs = visit(binOp.rhs);
                         // overriding previous value maybe during recursion I reuse these registers
                         // so they get overridden
-                         lhs = visit(binOp.lhs);
+                        // maybe use push registers and pull registers commends
+                        // lhs = visit(binOp.lhs);
                         text.emit(OpCode.MULT, lhs, rhs);
                         text.emit(OpCode.MFLO, resReg);
                     }

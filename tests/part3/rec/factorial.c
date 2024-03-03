@@ -7,5 +7,5 @@ int factorial(int n) {
    }
 }
 void main(){
-    print_i(factorial(3));
+    print_i(factorial(4));
 }

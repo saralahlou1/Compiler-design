@@ -47,7 +47,8 @@ public class FunCodeGen extends CodeGen {
             text.emit(OpCode.ADD, Register.Arch.fp, Register.Arch.zero, Register.Arch.sp);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
             text.emit(OpCode.SW, Register.Arch.ra, Register.Arch.sp, 0);
-
+            // reserve place for local vars
+            text.emit(OpCode.PUSH_REGISTERS);
 
             // 2) emit the body of the function
             StmtCodeGen scd = new StmtCodeGen(asmProg);
@@ -55,6 +56,7 @@ public class FunCodeGen extends CodeGen {
 
             text.emit(fctEnd);
             // 3) emit the epilog
+            text.emit(OpCode.POP_REGISTERS);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.fp, 4);
             text.emit(OpCode.LW, Register.Arch.ra, Register.Arch.fp, -4);
             text.emit(OpCode.LW, Register.Arch.fp, Register.Arch.fp, 0);
