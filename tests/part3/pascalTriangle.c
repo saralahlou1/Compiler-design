@@ -21,6 +21,7 @@ void printPascal(int n)
             i = i + 1;
         }
         print_s((char*)"\n");
+        print_c('\n');
         line = line + 1;
     }
 
