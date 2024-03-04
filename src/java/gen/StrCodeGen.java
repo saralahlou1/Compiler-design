@@ -14,7 +14,25 @@ public class StrCodeGen extends CodeGen {
             case StrLiteral str -> {
                 Label label = Label.create();
                 data.emit(label);
-                data.emit(new Directive("asciiz \"" + str.id +"\""));
+                StringBuilder s = new StringBuilder();
+                // String s = str.id.replace("\n", "\\n");
+                for (int i = 0; i < str.id.length(); i++){
+                    switch (str.id.charAt(i))
+                    {
+                        case ((char) 7) -> s.append("\\a");
+                        case ((char) 8) -> s.append("\\b");
+                        case ((char) 10) -> s.append("\\n");
+                        case ((char) 13) -> s.append("\\r");
+                        case ((char) 9) -> s.append("\\t");
+                        case ((char) 92) -> s.append("\\");
+                        case ((char) 39) -> s.append("\\'");
+                        case ((char) 34) -> s.append("\\\"");
+                        case ((char) 0) -> s.append("\\0");
+                        default -> s.append(str.id.charAt(i));
+
+                    }
+                }
+                data.emit(new Directive("asciiz \"" + s.toString() +"\""));
                 str.label = label;
             }
 

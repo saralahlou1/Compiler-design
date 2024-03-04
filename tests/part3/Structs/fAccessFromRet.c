@@ -13,4 +13,5 @@ void main() {
     struct Node node;
      node = s();
     print_i(node.x);
+    // even print_i(s().x); works
 }
