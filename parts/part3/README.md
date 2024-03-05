@@ -48,8 +48,7 @@ You can use the following sequence of instruction upon returning from main:
 li $v0, 10
 syscall		# Use syscall 10 to stop simulation
 ```
-To simplify, we will assume that the main function is never called recursivel
-y.
+To simplify, we will assume that the main function is never called recursively.
 
 Next, we suggest that you implement the `print_i` function using the corresponding system calls (check the lecture notes and the link above to the MARS documentation that explain how to do this).
 To test it, you could implement support for integer literals and have a simple call to `print_i` in `main`.
