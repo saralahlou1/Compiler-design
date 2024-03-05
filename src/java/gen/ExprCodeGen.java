@@ -193,13 +193,16 @@ public class ExprCodeGen extends CodeGen {
                     int sizeAssign = funDecl.params.get(i).type.size();
                     fctExp.totalSpOffset += sizeAssign;
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                    // int padding = fctExp.totalSpOffset % 4;
+                     int padding = sizeAssign % 4;
+                     padding = 4 - padding;
                     // maybe I need to review the offsets
                     switch (funDecl.params.get(i).type){
                         case BaseType b -> {
                             // if it's a char we only store 1 bite
                             if (b == BaseType.CHAR){
                                 text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
+                                fctExp.totalSpOffset += 3;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
                             }
                             // or it's an int so we store a word
                             if (b == BaseType.INT){
@@ -210,17 +213,34 @@ public class ExprCodeGen extends CodeGen {
                             // for pointers, we make them point to same address
                             text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
                         }
+                        case ArrayType arr -> {
+                            Register biteCopy = Register.Virtual.create();
+                            for (int j = 0; j < sizeAssign; j++) {
+                                text.emit(OpCode.LB, biteCopy, arg, j);
+                                text.emit(OpCode.SB, biteCopy, Register.Arch.sp, j);
+                            }
+                            if (padding != 4){
+                                fctExp.totalSpOffset += padding;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                            }
+                        }
                         default -> {
                             Register biteCopy = Register.Virtual.create();
                             for (int j = 0; j < sizeAssign; j++) {
                                 text.emit(OpCode.LB, biteCopy, arg, j);
-                                text.emit(OpCode.SB, biteCopy, Register.Arch.sp, -j);
+                                text.emit(OpCode.SB, biteCopy, Register.Arch.sp, j);
                             }
                         }
                     }
                 }
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
-                fctExp.totalSpOffset += funDecl.type.size(); // maybe for structs I should pay attention
+                fctExp.totalSpOffset += funDecl.type.size();
+                // maybe for structs I should pay attention (nah most likely good)
+                int padding = 4 - funDecl.type.size() % 4;
+                if (padding != 4){
+                    fctExp.totalSpOffset += padding;
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                }
 
                 funDecl.totalSpOffset = fctExp.totalSpOffset;
 

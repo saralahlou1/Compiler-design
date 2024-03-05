@@ -23,31 +23,14 @@ public class MemAllocCodeGen extends CodeGen {
                 fd.retValFPOffset = 4 ;
                 // need to implement returnSize
                 int offset = 4 + fd.type.size();
+                int pad = 4 - fd.type.size() % 4;
+                if (pad != 4) {
+                    offset += pad;
+                }
                 for (VarDecl param: fd.params.reversed()) {
-//                    int padding = offset % 4;
-//                    switch (param.type){
-//                        case BaseType b -> {
-//                            if (b == BaseType.INT){
-//                                if (padding != 0)
-//                                    offset = offset + (4 - (offset % 4));
-//                            }
-//                        }
-//                        case PointerType pointerType -> {
-//                            if (padding != 0)
-//                                offset = offset + (4 - (offset % 4));
-//                        }
-//
-//                        case ArrayType arrayType -> {
-//                            if (arrayType.arrayType == BaseType.INT){
-//                                if (padding != 0)
-//                                    offset = offset + (4 - (offset % 4));
-//                            }
-//                        }
-//                        case StructType structType -> {
-//                            if (padding != 0)
-//                                offset = offset + (4 - (offset % 4));
-//                        }
-//                    }
+                    int padding = param.type.size() % 4;
+                    if (padding != 0)
+                        offset = offset + (4 - padding);
 
                     param.fpOffset = offset;
                     offset += param.type.size();
