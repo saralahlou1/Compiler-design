@@ -8,6 +8,7 @@ import gen.asm.*;
  * Generates code to evaluate an expression and return the result in a register.
  */
 public class ExprCodeGen extends CodeGen {
+    //public Label Buffer = Label.create();
 
     public ExprCodeGen(AssemblyProgram asmProg) {
         this.asmProg = asmProg;
@@ -168,7 +169,9 @@ public class ExprCodeGen extends CodeGen {
                     text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 9);
                     text.emit(OpCode.ADD, Register.Arch.a0, Register.Arch.zero, param);
                     text.emit(OpCode.SYSCALL);
-                    yield Register.Arch.v0;
+                    Register result = Register.Virtual.create();
+                    text.emit(OpCode.ADD, result, Register.Arch.zero, Register.Arch.v0);
+                    yield result;
 
                 }
                 FunDecl funDecl;
@@ -182,13 +185,6 @@ public class ExprCodeGen extends CodeGen {
                 for (int i = 0; i < fctExp.params.size(); i++){
                     // argument
                     Register arg = visit(fctExp.params.get(i));
-                    // size of arg
-//                    int sizeAssign;
-//                    if (i == 0){
-//                        sizeAssign = funDecl.params.get(i).fpOffset ;
-//                    } else {
-//                        sizeAssign = funDecl.params.get(i).fpOffset - funDecl.params.get(i-1).fpOffset ;
-//                    }
 
                     int sizeAssign = funDecl.params.get(i).type.size();
                     fctExp.totalSpOffset += sizeAssign;
@@ -201,34 +197,38 @@ public class ExprCodeGen extends CodeGen {
                             // if it's a char we only store 1 bite
                             if (b == BaseType.CHAR){
                                 text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
-                                fctExp.totalSpOffset += 3;
-                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
+//                                fctExp.totalSpOffset += 3;
+//                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
                             }
                             // or it's an int so we store a word
-                            if (b == BaseType.INT){
+                            else if (b == BaseType.INT){
                                 text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                            }
+                            if (padding != 4) {
+                                fctExp.totalSpOffset += padding;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+
                             }
                         }
                         case PointerType pointerType -> {
                             // for pointers, we make them point to same address
                             text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
-                        }
-                        case ArrayType arr -> {
-                            Register biteCopy = Register.Virtual.create();
-                            for (int j = 0; j < sizeAssign; j++) {
-                                text.emit(OpCode.LB, biteCopy, arg, j);
-                                text.emit(OpCode.SB, biteCopy, Register.Arch.sp, j);
-                            }
-                            if (padding != 4){
+                            if (padding != 4) {
                                 fctExp.totalSpOffset += padding;
                                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+
                             }
                         }
                         default -> {
                             Register biteCopy = Register.Virtual.create();
-                            for (int j = 0; j < sizeAssign; j++) {
-                                text.emit(OpCode.LB, biteCopy, arg, j);
-                                text.emit(OpCode.SB, biteCopy, Register.Arch.sp, j);
+                            for (int j = 0; j < sizeAssign; j=j+4) {
+                                text.emit(OpCode.LW, biteCopy, arg, j);
+                                text.emit(OpCode.SW, biteCopy, Register.Arch.sp, j);
+                            }
+                            if (padding != 4) {
+                                fctExp.totalSpOffset += padding;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+
                             }
                         }
                     }
