@@ -356,6 +356,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 visit(aReturn.expr);
             }
             case SizeOfExpr sizeOfExpr -> {
+                visit(sizeOfExpr.sizeOfType);
             }
             case StrLiteral strLiteral -> {
             }

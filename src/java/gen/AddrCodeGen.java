@@ -19,7 +19,7 @@ public class AddrCodeGen extends CodeGen {
         return switch (e){
             // TODO do it for all lvalues
             case AddressOfExpr addressOfExpr -> {
-                // TODO
+
                 yield  visit(addressOfExpr.address);
             }
             case FieldAccessExpr s -> {

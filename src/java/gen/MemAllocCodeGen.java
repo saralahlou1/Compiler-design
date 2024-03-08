@@ -58,10 +58,8 @@ public class MemAllocCodeGen extends CodeGen {
                         }
                         case ArrayType arr -> {
                             // maybe I need to add few more cases
-                            if (arr.arrayType == BaseType.INT) {
-                                if (padding != 0)
-                                    this.fpOffset += (-4- (this.fpOffset % 4));
-                            }
+                            if (padding != 0)
+                                this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                         case StructType structType -> {
                             if (padding != 0)

@@ -120,7 +120,8 @@ public class ExprCodeGen extends CodeGen {
             }
             case SizeOfExpr sizeOf -> {
                 Register resReg = Register.Virtual.create();
-                text.emit(OpCode.LI, resReg, sizeOf.type.size());
+
+                text.emit(OpCode.LI, resReg, sizeOf.sizeOfType.size());
                 yield resReg;
             }
 
