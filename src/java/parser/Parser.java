@@ -7,10 +7,7 @@ import lexer.Token.Category;
 import lexer.Tokeniser;
 import util.CompilerPass;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 
 /**
@@ -217,18 +214,26 @@ public class Parser  extends CompilerPass {
         if(!accept(Category.RPAR)){
             Type varType = parse_type();
             Token id = expect(Category.IDENTIFIER);
+            // maybe stack
+            Stack<Integer> dimensions = new Stack<>();
+
             while(accept(Category.LSBR)){
                 nextToken();
                 if (accept(Category.INT_LITERAL)) {
                     Token token = expect(Category.INT_LITERAL);
-                    varType = new ArrayType(varType, Integer.parseInt(token.data));
+                    //varType = new ArrayType(varType, Integer.parseInt(token.data));
+                    dimensions.push(Integer.parseInt(token.data));
                 }
                 else {error();}
                 expect(Category.RSBR);
             }
+            while (! dimensions.empty()){
+                varType = new ArrayType(varType, dimensions.pop());
+            }
             varDecls.add(new VarDecl(varType, id.data));
 
             while(accept(Category.COMMA)){
+                dimensions = new Stack<>();
                 nextToken();
                 varType = parse_type();
                 id = expect(Category.IDENTIFIER);
@@ -236,10 +241,14 @@ public class Parser  extends CompilerPass {
                     nextToken();
                     if (accept(Category.INT_LITERAL)) {
                         Token token = expect(Category.INT_LITERAL);
-                        varType = new ArrayType(varType, Integer.parseInt(token.data));
+//                        varType = new ArrayType(varType, Integer.parseInt(token.data));
+                        dimensions.push(Integer.parseInt(token.data));
                     }
                     else {error();}
                     expect(Category.RSBR);
+                }
+                while (! dimensions.empty()){
+                    varType = new ArrayType(varType, dimensions.pop());
                 }
                 varDecls.add(new VarDecl(varType, id.data));
             }
@@ -251,15 +260,20 @@ public class Parser  extends CompilerPass {
         // Type varType = parse_type();
         Token id = expect(Category.IDENTIFIER);
         // in case it was an array, we update the type in parse VarDecl
+        Stack<Integer> dimensions = new Stack<>();
 
         while(accept(Category.LSBR)){
             nextToken();
             if (accept(Category.INT_LITERAL)) {
                 Token token = expect(Category.INT_LITERAL);
-                varType = new ArrayType(varType, Integer.parseInt(token.data));
+//              varType = new ArrayType(varType, Integer.parseInt(token.data));
+                dimensions.push(Integer.parseInt(token.data));
             }
             else {error();}
             expect(Category.RSBR);
+        }
+        while (! dimensions.empty()){
+            varType = new ArrayType(varType, dimensions.pop());
         }
         expect(Category.SC);
         return  new VarDecl(varType, id.data);
