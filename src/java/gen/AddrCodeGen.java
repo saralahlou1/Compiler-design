@@ -67,8 +67,15 @@ public class AddrCodeGen extends CodeGen {
                 Register result = Register.Virtual.create();
                 if ( v.vd.lable != null)
                     text.emit(OpCode.LA, result, v.vd.lable);
-                else
+                else {
                     text.emit(OpCode.ADDI, result, Register.Arch.fp, v.vd.fpOffset);
+                    switch (v.vd.type){
+                        case ArrayType arrayType -> {
+                            text.emit(OpCode.LW, result, result, 0);
+                        }
+                        default -> {}
+                    }
+                }
                 yield result;
             }
             case ValueAtExpr value -> {

@@ -28,12 +28,22 @@ public class MemAllocCodeGen extends CodeGen {
                     offset += pad;
                 }
                 for (VarDecl param: fd.params.reversed()) {
-                    int padding = param.type.size() % 4;
-                    if (padding != 0)
-                        offset = offset + (4 - padding);
+                    switch (param.type) {
+                        case ArrayType arrayType -> {
+                            // we are passing a pointer to the first element in the array in C
 
-                    param.fpOffset = offset;
-                    offset += param.type.size();
+                            param.fpOffset = offset;
+                            offset += 4;
+                        }
+                        default -> {
+                            int padding = param.type.size() % 4;
+                            if (padding != 0)
+                                offset = offset + (4 - padding);
+
+                            param.fpOffset = offset;
+                            offset += param.type.size();
+                        }
+                    }
                 }
                 this.fpOffset -= 4;
                 this.global = false;

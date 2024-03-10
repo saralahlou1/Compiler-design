@@ -188,13 +188,15 @@ public class ExprCodeGen extends CodeGen {
                     Register arg = visit(fctExp.params.get(i));
 
                     int sizeAssign = funDecl.params.get(i).type.size();
-                    fctExp.totalSpOffset += sizeAssign;
-                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+//                    fctExp.totalSpOffset += sizeAssign;
+//                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                      int padding = sizeAssign % 4;
                      padding = 4 - padding;
                     // maybe I need to review the offsets
                     switch (funDecl.params.get(i).type){
                         case BaseType b -> {
+                            fctExp.totalSpOffset += sizeAssign;
+                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                             // if it's a char we only store 1 bite
                             if (b == BaseType.CHAR){
                                 text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
@@ -212,6 +214,8 @@ public class ExprCodeGen extends CodeGen {
                             }
                         }
                         case PointerType pointerType -> {
+                            fctExp.totalSpOffset += sizeAssign;
+                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                             // for pointers, we make them point to same address
                             text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
                             if (padding != 4) {
@@ -220,7 +224,16 @@ public class ExprCodeGen extends CodeGen {
 
                             }
                         }
+                        case ArrayType arrayType -> {
+//                            arg = visit(fctExp.params.get(i));
+                            fctExp.totalSpOffset += 4;
+                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                            text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+
+                        }
                         default -> {
+                            fctExp.totalSpOffset += sizeAssign;
+                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                             Register biteCopy = Register.Virtual.create();
                             for (int j = 0; j < sizeAssign; j=j+4) {
                                 text.emit(OpCode.LW, biteCopy, arg, j);
@@ -315,6 +328,10 @@ public class ExprCodeGen extends CodeGen {
                         }
                         case PointerType p ->
                                 text.emit(OpCode.LW, result, result, 0);
+                        case ArrayType arrayType -> {
+                            if (var.vd.fpOffset > 0)
+                                text.emit(OpCode.LW, result, result, 0);
+                        }
                         default -> {}
                     }
                     yield  result;
