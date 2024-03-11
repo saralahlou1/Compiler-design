@@ -26,8 +26,9 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 				Scope oldScope = scope;
                 scope = new Scope(oldScope);
                 for (VarDecl param : params){
-                    scope.put(new VarSymbol(param));
+                    scope.put(new VarSymbol(param));    // I'm adding the params to every block
                 }
+                params = new ArrayList<>();
                 List<FunProto> oldList = lFunProto;
                 lFunProto = new ArrayList<>();
                 for (ASTNode child : b.children()){
@@ -36,7 +37,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 fctRetType = oldFctRetType;
                 scope = oldScope;
                 lFunProto = oldList;
-                params = new ArrayList<>();
+//                params = new ArrayList<>();
 			}
 
 			case FunDecl fd -> {
