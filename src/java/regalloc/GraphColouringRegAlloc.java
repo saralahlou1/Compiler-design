@@ -11,6 +11,9 @@ public class GraphColouringRegAlloc implements AssemblyPass {
     @Override
     public AssemblyProgram apply(AssemblyProgram program) {
 
+        // for each text section, call CFGGen generate to get the graph
+        // then call liveness analysis on list of nodes
+
         AssemblyProgram newProg = new AssemblyProgram();
 
         // we assume that each function has a single corresponding text section
