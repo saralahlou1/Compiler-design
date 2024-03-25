@@ -5,11 +5,14 @@ import gen.asm.*;
 import java.util.*;
 
 public class CFGGen {
+    public static final CFGGen INSTANCE = new CFGGen();
 
     // maybe first generate all the nodes then loop through nodes to instantiate successors
     // if instruction is not an unconditional jump then one successor is the instruction right after
     // if node1 is a jump, search through the existing nodes for the Label and add corresponding node2
     // to list of successors.
+
+    // check first if register is virtual or not before adding it to live in and out maybe
 
     // add the nodes corresponding to the instructions in order
     private final List<ControlFlowNode> nodes = new ArrayList<>();
@@ -58,15 +61,13 @@ public class CFGGen {
             }
         }
 
-
+        boolean updates;
         // Now we do Liveness Analysis
         do {
+            updates = false;
             for (ControlFlowNode node : nodes.reversed()){
-                node.oldLiveIN = new HashSet<>();
-                node.oldLiveIN.addAll(node.liveIN);
-
-                node.oldLiveOut = new HashSet<>();
-                node.oldLiveOut.addAll(node.liveOut);
+                int oldLiveINSize = node.liveIN.size();
+                int oldLiveOutSize = node.liveOut.size();
 
                 for (ControlFlowNode successor : node.successors){
                     node.liveOut.addAll(successor.liveIN);
@@ -76,11 +77,16 @@ public class CFGGen {
                 Set<Register> temp = new HashSet<>(node.liveOut);
                 temp.remove(node.definition);
                 node.liveIN.addAll(temp);
+
+                if (node.liveIN.size() != oldLiveINSize || node.liveOut.size() != oldLiveOutSize) {
+                    updates = true;
+                }
             }
-        } while (updates());
+        } while (updates);
 
 
         // getting rid of dead instructions
+        // maybe check if reg in definition is virtual or not first
         List<ControlFlowNode> newNodes = new ArrayList<>();
         for (ControlFlowNode node : nodes){
             switch (node.currentInstruction){
@@ -104,14 +110,6 @@ public class CFGGen {
     }
 
 
-    private boolean updates(){
-        for (ControlFlowNode node : nodes){
-            if (! (node.liveIN.equals(node.oldLiveIN) && node.liveOut.equals(node.oldLiveOut))){
-                return true;
-            }
-        }
-        return false;
-    }
 
 
     private void controlFlowSuccessors(Instruction.ControlFlow controlFlow, int i) {
