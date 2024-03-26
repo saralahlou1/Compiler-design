@@ -37,6 +37,20 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 List<InterferenceNode> interferenceGraph =
                         InterferenceGraph.INSTANCE.build(CFGGen.INSTANCE.generate(section));
 
+//                List<Register> vrList = new ArrayList<>();
+//                section.items.forEach((item) -> {
+//                    switch (item) {
+//                        case Instruction insn -> insn.registers().forEach(reg -> {
+//                            if (reg instanceof Register.Virtual) {
+//                                Register.Virtual vr = (Register.Virtual) reg;
+//                                Label l = Label.create(vr.toString());
+//                                vrList.add(vr);
+//                            }
+//                        });
+//                        default -> {} // nothing to do
+//                    }
+//                });
+
                 // TODO Review logic for coloring
                 ColorGraph(interferenceGraph, nbColors);
 
