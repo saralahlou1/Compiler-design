@@ -93,11 +93,13 @@ public class CFGGen {
                 case Instruction instruction -> {
                     if (node.definition != null){
                         // only instructions can have a definition
-                        if (node.liveOut.contains(node.definition)){
+                        if (node.liveOut.contains(node.definition) || node.definition.equals(Register.Arch.a0)
+                                || node.definition.equals(Register.Arch.v0)){
                             newNodes.addLast(node);
                         }
                         // else it is a dead instruction, so we don't add it
                     }
+                    else newNodes.addLast(node);
                 }
                 default -> newNodes.addLast(node);
             }

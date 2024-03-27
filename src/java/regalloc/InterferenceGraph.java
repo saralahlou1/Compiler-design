@@ -58,7 +58,7 @@ public class InterferenceGraph {
                 }
             } else if (r2.isVirtual()) {
                 if (!n.containsKey(r2)) {
-                    n.put(r1, new InterferenceNode(r2));
+                    n.put(r2, new InterferenceNode(r2));
                 }
             }
         }
