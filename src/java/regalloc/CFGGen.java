@@ -20,6 +20,7 @@ public class CFGGen {
     public List<ControlFlowNode> generate(AssemblyProgram.Section functionText){
         assert functionText.type == AssemblyProgram.Section.Type.TEXT;
 
+        nodes.clear();
         // First create the nodes for every instruction and add them to nodes
         functionText.items.forEach((item) -> {
             switch (item) {

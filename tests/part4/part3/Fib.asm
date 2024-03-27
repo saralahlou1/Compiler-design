@@ -342,10 +342,6 @@ addi $sp,$sp,4
 lw $s6,0($sp)
 addi $sp,$sp,4
 # Original instruction: popRegisters
-# Original instruction: addi $sp,$fp,4
-addi $sp,$fp,4
-# Original instruction: lw $fp,0($fp)
-lw $fp,0($fp)
 # Original instruction: li $v0,10
 li $v0,10
 # Original instruction: syscall
