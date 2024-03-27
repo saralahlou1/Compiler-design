@@ -34,8 +34,10 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 // final AssemblyProgram.Section newSection = newProg.newSection(AssemblyProgram.Section.Type.TEXT);
 
 
+                final List<ControlFlowNode> newInstructions = CFGGen.INSTANCE.generate(section);
+
                 List<InterferenceNode> interferenceGraph =
-                        InterferenceGraph.INSTANCE.build(CFGGen.INSTANCE.generate(section));
+                        InterferenceGraph.INSTANCE.build(newInstructions);
 
 //                List<Register> vrList = new ArrayList<>();
 //                section.items.forEach((item) -> {
@@ -79,8 +81,9 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 colorToAr.put(12, Register.Arch.s4); colorToAr.put(13, Register.Arch.s5);
                 colorToAr.put(14, Register.Arch.s6); colorToAr.put(15, Register.Arch.s7);
 
-                section.items.forEach((item) -> {
-                    switch (item) {
+
+                newInstructions.forEach((item) -> {
+                    switch (item.currentInstruction) {
                         case Comment comment -> newSection.emit(comment);
                         case Label label -> newSection.emit(label);
                         case Directive directive -> newSection.emit(directive);
