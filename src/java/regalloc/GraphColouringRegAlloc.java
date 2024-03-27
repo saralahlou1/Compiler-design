@@ -10,7 +10,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
 
     private final List<Register> spilledRegisters = new ArrayList<>();
     private final HashMap<Register, Integer> coloringMap = new HashMap<>();
-    private final int nbColors = 15; // we have 15 free registers outside the ones for spilling
+    private final int nbColors = 16; // we have 16 free registers outside the ones for spilling
     final Map<Integer, Register> colorToAr = new HashMap<>();
 
 
@@ -74,7 +74,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 // populate the coloring map
                 colorToAr.put(1, Register.Arch.t3); colorToAr.put(2, Register.Arch.t4);
                 colorToAr.put(3, Register.Arch.t5); colorToAr.put(4, Register.Arch.t6);
-                colorToAr.put(5, Register.Arch.s0);
+                colorToAr.put(5, Register.Arch.s0); colorToAr.put(16, Register.Arch.t2);
                 colorToAr.put(6, Register.Arch.t7); colorToAr.put(7, Register.Arch.t8);
                 colorToAr.put(8, Register.Arch.t9); colorToAr.put(9, Register.Arch.s1);
                 colorToAr.put(10, Register.Arch.s2); colorToAr.put(11, Register.Arch.s3);
@@ -148,16 +148,23 @@ public class GraphColouringRegAlloc implements AssemblyPass {
         section.emit("Original instruction: "+insn);
 
         final Map<Register, Register> vrToAr = new HashMap<>();
-        Register[] tempRegs = {Register.Arch.t0, Register.Arch.t1, Register.Arch.t2}; // 3 temporaries should be more than enough
+        Register[] tempRegs = {Register.Arch.t0, Register.Arch.t1}; // 2 temporaries should be more than enough
         final Stack<Register> freeTempRegs = new Stack<>();
         freeTempRegs.addAll(Arrays.asList(tempRegs));
 
         // creates a map from virtual register to temporary architecture register for all registers appearing in the instructions
         insn.registers().forEach(reg -> {
             if (spilledRegisters.contains(reg)) {
-                Register tmp = freeTempRegs.pop();
-                Label label = vrMap.get(reg);
-                vrToAr.put(reg, tmp);
+                if (reg == insn.def()){
+                    Register tmp = Register.Arch.t0;
+                    Label label = vrMap.get(reg);
+                    vrToAr.put(reg, tmp);
+                }
+                else {
+                    Register tmp = freeTempRegs.pop();
+                    Label label = vrMap.get(reg);
+                    vrToAr.put(reg, tmp);
+                }
             }
             else if (reg.isVirtual()){
                 // map the other registers using result of coloring
@@ -182,9 +189,11 @@ public class GraphColouringRegAlloc implements AssemblyPass {
         section.emit(insn.rebuild(vrToAr));
 
         if (insn.def() != null) {
+            // make the reg for def t0
             if (spilledRegisters.contains(insn.def())) {
                 Register tmpVal = vrToAr.get(insn.def());
-                Register tmpAddr = freeTempRegs.remove(0);
+                // use t1 for address
+                Register tmpAddr = Register.Arch.t1;
                 Label label = vrMap.get(insn.def());
 
                 section.emit(OpCode.LA, tmpAddr, label);
