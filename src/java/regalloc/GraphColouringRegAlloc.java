@@ -72,6 +72,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 // populate the coloring map
                 colorToAr.put(1, Register.Arch.t3); colorToAr.put(2, Register.Arch.t4);
                 colorToAr.put(3, Register.Arch.t5); colorToAr.put(4, Register.Arch.t6);
+                colorToAr.put(5, Register.Arch.s0);
                 colorToAr.put(6, Register.Arch.t7); colorToAr.put(7, Register.Arch.t8);
                 colorToAr.put(8, Register.Arch.t9); colorToAr.put(9, Register.Arch.s1);
                 colorToAr.put(10, Register.Arch.s2); colorToAr.put(11, Register.Arch.s3);
@@ -151,7 +152,9 @@ public class GraphColouringRegAlloc implements AssemblyPass {
             }
             else if (reg.isVirtual()){
                 // map the other registers using result of coloring
-                vrToAr.put(reg, colorToAr.get(coloringMap.get(reg)));
+                Integer tempo = coloringMap.get(reg);
+                Register tempp = colorToAr.get(tempo);
+                vrToAr.put(reg, tempp);
             }
         });
 
@@ -221,8 +224,9 @@ public class GraphColouringRegAlloc implements AssemblyPass {
             ColorGraph(newList, nbColors);
 
             // We look for a color different from the neighbors
-            boolean availableColor = true;
+            // boolean availableColor = true;
             for (int i = 1; i <= nbColors; i++){
+                boolean availableColor = true;
                 for (Register reg : colorableNode.interferenceList){
                     if (coloringMap.containsKey(reg)){
                         if (coloringMap.get(reg) == i){
