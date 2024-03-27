@@ -162,6 +162,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 Label label = vrMap.get(reg);
                 section.emit(OpCode.LA, tmp, label);
                 section.emit(OpCode.LW, tmp, tmp, 0);
+                freeTempRegs.push(tmp);
             }
         });
 
