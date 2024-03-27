@@ -224,7 +224,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
             ColorGraph(newList, nbColors);
 
             // We look for a color different from the neighbors
-            // boolean availableColor = true;
+
             for (int i = 1; i <= nbColors; i++){
                 boolean availableColor = true;
                 for (Register reg : colorableNode.interferenceList){
