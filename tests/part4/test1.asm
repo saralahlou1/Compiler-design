@@ -18,6 +18,7 @@ li a14,0
 li a15,0
 li v2,0
 li v0,0
+add a8,a8,a9
 add:
 addi v1,v0,1
 add v2,v2,v1

@@ -17,6 +17,7 @@ import java.util.List;
  * virtual (a fiction the compiler maintains until register allocation kicks in).
  */
 public abstract class Register {
+    public int nbUses = 0;
 
     /**
      * Tells if this register is virtual.

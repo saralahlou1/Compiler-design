@@ -254,10 +254,13 @@ public class GraphColouringRegAlloc implements AssemblyPass {
         // else we spill one variable
         else {
             // just to initialize the value
-            InterferenceNode maxDegreeNode = new InterferenceNode(null, -1);
+            InterferenceNode maxDegreeNode = new InterferenceNode(Register.Virtual.create(), -1);
+            maxDegreeNode.reg.nbUses = Integer.MAX_VALUE;
             for (InterferenceNode node : nodes){
-                if (node.degree > maxDegreeNode.degree){
-                    maxDegreeNode = node;
+                if (node.degree >= maxDegreeNode.degree){
+                    if (node.reg.nbUses < maxDegreeNode.reg.nbUses){
+                        maxDegreeNode = node;
+                    }
                 }
             }
             // choosing the node with max degree as the one to spill
