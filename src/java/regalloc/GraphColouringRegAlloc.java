@@ -99,13 +99,19 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                                     newSection.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                                     newSection.emit(OpCode.SW, Register.Arch.t0, Register.Arch.sp, 0);
                                 }
-                                coloringMap.forEach((reg, integer) -> {
+                                List<Integer> usedReg = new ArrayList<>(coloringMap.values());
+                                Set<Integer> usedRegNoDuplicates = new HashSet<>(usedReg);
+                                usedReg = new ArrayList<>(usedRegNoDuplicates);
+                                usedReg.forEach((integer) -> {
                                     // REVIEW
+                                    // pop from stack into corresponding reg
                                     newSection.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                                     newSection.emit(OpCode.SW, colorToAr.get(integer), Register.Arch.sp, 0);
                                 });
                             } else if (insn == Instruction.Nullary.popRegisters) {
                                 List<Integer> usedReg = new ArrayList<>(coloringMap.values());
+                                Set<Integer> usedRegNoDuplicates = new HashSet<>(usedReg);
+                                usedReg = new ArrayList<>(usedRegNoDuplicates);
                                 Collections.reverse(usedReg);
                                 usedReg.forEach((integer) -> {
                                     // REVIEW

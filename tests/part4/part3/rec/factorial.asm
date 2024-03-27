@@ -56,27 +56,9 @@ addi $sp,$sp,-4
 sw $ra,0($sp)
 # Original instruction: pushRegisters
 addi $sp,$sp,-4
-sw $s6,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s6,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s6,0($sp)
-addi $sp,$sp,-4
 sw $s5,0($sp)
 addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s5,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
+sw $s6,0($sp)
 addi $sp,$sp,-4
 sw $s7,0($sp)
 # Original instruction: addi v0,$fp,8
@@ -103,21 +85,21 @@ j label_8_
 j label_10_
 label_11_:
 # Original instruction: addi v6,$fp,8
-addi $s6,$fp,8
+addi $s5,$fp,8
 # Original instruction: lw v6,0(v6)
-lw $s6,0($s6)
+lw $s5,0($s5)
 # Original instruction: addi v8,$fp,8
 addi $s7,$fp,8
 # Original instruction: lw v8,0(v8)
 lw $s7,0($s7)
 # Original instruction: li v10,1
-li $s5,1
+li $s6,1
 # Original instruction: sub v9,v8,v10
-sub $s5,$s7,$s5
+sub $s7,$s7,$s6
 # Original instruction: addi $sp,$sp,-4
 addi $sp,$sp,-4
 # Original instruction: sw v9,0($sp)
-sw $s5,0($sp)
+sw $s7,0($sp)
 # Original instruction: addi $sp,$sp,-4
 addi $sp,$sp,-4
 # Original instruction: jal label_9_factorial
@@ -129,7 +111,7 @@ lw $s7,0($s7)
 # Original instruction: addi $sp,$sp,8
 addi $sp,$sp,8
 # Original instruction: mult v6,v11
-mult $s6,$s7
+mult $s5,$s7
 # Original instruction: mflo v7
 mflo $s7
 # Original instruction: sw v7,4($fp)
@@ -140,27 +122,9 @@ label_10_:
 label_8_:
 lw $s7,0($sp)
 addi $sp,$sp,4
-lw $s7,0($sp)
+lw $s6,0($sp)
 addi $sp,$sp,4
 lw $s5,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s5,0($sp)
-addi $sp,$sp,4
-lw $s6,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s6,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s6,0($sp)
 addi $sp,$sp,4
 # Original instruction: popRegisters
 # Original instruction: addi $sp,$fp,4
@@ -185,31 +149,9 @@ sw $fp,0($sp)
 add $fp,$zero,$sp
 # Original instruction: pushRegisters
 addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s5,0($sp)
-addi $sp,$sp,-4
-sw $s5,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s6,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
 sw $s5,0($sp)
 addi $sp,$sp,-4
 sw $s6,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s6,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
-addi $sp,$sp,-4
-sw $s7,0($sp)
 addi $sp,$sp,-4
 sw $s7,0($sp)
 # Original instruction: li v12,4
@@ -236,31 +178,9 @@ addi $v0,$zero,1
 syscall
 lw $s7,0($sp)
 addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s6,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
 lw $s6,0($sp)
 addi $sp,$sp,4
 lw $s5,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s6,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
-addi $sp,$sp,4
-lw $s5,0($sp)
-addi $sp,$sp,4
-lw $s5,0($sp)
-addi $sp,$sp,4
-lw $s7,0($sp)
 addi $sp,$sp,4
 # Original instruction: popRegisters
 # Original instruction: addi $sp,$fp,4
