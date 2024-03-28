@@ -34,6 +34,8 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 // final AssemblyProgram.Section newSection = newProg.newSection(AssemblyProgram.Section.Type.TEXT);
 
 
+                spilledRegisters.clear();
+                coloringMap.clear();
                 final List<ControlFlowNode> newInstructions = CFGGen.INSTANCE.generate(section);
 
                 List<InterferenceNode> interferenceGraph =
@@ -109,6 +111,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                                     newSection.emit(OpCode.SW, colorToAr.get(integer), Register.Arch.sp, 0);
                                 });
                             } else if (insn == Instruction.Nullary.popRegisters) {
+                                newSection.emit("Original instruction: popRegisters");
                                 List<Integer> usedReg = new ArrayList<>(coloringMap.values());
                                 Set<Integer> usedRegNoDuplicates = new HashSet<>(usedReg);
                                 usedReg = new ArrayList<>(usedRegNoDuplicates);
@@ -119,7 +122,6 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                                     newSection.emit(OpCode.LW, colorToAr.get(integer), Register.Arch.sp, 0);
                                     newSection.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, 4);
                                 });
-                                newSection.emit("Original instruction: popRegisters");
                                 for (Label l : reverseVrLabels) {
                                     // pop from stack into $t0
                                     newSection.emit(OpCode.LW, Register.Arch.t0, Register.Arch.sp, 0);

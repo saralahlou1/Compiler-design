@@ -11,6 +11,8 @@ public class InterferenceGraph {
     public HashMap<Register, InterferenceNode> n = new HashMap<>();
 
     public List<InterferenceNode> build(List<ControlFlowNode> nodes){
+        interferenceNodes = new ArrayList<>();
+        n = new HashMap<>();
         for (ControlFlowNode node : nodes){
 
             for (Register r1 : node.liveIN){
