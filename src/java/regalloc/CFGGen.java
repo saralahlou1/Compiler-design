@@ -109,6 +109,22 @@ public class CFGGen {
         nodes.clear();
         nodes.addAll(newNodes);
 
+        // Initialize nb of uses to 0
+        for (ControlFlowNode node : nodes){
+            if (node.definition != null){
+                if (node.definition.isVirtual()){
+                    node.definition.nbUses = 0;
+                }
+            }
+            if (node.uses != null){
+                for (Register reg : node.uses){
+                    if (reg.isVirtual()){
+                        reg.nbUses = 0;
+                    }
+                }
+            }
+        }
+
         // Compute number of uses of every virtual register
         for (ControlFlowNode node : nodes){
             if (node.definition != null){
