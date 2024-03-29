@@ -41,22 +41,11 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 List<InterferenceNode> interferenceGraph =
                         InterferenceGraph.INSTANCE.build(newInstructions);
 
-//                List<Register> vrList = new ArrayList<>();
-//                section.items.forEach((item) -> {
-//                    switch (item) {
-//                        case Instruction insn -> insn.registers().forEach(reg -> {
-//                            if (reg instanceof Register.Virtual) {
-//                                Register.Virtual vr = (Register.Virtual) reg;
-//                                Label l = Label.create(vr.toString());
-//                                vrList.add(vr);
-//                            }
-//                        });
-//                        default -> {} // nothing to do
-//                    }
-//                });
 
-                // TODO Review logic for coloring
-                ColorGraph(interferenceGraph, nbColors);
+                if (!fullColoringGraph(interferenceGraph, 18)) {
+                    coloringMap.clear();
+                    ColorGraph(interferenceGraph, nbColors);
+                }
 
 
                 final Map<Register.Virtual, Label> vrMap = collectVirtualRegisters();
@@ -82,6 +71,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 colorToAr.put(10, Register.Arch.s2); colorToAr.put(11, Register.Arch.s3);
                 colorToAr.put(12, Register.Arch.s4); colorToAr.put(13, Register.Arch.s5);
                 colorToAr.put(14, Register.Arch.s6); colorToAr.put(15, Register.Arch.s7);
+                colorToAr.put(17, Register.Arch.t0); colorToAr.put(18, Register.Arch.t1);
 
 
                 newInstructions.forEach((item) -> {
@@ -217,6 +207,55 @@ public class GraphColouringRegAlloc implements AssemblyPass {
         }
 
         return vrMap;
+    }
+
+    private boolean fullColoringGraph(List<InterferenceNode> nodes, int nbColors){
+        if (nodes.isEmpty()){
+            return true;
+        }
+
+        boolean colorable = false;
+        InterferenceNode colorableNode = null;
+
+        // First search for a node of degree < nbColors
+        for (InterferenceNode node : nodes){
+            if (node.degree < nbColors){
+                // If we found one then it is colorable
+                colorable = true;
+                colorableNode = node;
+                break;
+            }
+        }
+        if (colorable){
+            // in this case we "remove" the node and color the rest
+            List<InterferenceNode> newList = remove(nodes, colorableNode);
+            boolean isColorable = fullColoringGraph(newList, nbColors);
+            // We look for a color different from the neighbors
+            if (!isColorable){
+                return false;
+            }
+            for (int i = 1; i <= nbColors; i++){
+                boolean availableColor = true;
+                for (Register reg : colorableNode.interferenceList){
+                    if (coloringMap.containsKey(reg)){
+                        if (coloringMap.get(reg) == i){
+                            // if the color is taken, we set the var to false
+                            availableColor = false;
+                        }
+                    }
+                }
+                if (availableColor){
+                    // We must get to this stage at some point since we know that this node is colorable
+                    coloringMap.put(colorableNode.reg, i);
+                }
+            }
+            return true;
+        }
+
+        // else we spill one variable
+        else {
+            return false;
+        }
     }
 
     private void ColorGraph(List<InterferenceNode> nodes, int nbColors){

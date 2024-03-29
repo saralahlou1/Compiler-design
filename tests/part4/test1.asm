@@ -15,10 +15,9 @@ li a11,0
 li a12,0
 li a13,0
 li a14,0
-li a15,0
 li v2,0
 li v0,0
-add a8,a9,a15
+add a8,a9,a14
 add:
 addi v1,v0,1
 add v2,v2,v1
@@ -44,4 +43,3 @@ add a11,a11,$zero
 add a12,a12,$zero
 add a13,a13,$zero
 add a14,a14,$zero
-add a15,a15,$zero
