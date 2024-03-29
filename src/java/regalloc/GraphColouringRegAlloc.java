@@ -33,29 +33,84 @@ public class GraphColouringRegAlloc implements AssemblyPass {
                 // When dealign with push/pop registers, we assume that if a virtual register is used in the section, then it must be written into.
                 // final AssemblyProgram.Section newSection = newProg.newSection(AssemblyProgram.Section.Type.TEXT);
 
+                List<ControlFlowNode> newInstructions = new ArrayList<>();
+                boolean isSpilled = true;
+                AssemblyProgram.Section oldInst = section;
 
-                spilledRegisters.clear();
-                coloringMap.clear();
-                final List<ControlFlowNode> newInstructions = CFGGen.INSTANCE.generate(section);
+                AssemblyProgram.Section dataSec =
+                        newProg.newSection(AssemblyProgram.Section.Type.DATA);
+                dataSec.emit("Allocated labels for virtual registers");
 
-                List<InterferenceNode> interferenceGraph =
-                        InterferenceGraph.INSTANCE.build(newInstructions);
-
-
-                if (!fullColoringGraph(interferenceGraph, 18)) {
+                while (isSpilled){
+                    spilledRegisters.clear();
                     coloringMap.clear();
-                    ColorGraph(interferenceGraph, nbColors);
+                    newInstructions = CFGGen.INSTANCE.generate(oldInst);
+
+                    List<InterferenceNode> interferenceGraph =
+                            InterferenceGraph.INSTANCE.build(newInstructions);
+
+
+                    if (!fullColoringGraph(interferenceGraph, 18)) {
+                        InterferenceNode maxDegreeNode = new InterferenceNode(Register.Virtual.create(), -1);
+                        maxDegreeNode.reg.nbUses = Integer.MAX_VALUE;
+                        for (InterferenceNode node : interferenceGraph){
+                            if (node.degree >= maxDegreeNode.degree){
+                                if (node.reg.nbUses < maxDegreeNode.reg.nbUses){
+                                    maxDegreeNode = node;
+                                }
+                            }
+                        }
+
+                        // generate new inst with var spilled into a virtual reg
+                        AssemblyProgram optimisationProg = new AssemblyProgram();
+
+                        Label l = Label.create(maxDegreeNode.reg.toString());
+                        dataSec.emit("Allocated labels for this turn's virtual registers");
+                        dataSec.emit(l);
+                        dataSec.emit(new Directive("space " + 4));
+
+                        final AssemblyProgram.Section optimisationSection =
+                                optimisationProg.newSection(AssemblyProgram.Section.Type.TEXT);
+
+                        InterferenceNode finalMaxDegreeNode = maxDegreeNode;
+
+                        newInstructions.forEach((item) -> {
+                            switch (item.currentInstruction) {
+                                case Comment comment -> optimisationSection.emit(comment);
+                                case Label label -> optimisationSection.emit(label);
+                                case Directive directive -> optimisationSection.emit(directive);
+                                case Instruction insn -> {
+                                    if (insn.def() == finalMaxDegreeNode.reg){
+                                        optimisationSection.emit(insn);
+                                        Register tmpAddr = Register.Virtual.create();
+                                        Register tmpVal = finalMaxDegreeNode.reg;
+
+                                        optimisationSection.emit(OpCode.LA, tmpAddr, l);
+                                        optimisationSection.emit(OpCode.SW, tmpVal, tmpAddr, 0);
+                                    }
+                                    else if (insn.uses().contains(finalMaxDegreeNode.reg)){
+                                        Register tmpVal = finalMaxDegreeNode.reg;
+                                        optimisationSection.emit(OpCode.LA, tmpVal, l);
+                                        optimisationSection.emit(OpCode.LW, tmpVal, tmpVal, 0);
+                                        optimisationSection.emit(insn);
+                                    }
+                                    else
+                                        optimisationSection.emit(insn);
+                                }
+                            }
+                        });
+                        oldInst = optimisationSection;
+
+                    }
+                    else {
+                        isSpilled = false;
+                    }
+
                 }
 
 
                 final Map<Register.Virtual, Label> vrMap = collectVirtualRegisters();
 
-                AssemblyProgram.Section dataSec = newProg.newSection(AssemblyProgram.Section.Type.DATA);
-                dataSec.emit("Allocated labels for virtual registers");
-                vrMap.forEach((vr, lbl) -> {
-                    dataSec.emit(lbl);
-                    dataSec.emit(new Directive("space " + 4));
-                });
 
                 final AssemblyProgram.Section newSection = newProg.newSection(AssemblyProgram.Section.Type.TEXT);
                 List<Label> vrLabels = new LinkedList<>(vrMap.values());

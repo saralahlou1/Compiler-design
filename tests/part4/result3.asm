@@ -1,24 +1,21 @@
 .data
 # Allocated labels for virtual registers
+# Allocated labels for this turn's virtual registers
+label_2_a0:
+.space 4
 
 .text
 main:
-# Original instruction: pushRegisters
-addi $sp,$sp,-4
-sw $t2,0($sp)
-addi $sp,$sp,-4
-sw $t0,0($sp)
-addi $sp,$sp,-4
-sw $t1,0($sp)
-# Original instruction: jal dummy
-jal dummy
-# Original instruction: popRegisters
-lw $t1,0($sp)
-addi $sp,$sp,4
-lw $t0,0($sp)
-addi $sp,$sp,4
-lw $t2,0($sp)
-addi $sp,$sp,4
+# Original instruction: li a0,0
+li $t0,0
+# Original instruction: la v21,label_2_a0
+la $t1,label_2_a0
+# Original instruction: sw a0,0(v21)
+sw $t0,0($t1)
+# Original instruction: li a9,0
+li $s7,0
+# Original instruction: li a14,0
+li $t1,0
 # Original instruction: li v2,0
 li $t0,0
 # Original instruction: li v0,0
@@ -42,18 +39,4 @@ add $a0,$zero,$t0
 addi $v0,$zero,1
 # Original instruction: syscall
 syscall
-# Original instruction: li $v0,10
-li $v0,10
-# Original instruction: syscall
-syscall
-
-.data
-# Allocated labels for virtual registers
-
-.text
-dummy:
-# Original instruction: pushRegisters
-# Original instruction: popRegisters
-# Original instruction: jr $ra
-jr $ra
 
