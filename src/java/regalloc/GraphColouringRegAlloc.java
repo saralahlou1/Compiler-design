@@ -309,6 +309,11 @@ public class GraphColouringRegAlloc implements AssemblyPass {
             for (InterferenceNode node : nodes){
                 if (node.degree > maxDegreeNode.degree){
                     maxDegreeNode = node;
+                } else if (node.degree == maxDegreeNode.degree) {
+                    // In case of a tie, chose the least used one
+                    if (node.reg.nbUses < maxDegreeNode.reg.nbUses){
+                        maxDegreeNode = node;
+                    }
                 }
             }
             // choosing the node with max degree as the one to spill
