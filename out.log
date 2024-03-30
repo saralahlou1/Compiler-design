@@ -1,9 +1,6 @@
 java.lang.Throwable:
-java.base/java.lang.NumberFormatException.forInputString(NumberFormatException.java:67)
-java.base/java.lang.Integer.parseInt(Integer.java:661)
-java.base/java.lang.Integer.parseInt(Integer.java:777)
-gen.asm.AssemblyParser.parseImmediate(AssemblyParser.java:254)
-gen.asm.AssemblyParser.parseAssemblyItem(AssemblyParser.java:200)
+gen.asm.AssemblyParser.checkArity(AssemblyParser.java:215)
+gen.asm.AssemblyParser.parseAssemblyItem(AssemblyParser.java:196)
 gen.asm.AssemblyParser.readAssemblyProgram(AssemblyParser.java:38)
 Main4.compile(Main4.java:258)
 Main4.main(Main4.java:72)
