@@ -10,7 +10,7 @@ public class GraphColouringRegAlloc implements AssemblyPass {
 
     private final List<Register> spilledRegisters = new ArrayList<>();
     private final HashMap<Register, Integer> coloringMap = new HashMap<>();
-    private final int nbColors = 16; // we have 16 free registers outside the ones for spilling
+    private final int nbColors = 15; // we have 16 free registers outside the ones for spilling
     final Map<Integer, Register> colorToAr = new HashMap<>();
 
 
