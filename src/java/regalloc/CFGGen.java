@@ -184,7 +184,13 @@ public class CFGGen {
             case Instruction.JumpRegister jumpRegister -> {
                 // This is an unconditional jump to a register
                 // It is done at the end of the function, so it
-                // has no successor.
+                // has no successor. (this is for jr)
+                // jalr behaves like jal
+                if (jumpRegister.opcode == OpCode.JALR){
+                    if (i != nodes.size() - 1) {
+                        nodes.get(i).successors.add(nodes.get(i + 1));
+                    }
+                }
             }
         }
     }
