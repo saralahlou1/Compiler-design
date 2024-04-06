@@ -345,6 +345,9 @@ public class Tokeniser extends CompilerPass {
             if (keyword.equals("sizeof")) return new Token(Token.Category.SIZEOF, line, column);
             if (keyword.equals("continue")) return new Token(Token.Category.CONTINUE, line, column);
             if (keyword.equals("break")) return new Token(Token.Category.BREAK, line, column);
+            if (keyword.equals("class")) return new Token(Token.Category.CLASS, line, column);
+            if (keyword.equals("extends")) return new Token(Token.Category.EXTENDS, line, column);
+            if (keyword.equals("new")) return new Token(Token.Category.NEW, line, column);
             // if we reach here, then the keyword is not any of the ones above
             return new Token(Token.Category.IDENTIFIER, keyword, line, column);
         }

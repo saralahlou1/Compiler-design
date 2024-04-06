@@ -14,6 +14,13 @@ public class Token {
         // LowerCaseAlpha = 'a'|...|'z'
         // UpperCaseAlpha = 'A'|...|'Z'
         // Digit          = '0' | '1' | ... | '9'
+
+        CLASS,
+
+        EXTENDS,
+
+        NEW,
+
         IDENTIFIER, // (LowerCaseAlpha | UpperCaseAlpha | '_') (Digit | LowerCaseAlpha | UpperCaseAlpha | '_')*
 
         ASSIGN, // '='
