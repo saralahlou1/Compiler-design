@@ -378,6 +378,11 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				visit(aWhile.stmt);
 				yield BaseType.NONE;
 			}
+
+			// TODO
+            case ClassDecl classDecl -> null;
+            case InstanceFunCallExpr instanceFunCallExpr -> null;
+            case NewInstance newInstance -> null;
         };
 
 	}

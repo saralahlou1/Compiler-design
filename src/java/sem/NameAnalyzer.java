@@ -353,6 +353,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     case ArrayType arr -> aReturn.retType = new ArrayType(arr.arrayType, arr.nbElements);
                     case PointerType p -> aReturn.retType = new PointerType(p.pointerType);
                     case StructType s -> aReturn.retType = new StructType(s.structName);
+                    // TODO check
+                    case ClassType c -> aReturn.retType = new ClassType(c.ClassName);
                 }
                 visit(aReturn.expr);
             }
@@ -371,6 +373,14 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case While aWhile -> {
                 visit(aWhile.expr);
                 visit(aWhile.stmt);
+            }
+
+            // TODO
+            case ClassDecl classDecl -> {
+            }
+            case InstanceFunCallExpr instanceFunCallExpr -> {
+            }
+            case NewInstance newInstance -> {
             }
         };
 

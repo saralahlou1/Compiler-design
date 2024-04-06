@@ -72,11 +72,7 @@ public final class StructType implements Type{
                             structSize = structSize + (4 - (structSize % 4));
                     }
                 }
-                case PointerType pointerType -> {
-                    if (padding != 0)
-                        structSize = structSize + (4 - (structSize % 4));
-                }
-                case StructType structType -> {
+                default -> {
                     if (padding != 0)
                         structSize = structSize + (4 - (structSize % 4));
                 }

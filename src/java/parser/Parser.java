@@ -126,14 +126,18 @@ public class Parser  extends CompilerPass {
 
         List<Decl> decls = new ArrayList<>();
 
-        while (accept(Category.STRUCT, Category.INT, Category.CHAR, Category.VOID)) {
+        while (accept(Category.STRUCT, Category.INT, Category.CHAR, Category.VOID, Category.CLASS)) {
             if (error){break;}
             if (token.category == Category.STRUCT &&
                     lookAhead(1).category == Category.IDENTIFIER &&
                     lookAhead(2).category == Category.LBRA) {
                 decls.add(parseStructDecl());
-            }
-            else if (accept_type()){
+            } else if (token.category == Category.CLASS &&
+                    lookAhead(1).category == Category.IDENTIFIER &&
+                    (lookAhead(2).category == Category.LBRA || lookAhead(2).category == Category.EXTENDS)) {
+                decls.add(parseClassDecl());
+
+            } else if (accept_type()){
                 Type type = parse_type();
 
                 // check if it's fundecl / funproto
@@ -166,15 +170,75 @@ public class Parser  extends CompilerPass {
                 nextToken();
             }
         }
-        // to be completed ...
 
         expect(Category.EOF);
         return new Program(decls);
     }
 
+    private ClassDecl parseClassDecl(){
+        ClassType classType = parse_classType();
+        ClassType ancestorType = null;
+        List<VarDecl> varDecls = new ArrayList<>();
+        List<FunDecl> funDecls = new ArrayList<>();
+
+        if (accept(Category.EXTENDS)){
+            expect(Category.EXTENDS);
+            Token id = expect(Category.IDENTIFIER);
+            ancestorType = new ClassType(id.data);
+        }
+        expect(Category.LBRA);
+
+        Type temp = null;
+        boolean broke = false;
+        while (accept_type()){
+            temp = parse_type();
+            if (accept(Category.IDENTIFIER) &&
+                    (lookAhead(1).category == Category.LSBR || lookAhead(1).category == Category.SC)){
+                varDecls.add(parse_vardecl(temp));
+            } else {
+                broke = true;
+                break;
+            }
+        }
+
+        if (broke){
+            // then the type was processed already in temp
+            String fctName = expect(Category.IDENTIFIER).data;
+            expect(Category.LPAR);
+            List<VarDecl> params = parse_params();
+            expect(Category.RPAR);
+            Block block = parse_block();
+            FunDecl fun = new FunDecl(temp, fctName, params, block);
+            funDecls.add(fun);
+            while (accept_type()){
+                temp = parse_type();
+                fctName = expect(Category.IDENTIFIER).data;
+                expect(Category.LPAR);
+                params = parse_params();
+                expect(Category.RPAR);
+                block = parse_block();
+                fun = new FunDecl(temp, fctName, params, block);
+                funDecls.add(fun);
+            }
+        }
+        // if we didn't break, that means that accept type returned false
+
+        expect(Category.RBRA);
+
+        return new ClassDecl(classType, ancestorType, varDecls, funDecls);
+    }
+
     private boolean accept_type(){
         return accept(Category.INT) || accept(Category.CHAR) || accept(Category.VOID)
-                || (accept(Category.STRUCT) && lookAhead(1).category == Category.IDENTIFIER);
+                || (accept(Category.STRUCT) && lookAhead(1).category == Category.IDENTIFIER)
+                || (accept(Category.CLASS) && lookAhead(1).category == Category.IDENTIFIER);
+    }
+
+    private ClassType parse_classType(){
+        expect(Category.CLASS);
+        Token id = expect(Category.IDENTIFIER);
+        ClassType type = new ClassType(id.data);
+        return type;
     }
 
     private StructType parse_structtype(){
@@ -196,6 +260,8 @@ public class Parser  extends CompilerPass {
             expect(Category.VOID);
         } else if (accept(Category.STRUCT)){
             type = parse_structtype();
+        } else if (accept(Category.CLASS)) {
+            type = parse_classType();
         } else {
             type = BaseType.NONE;
             error();
@@ -495,6 +561,14 @@ public class Parser  extends CompilerPass {
     }
     Expr parseFactor_2(){
         Expr expr;
+        // TODO review this part concerning new
+        if (accept(Category.NEW)){
+            expect(Category.NEW);
+            ClassType t = parse_classType();
+            expect(Category.LPAR);
+            expect(Category.RPAR);
+            return new NewInstance(t);
+        }
         if (accept(Category.ASTERISK)){
             nextToken();
             expr = parseFactor_2();
@@ -515,6 +589,7 @@ public class Parser  extends CompilerPass {
                 (lookAhead(1).category == Category.INT) || (lookAhead(1).category == Category.CHAR) ||
                 (lookAhead(1).category == Category.VOID) ||
                 (lookAhead(1).category == Category.STRUCT && lookAhead(2).category == Category.IDENTIFIER)
+                || (lookAhead(1).category == Category.CLASS && lookAhead(2).category == Category.IDENTIFIER)
         )){
             nextToken();
             Type type = parse_type();
@@ -523,6 +598,8 @@ public class Parser  extends CompilerPass {
             return new TypecastExpr(type, expr);
         }
         else {
+
+
             return parseFactor_1();
         }
     }
@@ -533,7 +610,24 @@ public class Parser  extends CompilerPass {
             if (accept(Category.DOT)){
                 nextToken();
                 String id = expect(Category.IDENTIFIER).data;
-                expr = new FieldAccessExpr(expr, id);
+
+                // TODO review this part related to instance function call
+                if (accept(Category.LPAR)){
+                    nextToken();
+                    List<Expr> params = new ArrayList<>();
+                    if(acceptExp()){
+                        params.add(parse_exp());
+                        while(accept(Category.COMMA)){
+                            nextToken();
+                            params.add(parse_exp());
+                        }
+                    }
+                    expect(Category.RPAR);
+                    FunCallExpr funCallExpr = new FunCallExpr(id, params);
+                    expr = new InstanceFunCallExpr(expr, funCallExpr);
+                } else {
+                    expr = new FieldAccessExpr(expr, id);
+                }
             } else if (accept(Category.LSBR)){
                 nextToken();
                 Expr expr2 = parse_exp();

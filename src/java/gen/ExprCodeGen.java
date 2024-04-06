@@ -519,6 +519,8 @@ public class ExprCodeGen extends CodeGen {
                 yield null;
             }
 
+            case InstanceFunCallExpr instanceFunCallExpr -> null;
+            case NewInstance newInstance -> null;
         };
     }
 }

@@ -75,6 +75,9 @@ public class MemAllocCodeGen extends CodeGen {
                             if (padding != 0)
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
+                        case ClassType classType -> {
+                            // TODO
+                        }
                     }
                      this.fpOffset -= vd.size;
                      vd.fpOffset = this.fpOffset;
@@ -125,6 +128,9 @@ public class MemAllocCodeGen extends CodeGen {
                         // we initialize it in size fct for structType while computing the size.
                         // Don't forget padding
                         // Implemented size fct for all types
+                        case ClassType classType -> {
+                            // TODO
+                        }
                     }
 
                 }
