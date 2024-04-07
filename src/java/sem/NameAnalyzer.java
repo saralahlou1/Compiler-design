@@ -301,6 +301,15 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             case null, default -> error("Struct has not been declared yet.");
                         }
                     }
+                    case ClassType classType -> {
+                        Symbol classDecl = scope.lookup(classType.ClassName);
+                        switch (classDecl){
+                            case ClassSymbol c -> {
+                                classType.cDecl = c.classDecl;
+                            }
+                            case null, default -> error("Class has not been declared yet.");
+                        }
+                    }
                     case ArrayType arr -> visit(arr.arrayType);
                     case PointerType p -> visit(p.pointerType);
                     default -> {}
@@ -377,10 +386,70 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
             // TODO
             case ClassDecl classDecl -> {
+                // trying this
+                Symbol s = scope.lookupCurrent(classDecl.classType.ClassName);
+                if (s != null){
+                    error("Class name already declared in the same scope.");
+                }
+                else {
+                    classDecl.classType.cDecl = classDecl;
+                    s = new ClassSymbol(classDecl);
+                    scope.put(s);
+                }
+
+                // check if possible to inherit from class yet to be defined
+                if (classDecl.ancestorType != null){
+                    Symbol ancestor = scope.lookupCurrent(classDecl.ancestorType.ClassName);
+                    if (ancestor == null){
+                        error("Class ancestor does not/not yet exit.");
+                    }
+                    else {
+                        switch (ancestor){
+                            case ClassSymbol c -> {
+                                if (c.name.equals(classDecl.classType.ClassName)){
+                                    error("A class can't extend itself.");
+                                }
+                                classDecl.ancestorType.cDecl = c.classDecl;
+                            }
+                            default -> {
+                                error("extended class is not a class.");
+                            }
+                        }
+                    }
+                }
+
+                Scope oldScope = scope;
+                scope = new Scope(oldScope);
+                ClassType ancestor = classDecl.ancestorType;
+                while(ancestor != null){
+                    if (ancestor.ClassName.equals(classDecl.classType.ClassName)){
+                        error("A class can't have itself as an ancestor");
+                        break;
+                    }
+                    classDecl.ancestorFun = new ArrayList<>();
+                    classDecl.ancestorVars = new ArrayList<>();
+                    for (VarDecl var : ancestor.cDecl.varDecls.reversed()) {
+                        classDecl.ancestorVars.addFirst(var);
+                    }
+
+                    ClassDecl ancestorDecl = ancestor.cDecl;
+                    ancestor = ancestorDecl.ancestorType;
+                    for (ASTNode child : ancestorDecl.varDecls){
+                        visit(child);
+                    }
+
+                }
+                for (ASTNode child : classDecl.children()){
+                    visit(child);
+                }
+                scope = oldScope;
             }
             case InstanceFunCallExpr instanceFunCallExpr -> {
+                visit(instanceFunCallExpr.instance);
+                // verify if fct exists in corresponding class in type analysis
             }
             case NewInstance newInstance -> {
+                visit(newInstance.newInstanceType);
             }
         };
 
