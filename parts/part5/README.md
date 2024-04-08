@@ -257,10 +257,10 @@ You must make sure each declared class has a unique name in your type analyzer.
 Then, you must ensure that when facing a class function call, or field access, the function or field exists in the corresponding class declaration or its parents.
 This note is the essential part of object-oriented programming language type checking, in which you must have to check all ancestors of a class while analyzing field accesses or function calls.
 
-The typing rules have been updated based and can be accessed [here](./typing-rules/rules.pdf).
+The typing rules have been updated and can be accessed [here](./typing-rules/rules.pdf).
 All new or updated rules are written in red.
-The `<:` operator in typing inference rule indicates subtyping, meaning that T<sub>1</sub> corresponding class is a descendant of T<sub>2</sub> corresponding one.
-As before, you are responsible for extending `sem.TypeCheckVisitor` to follow newly-added rules.
+The `<:` operator indicates subtyping: if `T <: U`, it means that `T` is either the class `U` or a descendant of `U`.
+You should update your `sem.TypeCheckVisitor` to take into account all the newly-added/updated rules.
 
 
 
