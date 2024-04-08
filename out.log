@@ -1,6 +1,6 @@
 java.lang.Throwable:
 java.base/java.util.Objects.requireNonNull(Objects.java:233)
-sem.TypeAnalyzer.visit(TypeAnalyzer.java:298)
+sem.TypeAnalyzer.visit(TypeAnalyzer.java:314)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:171)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:227)
 sem.TypeAnalyzer.visit(TypeAnalyzer.java:17)

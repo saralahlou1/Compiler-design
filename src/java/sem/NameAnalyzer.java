@@ -432,6 +432,23 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         classDecl.ancestorVars.addFirst(var);
                     }
 
+
+                    for (FunDecl funDecl1 : ancestor.cDecl.funDecls) {
+                        for (FunDecl funDecl2 : classDecl.funDecls){
+                            if (funDecl1.name.equals(funDecl2.name)){
+
+                                if (funDecl1.params.size() == funDecl2.params.size() &&
+                                        funDecl1.type == funDecl2.type){
+                                    for (int i=0; i<funDecl1.params.size(); i++){
+                                        if(! funDecl1.params.get(i).type.equals(funDecl2.params.get(i).type))
+                                            error("Parameters types in subclass does not match super type specifications.");
+                                    }
+                                }
+
+                                else error("Class function declaration does not respect ancestor function format.");
+                            }
+                        }
+                    }
                     ClassDecl ancestorDecl = ancestor.cDecl;
                     ancestor = ancestorDecl.ancestorType;
                     for (ASTNode child : ancestorDecl.varDecls){

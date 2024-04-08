@@ -193,6 +193,33 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						assign.type = type_e1;
 						yield type_e1;
 					}
+//					case ClassType classType -> {
+//						if (!type_e1.equals(type_e2)){
+//							yield switch (type_e2){
+//								case ClassType classType2 -> {
+//									ClassType ancestor = classType2.cDecl.ancestorType;
+//									while (ancestor != null){
+//										ClassDecl ancestorDecl = ancestor.cDecl;
+//										ancestor = ancestorDecl.ancestorType;
+//										if (type_e1.equals(ancestor)){
+//											assign.type = type_e1;
+//											yield type_e1;
+//										}
+//									}
+//									error("Assignment types do not match. No superclass is of that type.");
+//									assign.type = BaseType.NONE;
+//									yield BaseType.NONE;
+//								}
+//								default -> {
+//									error("Assignment types do not match. One is a class the other is not");
+//									assign.type = BaseType.NONE;
+//									yield BaseType.NONE;
+//								}
+//							};
+//						}
+//						assign.type = type_e1;
+//						yield type_e1;
+//					}
 					default -> {
 						if (!type_e1.equals(type_e2)){
 							error("Assignment types do not match.");
@@ -247,8 +274,24 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						error("The given field does not exist in the struct.");
 						yield BaseType.NONE;
 					}
+					case ClassType classType -> {
+						// maybe do name analysis here for this
+						if (classType.cDecl == null){
+							error("Class declaration is null. Maybe the class does not exist");
+							yield BaseType.NONE;
+						}
+						for (VarDecl v : classType.cDecl.varDecls){
+							if (fieldAccessExpr.fieldName.equals(v.name)){
+								fieldAccessExpr.type = v.type;
+								yield v.type;
+							}
+						}
+						// means we didn't find the field
+						error("The given field does not exist in the class.");
+						yield BaseType.NONE;
+					}
 					default -> {
-						error("The given expression for field access is not a struct.");
+						error("The given expression for field access is neither a struct or a class.");
 						yield BaseType.NONE;
 					}
 				};
@@ -344,6 +387,23 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						};
 
 					}
+					case ClassType classType -> {
+						if (classType.cDecl.classType.equals(castType)) {
+							yield castType;
+						}
+						else {
+							ClassType ancestor = classType.cDecl.ancestorType;
+							while(ancestor != null){
+								if (ancestor.equals(castType)) {
+									yield castType;
+								}
+								ClassDecl ancestorDecl = ancestor.cDecl;
+								ancestor = ancestorDecl.ancestorType;
+							}
+							error("Type cast expression does not correspond to any superclass.");
+							yield BaseType.NONE;
+						}
+					}
 					default -> {
 						error("Type cast expression of non castable type.");
 						typecastExpr.type = BaseType.NONE;
@@ -379,10 +439,81 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				yield BaseType.NONE;
 			}
 
-			// TODO
-            case ClassDecl classDecl -> null;
-            case InstanceFunCallExpr instanceFunCallExpr -> null;
-            case NewInstance newInstance -> null;
+			// TODO finish and review
+            case ClassDecl classDecl -> {
+				for (FunDecl funDecl : classDecl.funDecls){
+					visit(funDecl);
+				}
+				yield BaseType.NONE;
+			}
+            case InstanceFunCallExpr instanceFunCallExpr -> {
+				Type t = visit(instanceFunCallExpr.instance);
+				instanceFunCallExpr.instance.type = t;
+				yield switch (t){
+					case ClassType classType -> {
+						// maybe do name analysis here for this
+						if (classType.cDecl == null){
+							error("Class declaration is null. Maybe the class does not exist");
+							yield BaseType.NONE;
+						}
+						for (FunDecl funDecl : classType.cDecl.funDecls){
+							if (instanceFunCallExpr.funCallExpr.fctName.equals(funDecl.name)){
+								instanceFunCallExpr.funCallExpr.funDecl = funDecl;
+
+								if (instanceFunCallExpr.funCallExpr.params.size() != funDecl.params.size()){
+									error("The size of the params in the function call don't match the one specified by the super class");
+								}
+
+								for (int i = 0; i< instanceFunCallExpr.funCallExpr.params.size(); i++){
+									Type paramType = visit(instanceFunCallExpr.funCallExpr.params.get(i));
+									if (!paramType.equals(instanceFunCallExpr.funCallExpr.funDecl.params.get(i).type)){
+										error("The types of the parameters in the function call do not match the types required by the class.");
+									}
+								}
+								instanceFunCallExpr.funCallExpr.type = instanceFunCallExpr.funCallExpr.funDecl.type;
+								yield instanceFunCallExpr.funCallExpr.type;
+
+							}
+						}
+
+						// else it should be a method of an ancestor
+						ClassType ancestor = classType.cDecl.ancestorType;
+						while (ancestor != null){
+							ClassDecl ancestorDecl = ancestor.cDecl;
+							ancestor = ancestorDecl.ancestorType;
+
+							for (FunDecl funDecl : ancestorDecl.funDecls){
+								if (instanceFunCallExpr.funCallExpr.fctName.equals(funDecl.name)){
+									instanceFunCallExpr.funCallExpr.funDecl = funDecl;
+									if (instanceFunCallExpr.funCallExpr.params.size() != funDecl.params.size()){
+										error("The size of the params in the function call don't match the one specified by the super class");
+									}
+
+									for (int i = 0; i< instanceFunCallExpr.funCallExpr.params.size(); i++){
+										Type paramType = visit(instanceFunCallExpr.funCallExpr.params.get(i));
+										if (!paramType.equals(instanceFunCallExpr.funCallExpr.funDecl.params.get(i).type)){
+											error("The types of the parameters in the function call do not match the types required by the super class.");
+										}
+									}
+									instanceFunCallExpr.funCallExpr.type = instanceFunCallExpr.funCallExpr.funDecl.type;
+									yield instanceFunCallExpr.funCallExpr.type;
+
+								}
+							}
+
+						}
+
+						// means we didn't find the field
+						error("The given class does not exist in the class.");
+						yield BaseType.NONE;
+					}
+					default -> {
+						error("The given expression for instance function call is not a class.");
+						yield BaseType.NONE;
+					}
+				};
+			}
+            case NewInstance newInstance -> newInstance.newInstanceType;
         };
 
 	}
