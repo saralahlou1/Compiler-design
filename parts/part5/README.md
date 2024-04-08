@@ -136,8 +136,9 @@ class VirtualCourse extends Course {
 
 int main() {
     class Course course;
-    course = new class Course();
     class Course vcourse;
+    
+    course = new class Course();
     vcourse = (class Course) new class VirtualCourse();
 
     course.whereToAttend();
