@@ -286,6 +286,18 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 								yield v.type;
 							}
 						}
+						// check ancestors
+						ClassType ancestor = classType.cDecl.ancestorType;
+						while(ancestor != null){
+							for (VarDecl v : ancestor.cDecl.varDecls){
+								if (fieldAccessExpr.fieldName.equals(v.name)){
+									fieldAccessExpr.type = v.type;
+									yield v.type;
+								}
+							}
+							ClassDecl ancestorDecl = ancestor.cDecl;
+							ancestor = ancestorDecl.ancestorType;
+						}
 						// means we didn't find the field
 						error("The given field does not exist in the class.");
 						yield BaseType.NONE;
@@ -388,6 +400,10 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 					}
 					case ClassType classType -> {
+						if (classType.cDecl == null) {
+							error("Class not declared");
+							yield BaseType.NONE;
+						}
 						if (classType.cDecl.classType.equals(castType)) {
 							yield castType;
 						}

@@ -426,12 +426,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         error("A class can't have itself as an ancestor");
                         break;
                     }
-                    classDecl.ancestorFun = new ArrayList<>();
-                    classDecl.ancestorVars = new ArrayList<>();
-                    for (VarDecl var : ancestor.cDecl.varDecls.reversed()) {
-                        classDecl.ancestorVars.addFirst(var);
+                    if (ancestor.cDecl == null){
+                        error("The class does not exist yet");
+                        break;
                     }
-
 
                     for (FunDecl funDecl1 : ancestor.cDecl.funDecls) {
                         for (FunDecl funDecl2 : classDecl.funDecls){
