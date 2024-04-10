@@ -10,6 +10,7 @@ public final class ClassDecl extends Decl{
     public List<VarDecl> varDecls;
     public List<FunDecl> funDecls;
     public List<VarDecl> ancestorVars;
+    public List<VarDecl> allVars;
     public List<FunDecl> ancestorFun;  // if needed then fill in the name analysis
 
     public ClassDecl(ClassType classType, List<VarDecl> varDecls, List<FunDecl> funDecls) {

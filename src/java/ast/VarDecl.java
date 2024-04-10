@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class VarDecl extends Decl {
+    public int classOffset;
     public int fpOffset;
     public int size;
     public Label lable;

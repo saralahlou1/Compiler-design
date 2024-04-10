@@ -431,6 +431,13 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         break;
                     }
 
+                    classDecl.ancestorFun = new ArrayList<>();
+                    classDecl.ancestorVars = new ArrayList<>();
+                    for (VarDecl var : ancestor.cDecl.varDecls.reversed()) {
+                        classDecl.ancestorVars.addFirst(var);
+                    }
+
+
                     for (FunDecl funDecl1 : ancestor.cDecl.funDecls) {
                         for (FunDecl funDecl2 : classDecl.funDecls){
                             if (funDecl1.name.equals(funDecl2.name)){

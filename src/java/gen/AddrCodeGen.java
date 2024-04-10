@@ -5,6 +5,9 @@ import gen.asm.AssemblyProgram;
 import gen.asm.OpCode;
 import gen.asm.Register;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Generates code to calculate the address of an expression and return the result in a register.
  */
@@ -35,6 +38,18 @@ public class AddrCodeGen extends CodeGen {
                         structType.size();
                         offset = structType.fieldOffsets.get(s.fieldName);
                         // we add offset to the address given to make it point where we want
+                        text.emit(OpCode.ADDI, address, address, offset);
+                        yield address;
+                    }
+                    case ClassType classType -> {
+                        List<VarDecl> allVar = new ArrayList<>(classType.cDecl.allVars);
+                        offset = 0;
+                        for (VarDecl varDecl : allVar){
+                            if (varDecl.name.equals(s.fieldName)){
+                                offset = varDecl.classOffset;
+                                break;
+                            }
+                        }
                         text.emit(OpCode.ADDI, address, address, offset);
                         yield address;
                     }
@@ -80,6 +95,32 @@ public class AddrCodeGen extends CodeGen {
             }
             case ValueAtExpr value -> {
                 yield new ExprCodeGen(asmProg).visit(value.value);
+            }
+            case NewInstance newInstance -> {
+                int size = 4; // fct table pointer
+                List<VarDecl> allVar = new ArrayList<>();
+                if (newInstance.newInstanceType.cDecl.ancestorVars != null) {
+                    allVar = new ArrayList<>(newInstance.newInstanceType.cDecl.ancestorVars);
+                }
+
+                allVar.addAll(newInstance.newInstanceType.cDecl.varDecls);
+                newInstance.newInstanceType.cDecl.allVars = allVar;
+                for (VarDecl varDecl : allVar){
+                    if (varDecl.classOffset != 0){
+                        size += varDecl.type.size();
+                        continue;
+                    }
+                    varDecl.classOffset = size;
+                    size += varDecl.type.size();
+
+                }
+                // we allocate into the heap the space for the object
+                text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 9);
+                text.emit(OpCode.ADDI, Register.Arch.a0, Register.Arch.zero, size);
+                text.emit(OpCode.SYSCALL);
+                Register result = Register.Virtual.create();
+                text.emit(OpCode.ADD, result, Register.Arch.zero, Register.Arch.v0);
+                yield result;
             }
             default -> {
                 yield null;

@@ -3,6 +3,9 @@ package gen;
 import ast.*;
 import gen.asm.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Generates code to evaluate an expression and return the result in a register.
@@ -391,7 +394,7 @@ public class ExprCodeGen extends CodeGen {
                 Type fieldType = s.type;
                 Type structureType = s.structure.type;
 
-                // the structure type must be a struct. This was checked by type analyser
+                // the structure type must be a struct or a class. This was checked by type analyser
                 yield switch (structureType){
                     case StructType structType -> {
                         structType.size();
@@ -422,6 +425,41 @@ public class ExprCodeGen extends CodeGen {
                         }
 
                         yield result;
+                    }
+                    case ClassType classType -> {
+                        List<VarDecl> allVar = new ArrayList<>(classType.cDecl.allVars);
+                        offset = 0;
+                        for (VarDecl varDecl : allVar){
+                            if (varDecl.name.equals(s.fieldName)){
+                                offset = varDecl.classOffset;
+                                break;
+                            }
+                        }
+                        text.emit(OpCode.ADDI, address, address, offset);
+                        Register result = Register.Virtual.create();
+                        switch (fieldType){
+                            case BaseType b -> {
+                                // if it's a char we only load 1 bite
+                                if (b == BaseType.CHAR){
+                                    text.emit(OpCode.LB, result, address, 0);
+                                }
+                                // or it's an int so we return it
+                                if (b == BaseType.INT){
+                                    text.emit(OpCode.LW, result, address, 0);
+                                }
+                            }
+                            case PointerType p -> {
+                                // if it's a pointer we return the value stored in it.
+                                // it corresponds to an address in the memory
+                                text.emit(OpCode.LW, result, address, 0);
+                            }
+                            default ->
+                                // else it's an array or struct type, so we return the address
+                                    result = address;
+                        }
+
+                        yield result;
+
                     }
                     default -> {
                         // not possible to get here from type analysis
@@ -503,6 +541,11 @@ public class ExprCodeGen extends CodeGen {
                         Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
                         text.emit(OpCode.SW, rhs, lhs, 0);
                     }
+                    case ClassType c -> {
+                        // for objects, we make them point to same address
+                        Register lhs = new AddrCodeGen(asmProg).visit(assign.lhs);
+                        text.emit(OpCode.SW, rhs, lhs, 0);
+                    }
                     default -> {
                         // else it's a struct type, since we can't assign to arrays
                         // if it's a struct we pass their address, so it's fine
@@ -520,7 +563,9 @@ public class ExprCodeGen extends CodeGen {
             }
 
             case InstanceFunCallExpr instanceFunCallExpr -> null;
-            case NewInstance newInstance -> null;
+            case NewInstance newInstance -> {
+                yield new AddrCodeGen(asmProg).visit(newInstance);
+            }
         };
     }
 }

@@ -35,6 +35,12 @@ public class MemAllocCodeGen extends CodeGen {
                             param.fpOffset = offset;
                             offset += 4;
                         }
+                        case ClassType classType -> {
+                            // we are passing a pointer to the object
+
+                            param.fpOffset = offset;
+                            offset += 4;
+                        }
                         default -> {
                             int padding = param.type.size() % 4;
                             if (padding != 0)
@@ -76,7 +82,8 @@ public class MemAllocCodeGen extends CodeGen {
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                         case ClassType classType -> {
-                            // TODO
+                            if (padding != 0)
+                                this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                     }
                      this.fpOffset -= vd.size;
@@ -129,7 +136,12 @@ public class MemAllocCodeGen extends CodeGen {
                         // Don't forget padding
                         // Implemented size fct for all types
                         case ClassType classType -> {
-                            // TODO
+                            // The object is in the heap, we pass pointer to that address
+                            data.emit(new Directive("align 4"));
+                            Label label = Label.create(vd.name);
+                            data.emit(label);
+                            data.emit(new Directive("space 4"));
+                            vd.lable = label;
                         }
                     }
 
