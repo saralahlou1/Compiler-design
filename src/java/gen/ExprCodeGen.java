@@ -227,6 +227,13 @@ public class ExprCodeGen extends CodeGen {
 
                             }
                         }
+                        case ClassType classType -> {
+//                            arg = new AddrCodeGen(asmProg).visit(fctExp.params.get(i));
+                            fctExp.totalSpOffset += 4;
+                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                            // for classes, we make them point to same address
+                            text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                        }
                         case ArrayType arrayType -> {
 //                            arg = visit(fctExp.params.get(i));
                             fctExp.totalSpOffset += 4;
@@ -276,6 +283,8 @@ public class ExprCodeGen extends CodeGen {
                     }
                     case PointerType p ->
                             text.emit(OpCode.LW, result, result, 0);
+                    case ClassType c ->
+                            text.emit(OpCode.LW, result, result, 0);
                     default -> {}
                 }
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
@@ -309,6 +318,8 @@ public class ExprCodeGen extends CodeGen {
                                 text.emit(OpCode.LW, result, result, 0);
                             }
                         }
+                        case ClassType c ->
+                                text.emit(OpCode.LW, result, result, 0);
                         case PointerType p ->
                                 text.emit(OpCode.LW, result, result, 0);
                         default -> {}
@@ -330,6 +341,8 @@ public class ExprCodeGen extends CodeGen {
                             }
                         }
                         case PointerType p ->
+                                text.emit(OpCode.LW, result, result, 0);
+                        case ClassType c ->
                                 text.emit(OpCode.LW, result, result, 0);
                         case ArrayType arrayType -> {
                             if (var.vd.fpOffset > 0)

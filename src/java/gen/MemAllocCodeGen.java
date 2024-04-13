@@ -3,6 +3,9 @@ package gen;
 import ast.*;
 import gen.asm.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /* This allocator should deal with all global and local variable declarations. */
 
 public class MemAllocCodeGen extends CodeGen {
@@ -36,6 +39,24 @@ public class MemAllocCodeGen extends CodeGen {
                             offset += 4;
                         }
                         case ClassType classType -> {
+                            List<VarDecl> allVar = new ArrayList<>();
+                            if (classType.cDecl.ancestorVars != null) {
+                                allVar = new ArrayList<>(classType.cDecl.ancestorVars);
+                            }
+
+                            allVar.addAll(classType.cDecl.varDecls);
+                            classType.cDecl.allVars = allVar;
+
+                            int size = 4;
+                            for (VarDecl varDecl : classType.cDecl.allVars){
+                                if (varDecl.classOffset != 0){
+                                    size += varDecl.type.size();
+                                    continue;
+                                }
+                                varDecl.classOffset = size;
+                                size += varDecl.type.size();
+
+                            }
                             // we are passing a pointer to the object
 
                             param.fpOffset = offset;
@@ -82,6 +103,13 @@ public class MemAllocCodeGen extends CodeGen {
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                         case ClassType classType -> {
+                            List<VarDecl> allVar = new ArrayList<>();
+                            if (classType.cDecl.ancestorVars != null) {
+                                allVar = new ArrayList<>(classType.cDecl.ancestorVars);
+                            }
+
+                            allVar.addAll(classType.cDecl.varDecls);
+                            classType.cDecl.allVars = allVar;
                             if (padding != 0)
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
@@ -142,6 +170,14 @@ public class MemAllocCodeGen extends CodeGen {
                             data.emit(label);
                             data.emit(new Directive("space 4"));
                             vd.lable = label;
+
+                            List<VarDecl> allVar = new ArrayList<>();
+                            if (classType.cDecl.ancestorVars != null) {
+                                allVar = new ArrayList<>(classType.cDecl.ancestorVars);
+                            }
+
+                            allVar.addAll(classType.cDecl.varDecls);
+                            classType.cDecl.allVars = allVar;
                         }
                     }
 
