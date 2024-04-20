@@ -439,9 +439,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
 
                     for (FunDecl funDecl1 : ancestor.cDecl.funDecls) {
+                        boolean visited = false;
                         for (FunDecl funDecl2 : classDecl.funDecls){
                             if (funDecl1.name.equals(funDecl2.name)){
-
+                                visited = true;
                                 if (funDecl1.params.size() == funDecl2.params.size() &&
                                         funDecl1.type == funDecl2.type){
                                     for (int i=0; i<funDecl1.params.size(); i++){
@@ -453,6 +454,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                 else error("Class function declaration does not respect ancestor function format.");
                             }
                         }
+                        if (!visited)
+                            visit(funDecl1);
                     }
                     ClassDecl ancestorDecl = ancestor.cDecl;
                     ancestor = ancestorDecl.ancestorType;
