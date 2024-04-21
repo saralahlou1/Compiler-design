@@ -50,8 +50,12 @@ public class FunCodeGen extends CodeGen {
                 return;
             }
 
-            Label fctName = Label.create(fd.name);
-            fd.fctLabel = fctName;
+            Label fctName;
+            if (fd.fctLabel == null){
+                fctName = Label.create(fd.name);
+                fd.fctLabel = fctName;
+            } else
+                fctName = fd.fctLabel;
             text.emit(fctName);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
             text.emit(OpCode.SW, Register.Arch.fp, Register.Arch.sp, 0);

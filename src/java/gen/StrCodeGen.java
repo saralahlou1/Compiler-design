@@ -64,6 +64,12 @@ public class StrCodeGen extends CodeGen {
                 }
             }
 
+            case ClassDecl classDecl -> {
+                for (FunDecl funDecl : classDecl.funDecls){
+                    visit(funDecl);
+                }
+            }
+
             case TypecastExpr typecastExpr -> {
                 visit(typecastExpr.expr);
             }

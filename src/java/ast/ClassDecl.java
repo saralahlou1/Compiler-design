@@ -1,6 +1,9 @@
 package ast;
 
+import gen.asm.Label;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public final class ClassDecl extends Decl{
@@ -11,14 +14,15 @@ public final class ClassDecl extends Decl{
     public List<FunDecl> funDecls;
     public List<VarDecl> ancestorVars;
     public List<VarDecl> allVars;
-    public List<FunDecl> ancestorFun;  // if needed then fill in the name analysis
+    public LinkedHashMap<String, Label> VTable;
+    public Label tableLabel;
 
     public ClassDecl(ClassType classType, List<VarDecl> varDecls, List<FunDecl> funDecls) {
         this.classType = classType;
         this.varDecls = varDecls;
         this.funDecls = funDecls;
         this.ancestorVars = new ArrayList<>();
-        this.ancestorFun = new ArrayList<>();
+        this.VTable = new LinkedHashMap<>();
     }
 
     public ClassDecl(ClassType classType, ClassType ancestorType, List<VarDecl> varDecls, List<FunDecl> funDecls) {

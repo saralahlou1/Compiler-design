@@ -1,7 +1,6 @@
 java.lang.Throwable:
-gen.MemAllocCodeGen.visit(MemAllocCodeGen.java:43)
-gen.MemAllocCodeGen.visit(MemAllocCodeGen.java:180)
-gen.ProgramCodeGen.generate(ProgramCodeGen.java:25)
+gen.VirtualTableGen.visit(VirtualTableGen.java:27)
+gen.ProgramCodeGen.generate(ProgramCodeGen.java:44)
 gen.CodeGenerator.emitProgram(CodeGenerator.java:56)
 Main3.compile(Main3.java:206)
 Main3.main(Main3.java:68)

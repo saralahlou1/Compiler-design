@@ -5,6 +5,8 @@ import gen.asm.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -575,9 +577,36 @@ public class ExprCodeGen extends CodeGen {
                 yield null;
             }
 
-            case InstanceFunCallExpr instanceFunCallExpr -> null;
+            case InstanceFunCallExpr instanceFunCallExpr -> {
+                Register address = visit(instanceFunCallExpr.instance);
+                Type instanceType = instanceFunCallExpr.instance.type;
+
+                switch (instanceType){
+                    case ClassType classType -> {
+                        int offset = 0;
+                        for (Map.Entry<String, Label> entry : classType.cDecl.VTable.entrySet()){
+                            if (instanceFunCallExpr.funCallExpr.fctName.equals(entry.getKey())){
+                                break;
+                            } else
+                                offset += 4;
+                        }
+                        // get the table
+//                        text.emit(OpCode.LW, address, address, 0);
+                        // get address of the fct
+                        text.emit(OpCode.LW, address, address, offset);
+                        text.emit(OpCode.JALR, address);
+                    }
+                    default -> {}
+                }
+
+                yield null;
+            }
             case NewInstance newInstance -> {
-                yield new AddrCodeGen(asmProg).visit(newInstance);
+                Register result = new AddrCodeGen(asmProg).visit(newInstance);
+                Register tableAddress = Register.Virtual.create();
+                text.emit(OpCode.LA, tableAddress, newInstance.newInstanceType.cDecl.tableLabel);
+                text.emit(OpCode.ADDI, result, tableAddress, 0);
+                yield result;
             }
         };
     }

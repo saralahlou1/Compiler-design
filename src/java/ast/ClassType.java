@@ -1,11 +1,14 @@
 package ast;
 
+import gen.asm.Label;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public final class ClassType implements Type {
     public String ClassName;
     public ClassDecl cDecl;    //fill in name analysis
+    public Label tableLabel;
 
     public ClassType(String className) {
         ClassName = className;

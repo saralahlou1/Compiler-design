@@ -1,6 +1,7 @@
 package sem;
 
 import ast.*;
+import gen.asm.Label;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -431,7 +432,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         break;
                     }
 
-                    classDecl.ancestorFun = new ArrayList<>();
                     classDecl.ancestorVars = new ArrayList<>();
                     for (VarDecl var : ancestor.cDecl.varDecls.reversed()) {
                         classDecl.ancestorVars.addFirst(var);
@@ -468,6 +468,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     visit(child);
                 }
                 scope = oldScope;
+
+                Label className = Label.get(classDecl.classType.ClassName);
+                classDecl.tableLabel = className;
+                classDecl.classType.tableLabel = className;
             }
             case InstanceFunCallExpr instanceFunCallExpr -> {
                 visit(instanceFunCallExpr.instance);
