@@ -188,6 +188,11 @@ public class MemAllocCodeGen extends CodeGen {
                     visit(d);
                 }
             }
+            case ClassDecl classDecl -> {
+                for (FunDecl funDecl : classDecl.funDecls){
+                    visit(funDecl);
+                }
+            }
             case Block block -> {
                 for (ASTNode child : block.children()){
                     visit(child);
