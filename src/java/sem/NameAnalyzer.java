@@ -438,8 +438,13 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         classDecl.ancestorVars.addFirst(var);
                     }
 
+                    ClassDecl ancestorDecl = ancestor.cDecl;
+                    ancestor = ancestorDecl.ancestorType;
+                    for (ASTNode child : ancestorDecl.varDecls){
+                        visit(child);
+                    }
 
-                    for (FunDecl funDecl1 : ancestor.cDecl.funDecls) {
+                    for (FunDecl funDecl1 : ancestorDecl.funDecls) {
                         boolean visited = false;
                         for (FunDecl funDecl2 : classDecl.funDecls){
                             if (funDecl1.name.equals(funDecl2.name)){
@@ -460,11 +465,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             visit(funDecl1);
                         }
                     }
-                    ClassDecl ancestorDecl = ancestor.cDecl;
-                    ancestor = ancestorDecl.ancestorType;
-                    for (ASTNode child : ancestorDecl.varDecls){
-                        visit(child);
-                    }
+
+//                    for (ASTNode child : ancestorDecl.varDecls){
+//                        visit(child);
+//                    }
 
                 }
                 for (ASTNode child : classDecl.children()){
