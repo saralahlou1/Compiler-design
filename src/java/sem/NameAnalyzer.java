@@ -422,6 +422,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 Scope oldScope = scope;
                 scope = new Scope(oldScope);
                 ClassType ancestor = classDecl.ancestorType;
+                List<String> ancestorFunctions = new ArrayList<>();
                 while(ancestor != null){
                     if (ancestor.ClassName.equals(classDecl.classType.ClassName)){
                         error("A class can't have itself as an ancestor");
@@ -454,8 +455,10 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                 else error("Class function declaration does not respect ancestor function format.");
                             }
                         }
-                        if (!visited)
+                        if (!visited && (!ancestorFunctions.contains(funDecl1.name)) ) {
+                            ancestorFunctions.add(funDecl1.name);
                             visit(funDecl1);
+                        }
                     }
                     ClassDecl ancestorDecl = ancestor.cDecl;
                     ancestor = ancestorDecl.ancestorType;
