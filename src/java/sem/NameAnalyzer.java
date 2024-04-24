@@ -13,6 +13,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
     List<FunProto> lFunProto = new ArrayList<>();
     Type fctRetType = BaseType.UNKNOWN;
     FunDecl fctDecl;
+    boolean inClass = false;
 
 
     NameAnalyzer(Scope scope ) { this.scope = scope ; } ;
@@ -96,7 +97,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     }
                 }
                 else {
-                    scope.put(new FunSymbol(fd));
+                    if (inClass){
+                        scope.put(new FunClassSymbol(fd));
+                    }
+                    else {
+                        scope.put(new FunSymbol(fd));
+                    }
                     Scope paramsScope = new Scope();
                     params = new ArrayList<>();
                     for (VarDecl vd : fd.params) {
@@ -188,14 +194,26 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                             switch (structDecl){
                                 case StructSymbol st -> {
                                     struct.sDecl = st.structTypeDecl;
-                                    scope.put(new VarSymbol(vd));
+                                    if (inClass){
+                                        scope.put(new VarClassSymbol(vd));
+                                    }
+                                    else {
+                                        scope.put(new VarSymbol(vd));
+                                    }
+
                                 }
                                 case null, default -> error("Struct has not been declared yet.");
                             }
                         }
                         default -> {
                             visit(vd.type);
-                            scope.put(new VarSymbol(vd));
+                            if (inClass){
+                                scope.put(new VarClassSymbol(vd));
+                            }
+                            else {
+                                scope.put(new VarSymbol(vd));
+                            }
+
                         }
                     }
                     // modified this
@@ -205,7 +223,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 			case VarExpr v -> {
 				Symbol s = scope.lookup(v.name);
                 switch (s){
-                    case VarSymbol vs -> v.vd = vs.varDecl;
+                    case VarSymbol vs -> {
+                        if (vs instanceof VarClassSymbol){
+                            v.isClassField = true;
+                        }
+                        v.vd = vs.varDecl;
+                    }
                     case StructSymbol struct -> v.type = struct.structTypeDecl.structType;
                     case null, default -> error("Variable has not been declared yet."); //here
                 }
@@ -215,6 +238,9 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 Symbol s = scope.lookup(funCallExpr.fctName);
                 switch (s){
                     case FunSymbol vs -> {
+                        if (vs instanceof FunClassSymbol){
+                            funCallExpr.isClassMethod = true;
+                        }
                         if (vs.funDecl.params.size() == funCallExpr.params.size())
                             funCallExpr.funDecl = vs.funDecl;
                         else error("Function call does not have same number of parameters");
@@ -387,6 +413,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
             // TODO
             case ClassDecl classDecl -> {
+                inClass = true;
                 // trying this
                 Symbol s = scope.lookupCurrent(classDecl.classType.ClassName);
                 if (s != null){
@@ -476,6 +503,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 }
                 scope = oldScope;
 
+                inClass = false;
                 Label className = Label.get(classDecl.classType.ClassName);
                 classDecl.tableLabel = className;
                 classDecl.classType.tableLabel = className;

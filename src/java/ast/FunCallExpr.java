@@ -9,6 +9,9 @@ public final class FunCallExpr extends Expr{
     public FunProto protoDecl; //initialized by name analyser
     public final List<Expr> params;
     public int totalSpOffset = 0;
+    public boolean isClassMethod = false;
+    public int firstArgOffset;
+    public ClassDecl instanceDecl;
     public FunCallExpr(String fctName, List<Expr> params){
         this.fctName = fctName;
         this.params = params;

@@ -1,6 +1,14 @@
 class Course{
     int x;
-    void whereToAttend(){x = 0;}
+    void test(){
+            x = 999;
+            print_i(x);
+            print_c('\n');
+
+    }
+    void whereToAttend(){
+        test();
+    }
 }
 
 void test(class Course c){
@@ -17,5 +25,6 @@ void main() {
     print_i(course.x);
     print_c('\n');
     test(course);
+    course.whereToAttend();
     print_i(course.x);
 }

@@ -11,4 +11,6 @@ void main() {
     course = new class ExtendedCourse();
     course.x = 51;
     print_i(course.x);
+    course.whereToAttend();
+    print_i(course.x);
 }

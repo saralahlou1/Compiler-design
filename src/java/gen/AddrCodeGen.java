@@ -80,6 +80,24 @@ public class AddrCodeGen extends CodeGen {
             }
             case VarExpr v -> {
                 Register result = Register.Virtual.create();
+                if (v.isClassField){
+                    Register address = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, address, Register.Arch.fp, v.firstArgOffset);
+                    text.emit(OpCode.LW, address, address, 0);
+
+                    List<VarDecl> allVar = new ArrayList<>(v.instanceDecl.allVars);
+                    int offset = 0;
+                    for (VarDecl varDecl : allVar){
+                        if (varDecl.name.equals(v.name)){
+                            offset = varDecl.classOffset;
+                            break;
+                        }
+                    }
+                    text.emit(OpCode.ADDI, address, address, offset);
+
+                    yield address;
+
+                }
                 if ( v.vd.lable != null)
                     text.emit(OpCode.LA, result, v.vd.lable);
                 else {

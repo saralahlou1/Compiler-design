@@ -187,110 +187,233 @@ public class ExprCodeGen extends CodeGen {
                     funDecl = fctExp.funDecl;
                 //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
 
+                // We then need to store the reference to the object as an arg if it's an instance
+                if (fctExp.isClassMethod){
+                    Register address = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, address, Register.Arch.fp, fctExp.firstArgOffset);
+                    text.emit(OpCode.LW, address, address, 0);
+//                    Type instanceType = instanceFunCallExpr.instance.type;
+                    for (int i = 0; i < fctExp.params.size(); i++){
+                        // argument
+                        Register arg = visit(fctExp.params.get(i));
 
-                for (int i = 0; i < fctExp.params.size(); i++){
-                    // argument
-                    Register arg = visit(fctExp.params.get(i));
+                        int sizeAssign = funDecl.params.get(i).type.size();
+                        int padding = sizeAssign % 4;
+                        padding = 4 - padding;
+                        // maybe I need to review the offsets
+                        switch (funDecl.params.get(i).type){
+                            case BaseType b -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+                                // if it's a char we only store 1 bite
+                                if (b == BaseType.CHAR){
+                                    text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
+                                }
+                                // or it's an int so we store a word
+                                else if (b == BaseType.INT){
+                                    text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                                }
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
 
-                    int sizeAssign = funDecl.params.get(i).type.size();
-//                    fctExp.totalSpOffset += sizeAssign;
-//                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                     int padding = sizeAssign % 4;
-                     padding = 4 - padding;
-                    // maybe I need to review the offsets
-                    switch (funDecl.params.get(i).type){
-                        case BaseType b -> {
-                            fctExp.totalSpOffset += sizeAssign;
-                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                            // if it's a char we only store 1 bite
-                            if (b == BaseType.CHAR){
-                                text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
-//                                fctExp.totalSpOffset += 3;
-//                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
+                                }
                             }
-                            // or it's an int so we store a word
-                            else if (b == BaseType.INT){
+                            case PointerType pointerType -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+                                // for pointers, we make them point to same address
+                                text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+
+                                }
+                            }
+                            case ClassType classType -> {
+                                fctExp.totalSpOffset += 4;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                                // for classes, we make them point to same address
                                 text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
                             }
-                            if (padding != 4) {
-                                fctExp.totalSpOffset += padding;
-                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                            case ArrayType arrayType -> {
+                                fctExp.totalSpOffset += 4;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                                text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
 
                             }
-                        }
-                        case PointerType pointerType -> {
-                            fctExp.totalSpOffset += sizeAssign;
-                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                            // for pointers, we make them point to same address
-                            text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
-                            if (padding != 4) {
-                                fctExp.totalSpOffset += padding;
-                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                            default -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+                                Register biteCopy = Register.Virtual.create();
+                                for (int j = 0; j < sizeAssign; j=j+4) {
+                                    text.emit(OpCode.LW, biteCopy, arg, j);
+                                    text.emit(OpCode.SW, biteCopy, Register.Arch.sp, j);
+                                }
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
 
+                                }
                             }
                         }
-                        case ClassType classType -> {
+                    }
+
+                    // store the object reference
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                    text.emit(OpCode.SW, address,Register.Arch.sp, 0);
+                    fctExp.totalSpOffset += 4;
+
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
+                    fctExp.totalSpOffset += funDecl.type.size();
+                    // maybe for structs I should pay attention (nah most likely good)
+                    int padding = 4 - funDecl.type.size() % 4;
+                    if (padding != 4){
+                        fctExp.totalSpOffset += padding;
+                        text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                    }
+
+                    funDecl.totalSpOffset = fctExp.totalSpOffset;
+
+                    int tempOffset = 0;
+                    for (Map.Entry<String, Label> entry : fctExp.instanceDecl.VTable.entrySet()){
+                        if (fctExp.fctName.equals(entry.getKey())){
+                            break;
+                        } else
+                            tempOffset += 4;
+                    }
+                    // get the table
+                        text.emit(OpCode.LW, address, address, 0);
+                    // get address of the fct
+                    text.emit(OpCode.LW, address, address, tempOffset);
+                    text.emit(OpCode.JALR, address);
+
+
+
+                    Register result = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
+                    switch (funDecl.type){
+                        case BaseType baseType -> {
+                            if (baseType == BaseType.CHAR){
+                                text.emit(OpCode.LB, result, result, 0);
+                            }
+                            if (baseType == BaseType.INT){
+                                text.emit(OpCode.LW, result, result, 0);
+                            }
+                        }
+                        case PointerType p ->
+                                text.emit(OpCode.LW, result, result, 0);
+                        case ClassType c ->
+                                text.emit(OpCode.LW, result, result, 0);
+                        default -> {}
+                    }
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
+                    yield  result;
+
+                }
+                else {
+                    for (int i = 0; i < fctExp.params.size(); i++) {
+                        // argument
+                        Register arg = visit(fctExp.params.get(i));
+
+                        int sizeAssign = funDecl.params.get(i).type.size();
+//                    fctExp.totalSpOffset += sizeAssign;
+//                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
+                        int padding = sizeAssign % 4;
+                        padding = 4 - padding;
+                        // maybe I need to review the offsets
+                        switch (funDecl.params.get(i).type) {
+                            case BaseType b -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -sizeAssign);
+                                // if it's a char we only store 1 bite
+                                if (b == BaseType.CHAR) {
+                                    text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
+//                                fctExp.totalSpOffset += 3;
+//                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
+                                }
+                                // or it's an int so we store a word
+                                else if (b == BaseType.INT) {
+                                    text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                                }
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -padding);
+
+                                }
+                            }
+                            case PointerType pointerType -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -sizeAssign);
+                                // for pointers, we make them point to same address
+                                text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -padding);
+
+                                }
+                            }
+                            case ClassType classType -> {
 //                            arg = new AddrCodeGen(asmProg).visit(fctExp.params.get(i));
-                            fctExp.totalSpOffset += 4;
-                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
-                            // for classes, we make them point to same address
-                            text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
-                        }
-                        case ArrayType arrayType -> {
+                                fctExp.totalSpOffset += 4;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
+                                // for classes, we make them point to same address
+                                text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                            }
+                            case ArrayType arrayType -> {
 //                            arg = visit(fctExp.params.get(i));
-                            fctExp.totalSpOffset += 4;
-                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
-                            text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
+                                fctExp.totalSpOffset += 4;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
+                                text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
 
-                        }
-                        default -> {
-                            fctExp.totalSpOffset += sizeAssign;
-                            text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
-                            Register biteCopy = Register.Virtual.create();
-                            for (int j = 0; j < sizeAssign; j=j+4) {
-                                text.emit(OpCode.LW, biteCopy, arg, j);
-                                text.emit(OpCode.SW, biteCopy, Register.Arch.sp, j);
                             }
-                            if (padding != 4) {
-                                fctExp.totalSpOffset += padding;
-                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
+                            default -> {
+                                fctExp.totalSpOffset += sizeAssign;
+                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -sizeAssign);
+                                Register biteCopy = Register.Virtual.create();
+                                for (int j = 0; j < sizeAssign; j = j + 4) {
+                                    text.emit(OpCode.LW, biteCopy, arg, j);
+                                    text.emit(OpCode.SW, biteCopy, Register.Arch.sp, j);
+                                }
+                                if (padding != 4) {
+                                    fctExp.totalSpOffset += padding;
+                                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -padding);
 
+                                }
                             }
                         }
                     }
-                }
-                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
-                fctExp.totalSpOffset += funDecl.type.size();
-                // maybe for structs I should pay attention (nah most likely good)
-                int padding = 4 - funDecl.type.size() % 4;
-                if (padding != 4){
-                    fctExp.totalSpOffset += padding;
-                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - padding);
-                }
-
-                funDecl.totalSpOffset = fctExp.totalSpOffset;
-
-                text.emit(OpCode.JAL, funDecl.fctLabel);
-
-                Register result = Register.Virtual.create();
-                text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
-                switch (funDecl.type){
-                    case BaseType baseType -> {
-                        if (baseType == BaseType.CHAR){
-                            text.emit(OpCode.LB, result, result, 0);
-                        }
-                        if (baseType == BaseType.INT){
-                            text.emit(OpCode.LW, result, result, 0);
-                        }
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -funDecl.type.size());
+                    fctExp.totalSpOffset += funDecl.type.size();
+                    // maybe for structs I should pay attention (nah most likely good)
+                    int padding = 4 - funDecl.type.size() % 4;
+                    if (padding != 4) {
+                        fctExp.totalSpOffset += padding;
+                        text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -padding);
                     }
-                    case PointerType p ->
-                            text.emit(OpCode.LW, result, result, 0);
-                    case ClassType c ->
-                            text.emit(OpCode.LW, result, result, 0);
-                    default -> {}
+
+                    funDecl.totalSpOffset = fctExp.totalSpOffset;
+
+                    text.emit(OpCode.JAL, funDecl.fctLabel);
+
+                    Register result = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
+                    switch (funDecl.type) {
+                        case BaseType baseType -> {
+                            if (baseType == BaseType.CHAR) {
+                                text.emit(OpCode.LB, result, result, 0);
+                            }
+                            if (baseType == BaseType.INT) {
+                                text.emit(OpCode.LW, result, result, 0);
+                            }
+                        }
+                        case PointerType p -> text.emit(OpCode.LW, result, result, 0);
+                        case ClassType c -> text.emit(OpCode.LW, result, result, 0);
+                        default -> {}
+                    }
+                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
+                    yield result;
                 }
-                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, fctExp.totalSpOffset);
-                yield  result;
 
 
                 //yield  null;
@@ -307,6 +430,44 @@ public class ExprCodeGen extends CodeGen {
                 yield resReg;
             }
             case VarExpr var -> {
+                if (var.isClassField){
+                    Register address = Register.Virtual.create();
+                    text.emit(OpCode.ADDI, address, Register.Arch.fp, var.firstArgOffset);
+                    text.emit(OpCode.LW, address, address, 0);
+
+                    List<VarDecl> allVar = new ArrayList<>(var.instanceDecl.allVars);
+                    int offset = 0;
+                    for (VarDecl varDecl : allVar){
+                        if (varDecl.name.equals(var.name)){
+                            offset = varDecl.classOffset;
+                            break;
+                        }
+                    }
+                    text.emit(OpCode.ADDI, address, address, offset);
+                    Register result = Register.Virtual.create();
+                    switch (var.type){
+                        case BaseType b -> {
+                            // if it's a char we only load 1 bite
+                            if (b == BaseType.CHAR){
+                                text.emit(OpCode.LB, result, address, 0);
+                            }
+                            // or it's an int so we return it
+                            if (b == BaseType.INT){
+                                text.emit(OpCode.LW, result, address, 0);
+                            }
+                        }
+                        case PointerType p -> {
+                            // if it's a pointer we return the value stored in it.
+                            // it corresponds to an address in the memory
+                            text.emit(OpCode.LW, result, address, 0);
+                        }
+                        default ->
+                            // else it's an array or struct type, so we return the address
+                                result = address;
+                    }
+
+                    yield result;
+                }
                 // check if in static memory
                 if (var.vd.lable != null){
                     Register result = Register.Virtual.create();
@@ -646,6 +807,12 @@ public class ExprCodeGen extends CodeGen {
                         }
                     }
                 }
+                Register address = visit(instanceFunCallExpr.instance);
+                Type instanceType = instanceFunCallExpr.instance.type;
+                // store the object reference
+                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 4);
+                text.emit(OpCode.SW, address, Register.Arch.sp, 0);
+
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
                 fctExp.totalSpOffset += funDecl.type.size();
                 // maybe for structs I should pay attention (nah most likely good)
@@ -657,8 +824,6 @@ public class ExprCodeGen extends CodeGen {
 
                 funDecl.totalSpOffset = fctExp.totalSpOffset;
 
-                Register address = visit(instanceFunCallExpr.instance);
-                Type instanceType = instanceFunCallExpr.instance.type;
 
                 switch (instanceType){
                     case ClassType classType -> {
@@ -670,7 +835,7 @@ public class ExprCodeGen extends CodeGen {
                                 offset += 4;
                         }
                         // get the table
-//                        text.emit(OpCode.LW, address, address, 0);
+                        text.emit(OpCode.LW, address, address, 0);
                         // get address of the fct
                         text.emit(OpCode.LW, address, address, offset);
                         text.emit(OpCode.JALR, address);
@@ -704,7 +869,7 @@ public class ExprCodeGen extends CodeGen {
                 Register result = new AddrCodeGen(asmProg).visit(newInstance);
                 Register tableAddress = Register.Virtual.create();
                 text.emit(OpCode.LA, tableAddress, newInstance.newInstanceType.cDecl.tableLabel);
-                text.emit(OpCode.ADDI, result, tableAddress, 0);
+                text.emit(OpCode.SW, tableAddress, result, 0);
                 yield result;
             }
         };
