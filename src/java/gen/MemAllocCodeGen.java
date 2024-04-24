@@ -294,6 +294,7 @@ public class MemAllocCodeGen extends CodeGen {
             case Return r -> {
                 visit(r.expr);
             }
+            case null -> {}
             case InstanceFunCallExpr expr -> {
                 visit(expr.funCallExpr);
             }

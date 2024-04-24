@@ -474,6 +474,14 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 ancestor = classDecl.ancestorType;
                 ancestorFunctions = new ArrayList<>();
                 while(ancestor != null) {
+                    if (ancestor.ClassName.equals(classDecl.classType.ClassName)) {
+                        error("A class can't have itself as an ancestor");
+                        break;
+                    }
+                    if (ancestor.cDecl == null) {
+                        error("The class does not exist yet");
+                        break;
+                    }
                     ClassDecl ancestorDecl = ancestor.cDecl;
                     ancestor = ancestorDecl.ancestorType;
                     for (FunDecl funDecl1 : ancestorDecl.funDecls) {
