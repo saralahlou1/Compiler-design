@@ -11,10 +11,8 @@ class VirtualCourse extends Course {
     char zoomLink[200];
     int isOnZoom;
 
+// extends whereToAttend which uses an ancestor field. This was what caused a semantic error.
 
-    void whereToAttend(){
-        bar();
-    }
 }
 
 int main() {

@@ -450,12 +450,12 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 scope = new Scope(oldScope);
                 ClassType ancestor = classDecl.ancestorType;
                 List<String> ancestorFunctions = new ArrayList<>();
-                while(ancestor != null){
-                    if (ancestor.ClassName.equals(classDecl.classType.ClassName)){
+                while(ancestor != null) {
+                    if (ancestor.ClassName.equals(classDecl.classType.ClassName)) {
                         error("A class can't have itself as an ancestor");
                         break;
                     }
-                    if (ancestor.cDecl == null){
+                    if (ancestor.cDecl == null) {
                         error("The class does not exist yet");
                         break;
                     }
@@ -467,10 +467,15 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
                     ClassDecl ancestorDecl = ancestor.cDecl;
                     ancestor = ancestorDecl.ancestorType;
-                    for (ASTNode child : ancestorDecl.varDecls){
+                    for (ASTNode child : ancestorDecl.varDecls) {
                         visit(child);
                     }
-
+                }
+                ancestor = classDecl.ancestorType;
+                ancestorFunctions = new ArrayList<>();
+                while(ancestor != null) {
+                    ClassDecl ancestorDecl = ancestor.cDecl;
+                    ancestor = ancestorDecl.ancestorType;
                     for (FunDecl funDecl1 : ancestorDecl.funDecls) {
                         boolean visited = false;
                         for (FunDecl funDecl2 : classDecl.funDecls){
