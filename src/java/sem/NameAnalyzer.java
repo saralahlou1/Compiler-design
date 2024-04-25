@@ -502,7 +502,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         }
                         if (!visited && (!ancestorFunctions.contains(funDecl1.name)) ) {
                             ancestorFunctions.add(funDecl1.name);
-                            visit(funDecl1);
+//                            visit(funDecl1);
+                            scope.put(new FunClassSymbol(funDecl1));
                         }
                     }
 
