@@ -25,9 +25,7 @@ public class MemAllocCodeGen extends CodeGen {
         switch (n){
             case FunDecl fd -> {
                 fpOffset = 0;
-                // review this
                 fd.retValFPOffset = 4 ;
-                // need to implement returnSize
                 int offset = 4 + fd.type.size();
                 int pad = 4 - fd.type.size() % 4;
                 if (pad != 4) {
@@ -82,7 +80,6 @@ public class MemAllocCodeGen extends CodeGen {
             }
             case VarDecl vd -> {
                 vd.size = vd.type.size();
-                // Need to review this code
                 if (!global){ // local / stack
                     int padding = this.fpOffset % 4;
                     switch (vd.type){
@@ -97,7 +94,6 @@ public class MemAllocCodeGen extends CodeGen {
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
                         case ArrayType arr -> {
-                            // maybe I need to add few more cases
                             if (padding != 0)
                                 this.fpOffset += (-4- (this.fpOffset % 4));
                         }
@@ -132,9 +128,6 @@ public class MemAllocCodeGen extends CodeGen {
                             vd.lable = label;
                         }
                         case PointerType p -> {
-                            // Not sure at all maybe change
-                            // will hold int of address?
-                            // then in assignments use load address and assign the result to here?
                             data.emit(new Directive("align 4"));
                             Label label = Label.create(vd.name);
                             data.emit(label);
@@ -151,9 +144,6 @@ public class MemAllocCodeGen extends CodeGen {
                             vd.lable = label;
                         }
                         case StructType structType -> {
-                            // maybe allocate the size of the struct first.
-                            // store the offset of each field of the struct
-                            // then for assignment of field access, we use the offset to navigate the struct
                             data.emit(new Directive("align 4"));
                             Label label = Label.create(vd.name);
                             data.emit(label);
@@ -161,11 +151,6 @@ public class MemAllocCodeGen extends CodeGen {
                             //size for struct should be aligned with 4 (must ensure this in size fct)
                             vd.lable = label;
                         }
-                        // need to implement size fct for every type and initialize vd.size with it
-                        // need to add a field in StructType for field offsets. It will be a list of offsets
-                        // we initialize it in size fct for structType while computing the size.
-                        // Don't forget padding
-                        // Implemented size fct for all types
                         case ClassType classType -> {
                             // The object is in the heap, we pass pointer to that address
                             data.emit(new Directive("align 4"));

@@ -15,7 +15,6 @@ public class StrCodeGen extends CodeGen {
                 Label label = Label.create();
                 data.emit(label);
                 StringBuilder s = new StringBuilder();
-                // String s = str.id.replace("\n", "\\n");
                 for (int i = 0; i < str.id.length(); i++){
                     switch (str.id.charAt(i))
                     {
@@ -99,10 +98,3 @@ public class StrCodeGen extends CodeGen {
     }
 }
 
-
-//case StrLiteral str -> {
-//Label label = Label.create();
-//                data.emit(label);
-//                data.emit(new Directive("asciiz \"" + str.id +"\""));
-//str.label = label;
-//            }

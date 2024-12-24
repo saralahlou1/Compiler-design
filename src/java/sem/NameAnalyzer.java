@@ -20,7 +20,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 	public void visit(ASTNode node) {
 		switch(node) {
 			case null -> {
-				//throw new IllegalStateException("Unexpected null value");
+
 			}
 
 			case Block b -> {
@@ -39,7 +39,7 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 fctRetType = oldFctRetType;
                 scope = oldScope;
                 lFunProto = oldList;
-//                params = new ArrayList<>();
+
 			}
 
 			case FunDecl fd -> {
@@ -84,7 +84,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                                             }
                                         }
 
-//                                        params.add(vd);
                                     }
                                 }
                                 fctDecl = fd;
@@ -136,14 +135,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case Program p -> {
-                /* void print_s(char* s);
-                void print_i(int i);
-                void print_c(char c);
-
-                char read_c();
-                int read_i();
-                void* mcmalloc(int size);
-                */
                 List<VarDecl> param_s = new ArrayList<>();
                 param_s.add(new VarDecl(new PointerType(BaseType.CHAR), "s"));
                 Decl fct_1 = new FunDecl(BaseType.VOID, "print_s", param_s, new Block(null, null));
@@ -216,7 +207,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
 
                         }
                     }
-                    // modified this
                 }
 			}
 
@@ -299,7 +289,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             }
 
 			case StructTypeDecl std -> {
-                // trying this
                 Symbol s = scope.lookupCurrent(std.structType.structName);
                 if (s != null){
                     error("Struct name already declared in the same scope.");
@@ -369,7 +358,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 visit(exprStmt.stmt);
             }
             case FieldAccessExpr fieldAccessExpr -> {
-                // to change maybe check if name of field exists in given struct
                 visit(fieldAccessExpr.structure);
             }
             case If anIf -> {
@@ -381,7 +369,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             case IntLiteral intLiteral -> {
             }
             case Return aReturn -> {
-                //Modify
                 aReturn.funDecl = fctDecl;
                 visit(fctRetType);
                 switch (fctRetType){
@@ -389,7 +376,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     case ArrayType arr -> aReturn.retType = new ArrayType(arr.arrayType, arr.nbElements);
                     case PointerType p -> aReturn.retType = new PointerType(p.pointerType);
                     case StructType s -> aReturn.retType = new StructType(s.structName);
-                    // TODO check
                     case ClassType c -> aReturn.retType = new ClassType(c.ClassName);
                 }
                 visit(aReturn.expr);
@@ -411,10 +397,8 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                 visit(aWhile.stmt);
             }
 
-            // TODO
             case ClassDecl classDecl -> {
                 inClass = true;
-                // trying this
                 Symbol s = scope.lookupCurrent(classDecl.classType.ClassName);
                 if (s != null){
                     error("Class name already declared in the same scope.");
@@ -425,7 +409,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                     scope.put(s);
                 }
 
-                // check if possible to inherit from class yet to be defined
                 if (classDecl.ancestorType != null){
                     Symbol ancestor = scope.lookupCurrent(classDecl.ancestorType.ClassName);
                     if (ancestor == null){
@@ -502,14 +485,11 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
                         }
                         if (!visited && (!ancestorFunctions.contains(funDecl1.name)) ) {
                             ancestorFunctions.add(funDecl1.name);
-//                            visit(funDecl1);
+
                             scope.put(new FunClassSymbol(funDecl1));
                         }
                     }
 
-//                    for (ASTNode child : ancestorDecl.varDecls){
-//                        visit(child);
-//                    }
 
                 }
                 for (ASTNode child : classDecl.children()){
@@ -524,7 +504,6 @@ public class NameAnalyzer extends BaseSemanticAnalyzer {
             }
             case InstanceFunCallExpr instanceFunCallExpr -> {
                 visit(instanceFunCallExpr.instance);
-                // verify if fct exists in corresponding class in type analysis
             }
             case NewInstance newInstance -> {
                 visit(newInstance.newInstanceType);

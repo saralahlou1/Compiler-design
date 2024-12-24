@@ -19,9 +19,7 @@ public class FunCodeGen extends CodeGen {
         AssemblyProgram.Section text = asmProg.newSection(AssemblyProgram.Section.Type.TEXT);
 
         if (fd.name.equals("main")){
-            // maybe use get label instead
             text.emit(fd.fctLabel);
-            //text.emit(OpCode.ADD, Register.Arch.fp, Register.Arch.zero, Register.Arch.sp);
             text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
             text.emit(OpCode.SW, Register.Arch.fp, Register.Arch.sp, 0);
             text.emit(OpCode.ADD, Register.Arch.fp, Register.Arch.zero, Register.Arch.sp);
@@ -36,12 +34,9 @@ public class FunCodeGen extends CodeGen {
 
             text.emit(OpCode.LI, Register.Arch.v0, 10);
             text.emit(OpCode.SYSCALL);
-            //li $v0, 10
-            //	syscall
         }
 
         else {
-            // TODO: to complete
             // 1) emit the prolog
             Label fctEnd = Label.create();
             fd.returnLabel = fctEnd;

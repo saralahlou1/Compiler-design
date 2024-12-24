@@ -64,8 +64,6 @@ public class Tokeniser extends CompilerPass {
 
     private boolean isEscapedChar(char c){
         return "abnrt\\'\"0".indexOf(c) != -1;
-                //((int)c == 0 || (int)c == 7 || (int)c == 8 || (int)c == 9 || (int)c == 10 || (int)c == 13 ||
-                //(int)c == 92 || (int)c == 39 || (int)c == 34);
     }
 
     private String buildStringLiteral(char c){
@@ -147,9 +145,6 @@ public class Tokeniser extends CompilerPass {
         return token.toString();
     }
 
-    /*
-     * To be completed
-     */
     public Token nextToken() {
 
         int line = scanner.getLine();
@@ -356,9 +351,6 @@ public class Tokeniser extends CompilerPass {
         if (c == '"'){
             String word = buildStringLiteral(c);
             return new Token(Token.Category.STRING_LITERAL, word, line, column);
-            // maybe change this so that it returns invalid if string is bad.
-            // for now returns void if bad string. and toString(null) = ""
-            // we don't separate empty str from non-valid
         }
 
         // recognises char literals
@@ -366,12 +358,7 @@ public class Tokeniser extends CompilerPass {
 
             if (scanner.hasNext()){
                 c = scanner.peek();
-                // check empty ''
-//                if (c == '\'') {
-//                    scanner.next();
-//                    return new Token(Token.Category.CHAR_LITERAL, "", line, column);
-//                }
-                // else check if valid char
+
                 if (Character.isLetterOrDigit(c) || "\"`~@!$#^*%&()[]{}<>+=_-|/;:,.? ".indexOf(c) != -1) {
                     String character = Character.toString(c);
                     scanner.next();

@@ -61,8 +61,6 @@ public class ProgramCodeGen extends CodeGen {
             switch (decl){
                 case FunDecl funDecl -> {
                     if (funDecl.name.equals("main") && funDecl.type.equals(BaseType.VOID)){
-//                        p.decls.remove(funDecl);
-//                        p.decls.addLast(funDecl);
                         funDecl.fctLabel = mainLabel;
                     }
                 }

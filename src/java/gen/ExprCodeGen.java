@@ -13,15 +13,14 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Generates code to evaluate an expression and return the result in a register.
  */
 public class ExprCodeGen extends CodeGen {
-    //public Label Buffer = Label.create();
+
 
     public ExprCodeGen(AssemblyProgram asmProg) {
         this.asmProg = asmProg;
     }
 
     public Register visit(Expr e) {
-        // TODO: to complete
-//        return null;
+
         AssemblyProgram.Section text = asmProg.getCurrentSection();
         return switch(e){
 
@@ -39,10 +38,6 @@ public class ExprCodeGen extends CodeGen {
                     }
                     case MUL -> {
                         Register rhs = visit(binOp.rhs);
-                        // overriding previous value maybe during recursion I reuse these registers
-                        // so they get overridden
-                        // maybe use push registers and pull registers commends
-                        // lhs = visit(binOp.lhs);
                         text.emit(OpCode.MULT, lhs, rhs);
                         text.emit(OpCode.MFLO, resReg);
                     }
@@ -131,8 +126,6 @@ public class ExprCodeGen extends CodeGen {
             }
 
             case FunCallExpr fctExp -> {
-                // maybe here check if its one of the std library fct
-                // then for each fct provide implementation
                 if (fctExp.fctName.equals("print_s")){
                     Register param = visit(fctExp.params.getFirst());
 
@@ -161,8 +154,6 @@ public class ExprCodeGen extends CodeGen {
                     text.emit(OpCode.SYSCALL);
                     yield Register.Arch.v0;
 
-                    //li $v0, 5           # Load syscall code for reading integer
-                    //    syscall             # Read the integer
                 }
                 if (fctExp.fctName.equals("read_c")){
                     text.emit(OpCode.ADDI, Register.Arch.v0, Register.Arch.zero, 12);
@@ -185,14 +176,13 @@ public class ExprCodeGen extends CodeGen {
                     funDecl = fctExp.protoDecl.funDecl;
                 else
                     funDecl = fctExp.funDecl;
-                //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
 
                 // We then need to store the reference to the object as an arg if it's an instance
                 if (fctExp.isClassMethod){
                     Register address = Register.Virtual.create();
                     text.emit(OpCode.ADDI, address, Register.Arch.fp, fctExp.firstArgOffset);
                     text.emit(OpCode.LW, address, address, 0);
-//                    Type instanceType = instanceFunCallExpr.instance.type;
+
                     for (int i = 0; i < fctExp.params.size(); i++){
                         // argument
                         Register arg = visit(fctExp.params.get(i));
@@ -200,7 +190,7 @@ public class ExprCodeGen extends CodeGen {
                         int sizeAssign = funDecl.params.get(i).type.size();
                         int padding = sizeAssign % 4;
                         padding = 4 - padding;
-                        // maybe I need to review the offsets
+
                         switch (funDecl.params.get(i).type){
                             case BaseType b -> {
                                 fctExp.totalSpOffset += sizeAssign;
@@ -266,7 +256,6 @@ public class ExprCodeGen extends CodeGen {
 
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
                     fctExp.totalSpOffset += funDecl.type.size();
-                    // maybe for structs I should pay attention (nah most likely good)
                     int padding = 4 - funDecl.type.size() % 4;
                     if (padding != 4){
                         fctExp.totalSpOffset += padding;
@@ -317,11 +306,9 @@ public class ExprCodeGen extends CodeGen {
                         Register arg = visit(fctExp.params.get(i));
 
                         int sizeAssign = funDecl.params.get(i).type.size();
-//                    fctExp.totalSpOffset += sizeAssign;
-//                    text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - sizeAssign);
                         int padding = sizeAssign % 4;
                         padding = 4 - padding;
-                        // maybe I need to review the offsets
+
                         switch (funDecl.params.get(i).type) {
                             case BaseType b -> {
                                 fctExp.totalSpOffset += sizeAssign;
@@ -329,8 +316,6 @@ public class ExprCodeGen extends CodeGen {
                                 // if it's a char we only store 1 bite
                                 if (b == BaseType.CHAR) {
                                     text.emit(OpCode.SB, arg, Register.Arch.sp, 0);
-//                                fctExp.totalSpOffset += 3;
-//                                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - 3);
                                 }
                                 // or it's an int so we store a word
                                 else if (b == BaseType.INT) {
@@ -354,14 +339,12 @@ public class ExprCodeGen extends CodeGen {
                                 }
                             }
                             case ClassType classType -> {
-//                            arg = new AddrCodeGen(asmProg).visit(fctExp.params.get(i));
                                 fctExp.totalSpOffset += 4;
                                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                                 // for classes, we make them point to same address
                                 text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
                             }
                             case ArrayType arrayType -> {
-//                            arg = visit(fctExp.params.get(i));
                                 fctExp.totalSpOffset += 4;
                                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -4);
                                 text.emit(OpCode.SW, arg, Register.Arch.sp, 0);
@@ -385,7 +368,6 @@ public class ExprCodeGen extends CodeGen {
                     }
                     text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, -funDecl.type.size());
                     fctExp.totalSpOffset += funDecl.type.size();
-                    // maybe for structs I should pay attention (nah most likely good)
                     int padding = 4 - funDecl.type.size() % 4;
                     if (padding != 4) {
                         fctExp.totalSpOffset += padding;
@@ -415,8 +397,6 @@ public class ExprCodeGen extends CodeGen {
                     yield result;
                 }
 
-
-                //yield  null;
             }
             case StrLiteral str -> {
                 Register resReg = Register.Virtual.create();
@@ -490,7 +470,7 @@ public class ExprCodeGen extends CodeGen {
                     // if it's a struct or array, we return the address
                     yield result;
                 }
-                // TODO check if the variable is in the stack
+
                 else {
                     Register result = Register.Virtual.create();
                     text.emit(OpCode.ADDI, result, Register.Arch.fp, var.vd.fpOffset);
@@ -518,7 +498,6 @@ public class ExprCodeGen extends CodeGen {
 
             }
             case ArrayAccessExpr arr -> {
-                //TODO implement array access for pointers
 
                 Register address = visit(arr.array);
                 Register index = visit(arr.index);
@@ -559,9 +538,6 @@ public class ExprCodeGen extends CodeGen {
                 yield result;
             }
             case FieldAccessExpr s -> {
-                //TODO implement hashmap for offsets of each field
-                // Done. Need to test it
-
                 // fetch the address of the struct
                 Register address = visit(s.structure);
 
@@ -645,12 +621,6 @@ public class ExprCodeGen extends CodeGen {
             }
 
             case ValueAtExpr value -> {
-                /* TODO using address code gen to get address, then read value at 0
-                 *  if int or char, then read first word or byte
-                 *  else then its an array or struct so return address
-                 *  pointers? Return address too probably or read first word
-                 *  (ValueAt only called at pointer types)
-                 * */
                 Register reg = visit(value.value);
                 Register result = Register.Virtual.create();
                 switch (value.type){
@@ -676,14 +646,10 @@ public class ExprCodeGen extends CodeGen {
                 yield  result;
             }
             case AddressOfExpr address -> {
-                //TODO use AddrCodeGen maybe and return the result
-                // Done need to test
                 yield new AddrCodeGen(asmProg).visit(address);
             }
             case TypecastExpr typeCast -> {
-                //TODO think about how to type cast in assembly
                 Register exp = visit(typeCast.expr);
-                //Register register = Register.Virtual.create();
                 switch (typeCast.castType){
                     case BaseType baseType -> {
                         if (baseType == BaseType.INT){
@@ -749,7 +715,7 @@ public class ExprCodeGen extends CodeGen {
                     int sizeAssign = funDecl.params.get(i).type.size();
                     int padding = sizeAssign % 4;
                     padding = 4 - padding;
-                    // maybe I need to review the offsets
+
                     switch (funDecl.params.get(i).type){
                         case BaseType b -> {
                             fctExp.totalSpOffset += sizeAssign;
@@ -815,7 +781,7 @@ public class ExprCodeGen extends CodeGen {
 
                 text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, - funDecl.type.size());
                 fctExp.totalSpOffset += funDecl.type.size();
-                // maybe for structs I should pay attention (nah most likely good)
+
                 int padding = 4 - funDecl.type.size() % 4;
                 if (padding != 4){
                     fctExp.totalSpOffset += padding;

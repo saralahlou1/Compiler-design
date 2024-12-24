@@ -9,12 +9,11 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			case null -> {
 				error("Value is null");
 				yield BaseType.NONE;
-				//throw new IllegalStateException("Unexpected null value");
 			}
 
 			case Block b -> {
 				for (ASTNode c : b.children())
-					visit(c);	//here
+					visit(c);
 				yield BaseType.NONE;
 			}
 
@@ -22,7 +21,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				for (VarDecl varDecl : fd.params){
 					visit(varDecl);
 				}
-				visit(fd.block);	//here
+				visit(fd.block);
 				yield BaseType.NONE;
 			}
 
@@ -148,7 +147,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 			}
 
 			case StructTypeDecl std -> {
-				//test
 				for (VarDecl v : std.varDecl){
 					visit(v);
 				}
@@ -173,7 +171,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 					error("One of the assignments side is null.");
 					yield BaseType.NONE;
 				}
-				yield switch (type_e1){		//here
+				yield switch (type_e1){
 					case ArrayType arr -> {
 						error("Can't assign to array types.");
 						assign.type = BaseType.NONE;
@@ -193,33 +191,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						assign.type = type_e1;
 						yield type_e1;
 					}
-//					case ClassType classType -> {
-//						if (!type_e1.equals(type_e2)){
-//							yield switch (type_e2){
-//								case ClassType classType2 -> {
-//									ClassType ancestor = classType2.cDecl.ancestorType;
-//									while (ancestor != null){
-//										ClassDecl ancestorDecl = ancestor.cDecl;
-//										ancestor = ancestorDecl.ancestorType;
-//										if (type_e1.equals(ancestor)){
-//											assign.type = type_e1;
-//											yield type_e1;
-//										}
-//									}
-//									error("Assignment types do not match. No superclass is of that type.");
-//									assign.type = BaseType.NONE;
-//									yield BaseType.NONE;
-//								}
-//								default -> {
-//									error("Assignment types do not match. One is a class the other is not");
-//									assign.type = BaseType.NONE;
-//									yield BaseType.NONE;
-//								}
-//							};
-//						}
-//						assign.type = type_e1;
-//						yield type_e1;
-//					}
 					default -> {
 						if (!type_e1.equals(type_e2)){
 							error("Assignment types do not match.");
@@ -251,7 +222,7 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 
 			case Continue aContinue -> null;
 
-			case ExprStmt exprStmt -> visit(exprStmt.stmt); //here
+			case ExprStmt exprStmt -> visit(exprStmt.stmt);
 
 
 			case FieldAccessExpr fieldAccessExpr -> {
@@ -259,7 +230,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				fieldAccessExpr.structure.type = t;
 				yield switch (t){
 					case StructType type -> {
-						// maybe do name analysis here for this
 						if (type.sDecl == null){
 							error("Struct declaration is null. Maybe the struct does not exist");
 							yield BaseType.NONE;
@@ -275,7 +245,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 						yield BaseType.NONE;
 					}
 					case ClassType classType -> {
-						// maybe do name analysis here for this
 						if (classType.cDecl == null){
 							error("Class declaration is null. Maybe the class does not exist");
 							yield BaseType.NONE;
@@ -455,7 +424,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				yield BaseType.NONE;
 			}
 
-			// TODO finish and review
             case ClassDecl classDecl -> {
 				for (FunDecl funDecl : classDecl.funDecls){
 					visit(funDecl);
@@ -467,7 +435,6 @@ public class TypeAnalyzer extends BaseSemanticAnalyzer {
 				instanceFunCallExpr.instance.type = t;
 				yield switch (t){
 					case ClassType classType -> {
-						// maybe do name analysis here for this
 						if (classType.cDecl == null){
 							error("Class declaration is null. Maybe the class does not exist");
 							yield BaseType.NONE;

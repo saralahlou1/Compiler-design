@@ -38,7 +38,7 @@ public class Parser  extends CompilerPass {
 
 
 
-    //private int error = 0;
+
     private Token lastErrorToken;
 
     private void error(Category... expected) {
@@ -287,7 +287,6 @@ public class Parser  extends CompilerPass {
                 nextToken();
                 if (accept(Category.INT_LITERAL)) {
                     Token token = expect(Category.INT_LITERAL);
-                    //varType = new ArrayType(varType, Integer.parseInt(token.data));
                     dimensions.push(Integer.parseInt(token.data));
                 }
                 else {error();}
@@ -307,7 +306,6 @@ public class Parser  extends CompilerPass {
                     nextToken();
                     if (accept(Category.INT_LITERAL)) {
                         Token token = expect(Category.INT_LITERAL);
-//                        varType = new ArrayType(varType, Integer.parseInt(token.data));
                         dimensions.push(Integer.parseInt(token.data));
                     }
                     else {error();}
@@ -323,7 +321,6 @@ public class Parser  extends CompilerPass {
     }
 
     private VarDecl parse_vardecl(Type varType){
-        // Type varType = parse_type();
         Token id = expect(Category.IDENTIFIER);
         // in case it was an array, we update the type in parse VarDecl
         Stack<Integer> dimensions = new Stack<>();
@@ -332,7 +329,6 @@ public class Parser  extends CompilerPass {
             nextToken();
             if (accept(Category.INT_LITERAL)) {
                 Token token = expect(Category.INT_LITERAL);
-//              varType = new ArrayType(varType, Integer.parseInt(token.data));
                 dimensions.push(Integer.parseInt(token.data));
             }
             else {error();}
@@ -418,51 +414,6 @@ public class Parser  extends CompilerPass {
             nextToken();
             return null;
         }
-        /*if(accept(Category.WHILE)){
-            nextToken();
-            expect(Category.LPAR);
-            parse_exp();
-            expect(Category.RPAR);
-            parse_stmt();
-        }
-        else if (accept(Category.IF)){
-            nextToken();
-            expect(Category.LPAR);
-            parse_exp();
-            expect(Category.RPAR);
-            parse_stmt();
-            if(accept(Category.ELSE)){
-                nextToken();
-                parse_stmt();
-            }
-        }
-        else if(accept(Category.RETURN)){
-            nextToken();
-            if(acceptExp()){
-                parse_exp();
-            }
-            expect(Category.SC);
-        }
-        else if(accept(Category.CONTINUE)){
-                nextToken();
-                expect(Category.SC);
-            }
-        else if(accept(Category.BREAK)){
-                nextToken();
-                expect(Category.SC);
-            }
-        else if (accept(Category.LBRA)){
-                parse_block();
-            }
-        else if (acceptExp()){
-                parse_exp();
-                expect(Category.SC);
-            }
-        else {
-            error();
-            nextToken();
-        }
-        return null; //to change */
     }
 
 
@@ -693,134 +644,6 @@ public class Parser  extends CompilerPass {
     }
 
 
-    /*
-    private void parse_funcall(){
-        expect(Category.IDENTIFIER);
-        expect(Category.LPAR);
-        if(acceptExp()){
-            parse_exp();
-            while(accept(Category.COMMA)){
-                nextToken();
-                parse_exp();
-            }
-        }
-        expect(Category.RPAR);
-    }
-
-    private void parse_arrayaccess(){
-        expect(Category.LSBR);
-        parse_exp();
-        expect(Category.RSBR);
-    }
-
-    private void parse_fieldaccess(){
-        expect(Category.DOT);
-        expect(Category.IDENTIFIER);
-    }
-
-    private void parse_valueat(){
-        expect(Category.ASTERISK);
-        parse_exp();
-    }
-
-    private void parse_addressof(){
-        expect(Category.AND);
-        parse_exp();
-    }
-
-    private void parse_sizeof(){
-        expect(Category.SIZEOF);
-        expect(Category.LPAR);
-        parse_type();
-        expect(Category.RPAR);
-    }
-
-    private void parse_typecast(){
-        //expect(Category.LPAR);
-        parse_type();
-        expect(Category.RPAR);
-        parse_exp();
-    }
-
-    private void parse_exp_prime(){
-        if(accept(Category.ASSIGN, Category.GT, Category.LT,Category.GE,
-                    Category.LE, Category.NE, Category.EQ, Category.PLUS, Category.MINUS,
-                    Category.DIV, Category.ASTERISK, Category.REM, Category.LOGOR, Category.LOGAND)){
-            nextToken();
-            parse_exp();
-            parse_exp_prime();
-        }
-
-        else if(accept(Category.LSBR)){
-            parse_arrayaccess();
-            parse_exp_prime();
-        }
-
-        else if(accept(Category.DOT)){
-            parse_fieldaccess();
-            parse_exp_prime();
-        }
-    }
-
-    private void parse_exp(){
-        if(accept(Category.LPAR)){
-            nextToken();
-            if(accept_type()){
-                parse_typecast();
-                parse_exp_prime();
-            } else if (acceptExp()){
-                //nextToken();
-                parse_exp();
-                expect(Category.RPAR);
-                parse_exp_prime();
-            } else {
-                error();
-            }
-        }
-
-        else if(accept(Category.IDENTIFIER)){
-            if(lookAhead(1).category == Category.LPAR){
-                parse_funcall();
-                parse_exp_prime();
-            }
-            else {
-                nextToken();
-                parse_exp_prime();
-            }
-        }
-
-        else if(accept(Category.INT_LITERAL, Category.CHAR_LITERAL, Category.STRING_LITERAL)){
-            nextToken();
-            parse_exp_prime();
-        }
-
-        else if(accept(Category.MINUS, Category.PLUS)){
-            nextToken();
-            parse_exp();
-            parse_exp_prime();
-        }
-
-        else if(accept(Category.ASTERISK)){
-            parse_valueat();
-            parse_exp_prime();
-        }
-
-        else if(accept(Category.AND)){
-            parse_addressof();
-            parse_exp_prime();
-        }
-
-        else if (accept(Category.SIZEOF)){
-            parse_sizeof();
-            parse_exp_prime();
-        }
-        else {
-            error();
-            nextToken();
-        }
-    }
-*/
-
     // includes are ignored, so does not need to return an AST node
     private void parseIncludes() {
         if (accept(Category.INCLUDE)) {
@@ -857,5 +680,4 @@ public class Parser  extends CompilerPass {
         return accept(Category.LPAR, Category.IDENTIFIER, Category.STRING_LITERAL, Category.INT_LITERAL,
                 Category.CHAR_LITERAL, Category.PLUS, Category.MINUS, Category.ASTERISK, Category.AND, Category.SIZEOF);
     }
-    // to be completed ...
 }

@@ -9,9 +9,7 @@ public class SemanticAnalyzer extends CompilerPass {
 		NameAnalyzer na = new NameAnalyzer(new Scope());
 		na.visit(prog);
 		this.numErrors += na.getNumErrors();
-//		if (this.numErrors != 0){
-//			return;
-//		}
+
 		TypeAnalyzer tc = new TypeAnalyzer();
 		tc.visit(prog);
 		this.numErrors += tc.getNumErrors();

@@ -83,14 +83,11 @@ public class StmtCodeGen extends CodeGen {
             }
             case Return aReturn -> {
                 if (aReturn.expr == null){
-                    //text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
                     text.emit(OpCode.J, aReturn.funDecl.returnLabel);
                     break;
                 }
                 ExprCodeGen exprCodeGen = new ExprCodeGen(asmProg);
                 Register ret = exprCodeGen.visit(aReturn.expr);
-                //Register result = Register.Virtual.create();
-                //text.emit(OpCode.ADDI, result, Register.Arch.sp, 0);
                 switch (aReturn.retType){
                     case BaseType b -> {
                         // if it's a char we only store 1 bite
@@ -115,8 +112,6 @@ public class StmtCodeGen extends CodeGen {
                     }
 
                 }
-//                text.emit(OpCode.POP_REGISTERS);
-//                text.emit(OpCode.ADDI, Register.Arch.sp, Register.Arch.sp, aReturn.funDecl.totalSpOffset);
                 text.emit(OpCode.J, aReturn.funDecl.returnLabel);
             }
             default -> {}

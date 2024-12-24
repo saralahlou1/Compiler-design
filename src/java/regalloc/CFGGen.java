@@ -7,14 +7,7 @@ import java.util.*;
 public class CFGGen {
     public static final CFGGen INSTANCE = new CFGGen();
 
-    // maybe first generate all the nodes then loop through nodes to instantiate successors
-    // if instruction is not an unconditional jump then one successor is the instruction right after
-    // if node1 is a jump, search through the existing nodes for the Label and add corresponding node2
-    // to list of successors.
 
-    // check first if register is virtual or not before adding it to live in and out maybe
-
-    // add the nodes corresponding to the instructions in order
     private final List<ControlFlowNode> nodes = new ArrayList<>();
 
     public List<ControlFlowNode> generate(AssemblyProgram.Section functionText){
@@ -87,7 +80,7 @@ public class CFGGen {
 
 
         // getting rid of dead instructions
-        // maybe check if reg in definition is virtual or not first
+        // check if reg in definition is virtual or not first
         List<ControlFlowNode> newNodes = new ArrayList<>();
         for (ControlFlowNode node : nodes){
             switch (node.currentInstruction){
